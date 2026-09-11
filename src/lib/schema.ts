@@ -47,21 +47,35 @@ export function getWebSiteSchema() {
 }
 
 export interface ServiceSchemaInput {
-  name: string;
-  description: string;
-  url: string;
-  serviceType: string;
+  name?: string;
+  title?: string;
+  description?: string;
+  definition?: string;
+  url?: string;
+  slug?: string;
+  serviceType?: string;
+  shortTitle?: string;
   deliverables?: string[];
 }
 
 export function getServiceSchema(service: ServiceSchemaInput) {
+  const serviceName = service.name || service.title || "Design Service";
+  const serviceDescription = service.description || service.definition || "";
+  const serviceType = service.serviceType || service.shortTitle || serviceName;
+  const servicePath = service.url || (service.slug ? `/services/${service.slug}` : "");
+  const fullUrl = servicePath
+    ? servicePath.startsWith("http")
+      ? servicePath
+      : `${siteConfig.url}${servicePath.startsWith("/") ? "" : "/"}${servicePath}`
+    : siteConfig.url;
+
   return {
     "@context": "https://schema.org",
     "@type": "Service",
-    name: service.name,
-    serviceType: service.serviceType,
-    description: service.description,
-    url: service.url.startsWith("http") ? service.url : `${siteConfig.url}${service.url}`,
+    name: serviceName,
+    serviceType,
+    description: serviceDescription,
+    url: fullUrl,
     provider: {
       "@type": "Organization",
       "@id": `${siteConfig.url}/#organization`,
@@ -76,7 +90,7 @@ export function getServiceSchema(service: ServiceSchemaInput) {
       ? {
           hasOfferCatalog: {
             "@type": "OfferCatalog",
-            name: `${service.name} Deliverables`,
+            name: `${serviceName} Deliverables`,
             itemListElement: service.deliverables.map((d, idx) => ({
               "@type": "Offer",
               itemOffered: {
@@ -100,12 +114,19 @@ export function getBreadcrumbSchema(items: BreadcrumbItem[]) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    itemListElement: items.map((crumb, idx) => ({
-      "@type": "ListItem",
-      position: idx + 1,
-      name: crumb.name,
-      item: crumb.item.startsWith("http") ? crumb.item : `${siteConfig.url}${crumb.item}`,
-    })),
+    itemListElement: items.map((crumb, idx) => {
+      const itemUrl = crumb.item || "/";
+      const fullUrl = itemUrl.startsWith("http")
+        ? itemUrl
+        : `${siteConfig.url}${itemUrl.startsWith("/") ? "" : "/"}${itemUrl}`;
+
+      return {
+        "@type": "ListItem",
+        position: idx + 1,
+        name: crumb.name,
+        item: fullUrl,
+      };
+    }),
   };
 }
 
@@ -140,18 +161,24 @@ export interface CreativeWorkInput {
 }
 
 export function getCreativeWorkSchema(work: CreativeWorkInput) {
+  const workUrl = work.url || "";
+  const fullUrl = workUrl.startsWith("http")
+    ? workUrl
+    : `${siteConfig.url}${workUrl.startsWith("/") ? "" : "/"}${workUrl}`;
+  const fullImage = work.image
+    ? work.image.startsWith("http")
+      ? work.image
+      : `${siteConfig.url}${work.image.startsWith("/") ? "" : "/"}${work.image}`
+    : undefined;
+
   return {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
     name: work.name,
     headline: work.headline,
     description: work.description,
-    url: work.url.startsWith("http") ? work.url : `${siteConfig.url}${work.url}`,
-    image: work.image
-      ? work.image.startsWith("http")
-        ? work.image
-        : `${siteConfig.url}${work.image}`
-      : undefined,
+    url: fullUrl,
+    image: fullImage,
     datePublished: work.datePublished ?? "2026-01-01",
     author: {
       "@type": "Organization",
@@ -183,6 +210,12 @@ export interface ArticleInput {
 
 export function getArticleSchema(article: ArticleInput) {
   const url = `${siteConfig.url}/insights/${article.slug}`;
+  const fullImage = article.image
+    ? article.image.startsWith("http")
+      ? article.image
+      : `${siteConfig.url}${article.image.startsWith("/") ? "" : "/"}${article.image}`
+    : `${siteConfig.url}/og-default.png`;
+
   return {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -191,11 +224,7 @@ export function getArticleSchema(article: ArticleInput) {
     url,
     datePublished: article.datePublished,
     dateModified: article.dateModified || article.datePublished,
-    image: article.image
-      ? article.image.startsWith("http")
-        ? article.image
-        : `${siteConfig.url}${article.image}`
-      : `${siteConfig.url}/og-default.png`,
+    image: fullImage,
     author: {
       "@type": "Person",
       name: article.authorName || "Skédio Team",

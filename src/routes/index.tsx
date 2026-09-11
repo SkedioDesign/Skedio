@@ -103,7 +103,15 @@ function Index() {
   const { openContactModal } = useContactModal();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  const serviceSchemas = servicesData.map(getServiceSchema);
+  const serviceSchemas = servicesData.map((s) =>
+    getServiceSchema({
+      name: s.title,
+      description: s.definition,
+      url: `/services/${s.slug}`,
+      serviceType: s.shortTitle,
+      deliverables: s.deliverables,
+    }),
+  );
   const faqSchema = getFAQSchema(generalFaqs);
 
   return (
