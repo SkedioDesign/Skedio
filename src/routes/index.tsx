@@ -1,59 +1,41 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, ArrowRight, Zap } from "lucide-react";
+import { ArrowUpRight, ArrowRight, Zap, HelpCircle } from "lucide-react";
+import { useState } from "react";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { useContactModal } from "@/context/contact-modal-context";
+import { seo, canonicalLink } from "@/lib/seo";
+import { siteConfig } from "@/lib/site-config";
+import { StructuredData } from "@/components/StructuredData";
+import { getServiceSchema, getFAQSchema } from "@/lib/schema";
+import { servicesData } from "@/data/services";
+import { generalFaqs } from "@/data/faq";
+import { insightsArticles } from "@/data/insights";
 
 import hero from "@/assets/hero.png";
 import svcStrategy from "@/assets/svc-strategy.jpg";
 import svcIdentity from "@/assets/svc-identity.jpg";
 import svcDesign from "@/assets/svc-design.jpg";
 import svcUiux from "@/assets/svc-uiux.jpg";
-import insight1 from "@/assets/insight-1.jpg";
-import insight2 from "@/assets/insight-2.jpg";
-import insight3 from "@/assets/insight-3.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
-    meta: [
-      { title: "Skédio — We build brands that make an impact" },
-      {
-        name: "description",
-        content:
-          "Skédio is a creative studio crafting bold brands, beautiful experiences and digital products that help businesses grow.",
-      },
-      { property: "og:title", content: "Skédio — We build brands that make an impact" },
-      {
-        property: "og:description",
-        content: "Brand strategy, identity, design and UI/UX from a studio built for growth.",
-      },
-      { name: "theme-color", content: "#8537F4" },
-    ],
+    meta: seo({
+      title: "Skédio — Brand Strategy, Identity & Digital Product Design Studio",
+      description:
+        "Skédio is a creative studio crafting bold brands, beautiful digital experiences, and high-performance digital products that help businesses grow.",
+      url: "/",
+    }),
+    links: canonicalLink("/"),
   }),
   component: Index,
 });
 
-const services = [
-  {
-    title: "Brand Strategy",
-    body: "Building positioning and strategy that give a brand real direction, not just a look.",
-    img: svcStrategy,
-  },
-  {
-    title: "Brand Identity",
-    body: "Distinctive visual identities built to be recognized at a glance and remembered long after.",
-    img: svcIdentity,
-  },
-  {
-    title: "UI/UX",
-    body: "Digital experiences built to be intuitive first, beautiful second.",
-    img: svcUiux,
-  },
-  {
-    title: "Product Development",
-    body: "End-to-end product development that turns ideas into scalable digital products.",
-    img: svcDesign,
-  },
-];
+const serviceCardImages: Record<string, string> = {
+  "brand-strategy": svcStrategy,
+  "brand-identity": svcIdentity,
+  "ui-ux-design": svcUiux,
+  "product-development": svcDesign,
+};
 
 const projects = [
   {
@@ -63,12 +45,6 @@ const projects = [
     tag: "Product Design, UI/UX",
     img: "/HaoCabs/cover.png",
   },
-];
-
-const insights = [
-  { date: "May 20, 2025", title: "The Future of Brand Building in a Digital World", img: insight1 },
-  { date: "May 12, 2025", title: "Typography in Branding: More Than Just Fonts", img: insight2 },
-  { date: "May 05, 2025", title: "Designing Experiences That People Remember", img: insight3 },
 ];
 
 const clientLogos = Array.from({ length: 14 }, (_, i) => ({
@@ -125,9 +101,15 @@ function PillLink({
 
 function Index() {
   const { openContactModal } = useContactModal();
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  const serviceSchemas = servicesData.map(getServiceSchema);
+  const faqSchema = getFAQSchema(generalFaqs);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <StructuredData data={[...serviceSchemas, faqSchema]} />
+
       {/* Nav */}
       <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-md">
         <nav className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-6 py-5 md:px-12">
@@ -145,12 +127,12 @@ function Index() {
                 </li>
               ))}
               <li>
-                <a
-                  href="/about"
+                <Link
+                  to="/about"
                   className="type-body tracking-[0.08em] text-foreground/70 transition-colors duration-200 hover:text-primary"
                 >
                   About
-                </a>
+                </Link>
               </li>
             </ul>
             <PillLink onClick={openContactModal}>Let's Talk</PillLink>
@@ -166,18 +148,19 @@ function Index() {
             <h1 className="type-h1 sk-rise">
               We build brands and digital
               <br />
-              products that make an{" "}
-              <span className="font-extrabold text-primary">impact.</span>
+              products that make an <span className="font-extrabold text-primary">impact.</span>
             </h1>
 
             <div className="mt-10 flex flex-wrap items-center gap-3">
-              {["Brand Strategy", "Brand Identity", "UI/UX Design", "Web Development"].map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-md border border-border bg-surface px-4 py-1.5 text-sm font-medium text-foreground/70"
+              {servicesData.map((s) => (
+                <Link
+                  key={s.slug}
+                  to="/services/$slug"
+                  params={{ slug: s.slug }}
+                  className="rounded-md border border-border bg-surface px-4 py-1.5 text-sm font-medium text-foreground/70 transition-colors hover:border-primary/50 hover:text-primary"
                 >
-                  {tag}
-                </span>
+                  {s.shortTitle}
+                </Link>
               ))}
             </div>
 
@@ -226,31 +209,40 @@ function Index() {
         </div>
       </section>
 
-      {/* Hero image placeholder */}
+      {/* Hero visual with LCP optimization */}
       <section className="mx-auto w-full max-w-[1440px] px-6 md:px-12">
         <img
           src={hero}
-          alt="Hero visual"
+          alt="Skédio design studio hero showcase — bold brand strategy and product design"
+          fetchPriority="high"
+          loading="eager"
+          width={1440}
+          height={810}
           className="aspect-[16/9] w-full rounded-2xl object-cover"
         />
       </section>
 
       <div className="bg-background">
         {/* Services */}
-        <section id="services" className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 py-24 lg:py-28">
+        <section
+          id="services"
+          className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 py-24 lg:py-28"
+        >
           <ScrollReveal>
             <p className="eyebrow">What we do</p>
             <h2 className="type-h2 mt-5">Services that drive brands forward</h2>
           </ScrollReveal>
 
           <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {services.map((s, idx) => (
-              <ScrollReveal key={s.title} delay={idx}>
-                <article
-                  className="group overflow-hidden rounded-xl border border-border bg-card shadow-card transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1.5 hover:shadow-card-hover"
+            {servicesData.map((s, idx) => (
+              <ScrollReveal key={s.slug} delay={idx}>
+                <Link
+                  to="/services/$slug"
+                  params={{ slug: s.slug }}
+                  className="group block h-full overflow-hidden rounded-xl border border-border bg-card shadow-card transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-1.5 hover:border-primary/50 hover:shadow-card-hover"
                 >
                   <img
-                    src={s.img}
+                    src={serviceCardImages[s.slug]}
                     alt={s.title}
                     loading="lazy"
                     width={700}
@@ -258,26 +250,39 @@ function Index() {
                     className="h-48 w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
                   />
                   <div className="p-6">
-                    <h3 className="type-h6">{s.title}</h3>
-                    <p className="type-sm mt-2.5 text-muted-foreground">{s.body}</p>
+                    <h3 className="type-h6 group-hover:text-primary transition-colors flex items-center justify-between">
+                      {s.shortTitle}
+                      <ArrowUpRight className="size-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </h3>
+                    <p className="type-sm mt-2.5 text-muted-foreground">{s.tagline}</p>
                   </div>
-                </article>
+                </Link>
               </ScrollReveal>
             ))}
           </div>
         </section>
 
         {/* Work */}
-        <section id="work" className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 pb-24 lg:pb-28">
+        <section
+          id="work"
+          className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 pb-24 lg:pb-28"
+        >
           <ScrollReveal>
             <div className="flex flex-wrap items-end justify-between gap-6">
               <div>
                 <p className="eyebrow">Featured project</p>
                 <h2 className="type-h2 mt-5">Selected work</h2>
               </div>
-              <PillLink href="/projects/haocabs" variant="outline">
+              <Link
+                to="/projects/$slug"
+                params={{ slug: "haocabs" }}
+                className="group type-button inline-flex cursor-pointer items-center gap-2 rounded-full border border-border bg-transparent px-6 py-3 text-foreground transition-colors duration-250 ease-out hover:border-ink hover:bg-ink hover:text-ink-foreground"
+              >
                 Explore Case Study
-              </PillLink>
+                <span className="grid size-8 place-items-center rounded-full bg-foreground/10 transition-transform duration-250 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                  <ArrowUpRight className="size-4" />
+                </span>
+              </Link>
             </div>
           </ScrollReveal>
 
@@ -292,7 +297,7 @@ function Index() {
                   <div className="relative aspect-[16/9] w-full overflow-hidden sm:aspect-[21/9]">
                     <img
                       src={p.img}
-                      alt={`${p.name} project`}
+                      alt={`${p.name} — ${p.line}`}
                       loading="lazy"
                       width={1600}
                       height={900}
@@ -303,7 +308,9 @@ function Index() {
                       <div className="flex flex-wrap items-center justify-between gap-4">
                         <div>
                           <div className="flex items-center gap-3">
-                            <h3 className="font-display text-2xl font-bold sm:text-4xl">{p.name}</h3>
+                            <h3 className="font-display text-2xl font-bold sm:text-4xl">
+                              {p.name}
+                            </h3>
                             <span className="rounded-full bg-[#FFC400] px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-black">
                               Case Study
                             </span>
@@ -323,62 +330,119 @@ function Index() {
         </section>
 
         {/* Insights */}
-        <section id="insights" className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 pb-24 lg:pb-32">
+        <section
+          id="insights"
+          className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 pb-24 lg:pb-32"
+        >
           <ScrollReveal>
             <div className="flex flex-wrap items-end justify-between gap-6">
               <div>
                 <p className="eyebrow">Insights</p>
                 <h2 className="type-h2 mt-5">Read our latest thoughts</h2>
               </div>
-              <PillLink href="#insights" variant="outline">
+              <Link
+                to="/insights"
+                className="group type-button inline-flex cursor-pointer items-center gap-2 rounded-full border border-border bg-transparent px-6 py-3 text-foreground transition-colors duration-250 ease-out hover:border-ink hover:bg-ink hover:text-ink-foreground"
+              >
                 View All Insights
-              </PillLink>
+                <span className="grid size-8 place-items-center rounded-full bg-foreground/10 transition-transform duration-250 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                  <ArrowUpRight className="size-4" />
+                </span>
+              </Link>
             </div>
           </ScrollReveal>
 
           <div className="mt-12 grid gap-8 md:grid-cols-3">
-            {insights.map((n, idx) => (
-              <ScrollReveal key={n.title} delay={idx}>
-                <article className="group flex cursor-pointer gap-5">
-                  <img
-                    src={n.img}
-                    alt={n.title}
-                    loading="lazy"
-                    width={560}
-                    height={560}
-                    className="size-32 shrink-0 rounded-xl object-cover transition-transform duration-250 ease-out group-hover:-translate-y-1"
-                  />
+            {insightsArticles.slice(0, 3).map((article, idx) => (
+              <ScrollReveal key={article.slug} delay={idx}>
+                <Link
+                  to="/insights/$slug"
+                  params={{ slug: article.slug }}
+                  className="group flex flex-col justify-between rounded-xl border border-border bg-card p-6 transition-all duration-250 ease-out hover:-translate-y-1 hover:border-primary/50 hover:shadow-card"
+                >
                   <div>
-                    <p className="type-caption text-muted-foreground">{n.date}</p>
-                    <h3 className="mt-2 text-base font-semibold leading-snug">{n.title}</h3>
-                    <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
-                      Read More{" "}
-                      <ArrowRight className="size-4 transition-transform duration-250 ease-out group-hover:translate-x-1" />
-                    </span>
+                    <p className="type-caption text-muted-foreground">{article.datePublished}</p>
+                    <h3 className="mt-2 text-base font-semibold leading-snug group-hover:text-primary transition-colors">
+                      {article.title}
+                    </h3>
+                    <p className="mt-2 text-xs leading-relaxed text-muted-foreground line-clamp-3">
+                      {article.excerpt}
+                    </p>
                   </div>
-                </article>
+                  <span className="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-primary">
+                    Read Article{" "}
+                    <ArrowRight className="size-3.5 transition-transform duration-250 ease-out group-hover:translate-x-1" />
+                  </span>
+                </Link>
               </ScrollReveal>
             ))}
           </div>
         </section>
 
-        {/* Clients */}
-        <section id="clients" className="mx-auto w-full max-w-[1360px] scroll-mt-24 px-6 pb-28 lg:pb-36">
+        {/* FAQs Section (High-Leverage AEO Surface) */}
+        <section
+          id="faqs"
+          className="mx-auto w-full max-w-[900px] scroll-mt-24 px-6 pb-24 lg:pb-32"
+        >
           <ScrollReveal>
-            <div className="mb-14 lg:mb-20">
-              <h2 className="font-display text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-                Clients
-              </h2>
-              <div className="mt-3 flex items-center gap-6">
-                <p className="type-body text-muted-foreground sm:text-lg">
-                  We'll let the brands speak for us
-                </p>
-                <div className="h-px flex-1 max-w-sm bg-border/80" />
-              </div>
+            <div className="text-center">
+              <p className="eyebrow">Studio FAQs</p>
+              <h2 className="type-h2 mt-4">Questions you might have</h2>
+              <p className="mt-3 text-muted-foreground">
+                Clear answers on pricing, timelines, deliverables, and how we work with founders.
+              </p>
             </div>
           </ScrollReveal>
 
-          <div className="grid grid-cols-2 items-center justify-items-center gap-x-12 gap-y-16 sm:grid-cols-3 sm:gap-x-16 sm:gap-y-20 md:grid-cols-4 lg:grid-cols-4">
+          <div className="mt-12 space-y-4">
+            {generalFaqs.map((faq, index) => {
+              const isOpen = openFaq === index;
+              return (
+                <ScrollReveal key={faq.question} delay={index % 3}>
+                  <div className="rounded-xl border border-border bg-card overflow-hidden transition-colors">
+                    <button
+                      type="button"
+                      onClick={() => setOpenFaq(isOpen ? null : index)}
+                      className="flex w-full items-center justify-between p-6 text-left font-semibold text-foreground cursor-pointer"
+                      aria-expanded={isOpen}
+                    >
+                      <span className="flex items-center gap-3 pr-4">
+                        <HelpCircle className="size-5 text-primary shrink-0" />
+                        {faq.question}
+                      </span>
+                      <span className="text-xl leading-none text-muted-foreground">
+                        {isOpen ? "−" : "+"}
+                      </span>
+                    </button>
+                    {isOpen && (
+                      <div className="border-t border-border px-6 pt-4 pb-6 text-muted-foreground leading-relaxed">
+                        {faq.answer}
+                      </div>
+                    )}
+                  </div>
+                </ScrollReveal>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Clients */}
+        <section
+          id="clients"
+          className="mx-auto w-full max-w-[1360px] scroll-mt-24 px-6 pb-28 lg:pb-36"
+        >
+          <ScrollReveal>
+            <div className="mb-14 text-center lg:mb-20">
+              <h2 className="font-display text-center text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+                Clients
+              </h2>
+              <p className="mt-3 type-body text-center text-muted-foreground sm:text-lg">
+                We'll let the brands speak for us
+              </p>
+            </div>
+          </ScrollReveal>
+
+          <div className="grid grid-cols-2 items-center justify-items-center gap-x-6 gap-y-8 sm:grid-cols-3 sm:gap-x-8 sm:gap-y-10 md:grid-cols-4 lg:grid-cols-4">
             {clientLogos.map((c, idx) => (
               <ScrollReveal
                 key={c.id}

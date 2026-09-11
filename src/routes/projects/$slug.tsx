@@ -2,26 +2,42 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowDown, ArrowDownRight, ArrowLeft } from "lucide-react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 
+import { getProjectBySlug } from "@/data/projects";
+import { seo, canonicalLink } from "@/lib/seo";
+import { StructuredData } from "@/components/StructuredData";
+import { getCreativeWorkSchema, getBreadcrumbSchema } from "@/lib/schema";
+
 import "./case-study.css";
 
 export const Route = createFileRoute("/projects/$slug")({
-  head: () => ({
-    meta: [
-      { title: "HAO Cabs — Taxi Bidding Experience Case Study | Skédio" },
-      {
-        name: "description",
-        content:
-          "A long-form editorial product design case study exploring HAO Cabs — a taxi bidding experience app connecting riders and drivers in real time.",
-      },
-      { property: "og:title", content: "HAO Cabs — Case Study | Skédio" },
-      {
-        property: "og:description",
-        content:
-          "A modern taxi-bidding platform where riders compare driver bids and choose the ride that best fits their needs.",
-      },
-      { name: "theme-color", content: "#FFC400" },
-    ],
-  }),
+  loader: async ({ params }) => {
+    const project = getProjectBySlug(params.slug);
+    return { project, slug: params.slug };
+  },
+  head: ({ loaderData }) => {
+    const project = loaderData?.project;
+    if (!project) {
+      return {
+        meta: seo({
+          title: "Case Study Not Found | Skédio",
+          description: "The requested project case study could not be found.",
+          noindex: true,
+        }),
+      };
+    }
+
+    return {
+      meta: seo({
+        title: project.metaTitle,
+        description: project.metaDescription,
+        image: project.ogImage,
+        url: `/projects/${project.slug}`,
+        themeColor: project.themeColor,
+        type: "article",
+      }),
+      links: canonicalLink(`/projects/${project.slug}`),
+    };
+  },
   component: CaseStudy,
 });
 
@@ -75,11 +91,7 @@ function Reveal({
 }) {
   const ref = useInView<HTMLElement>();
   return (
-    <Tag
-      ref={ref as never}
-      data-delay={delay}
-      className={`cs-reveal ${className}`}
-    >
+    <Tag ref={ref as never} data-delay={delay} className={`cs-reveal ${className}`}>
       {children}
     </Tag>
   );
@@ -103,13 +115,7 @@ function Section({
   );
 }
 
-function SectionHead({
-  kicker,
-  children,
-}: {
-  kicker: string;
-  children?: ReactNode;
-}) {
+function SectionHead({ kicker, children }: { kicker: string; children?: ReactNode }) {
   return (
     <div className="cs-sechead">
       <p className="cs-kicker">{kicker}</p>
@@ -208,10 +214,9 @@ function Overview() {
           Book, <span className="cs-accent">Bid &amp; Ride.</span>
         </Reveal>
         <Reveal as="p" className="cs-lede" delay={1}>
-          Hao Cabs is a modern taxi-bidding platform that reimagines traditional
-          ride booking through real-time driver bidding. Instead of fixed fares,
-          riders can compare multiple offers from nearby drivers and choose the
-          ride that best fits their needs.
+          Hao Cabs is a modern taxi-bidding platform that reimagines traditional ride booking
+          through real-time driver bidding. Instead of fixed fares, riders can compare multiple
+          offers from nearby drivers and choose the ride that best fits their needs.
         </Reveal>
       </div>
 
@@ -235,10 +240,9 @@ function Challenges() {
           Giving Riders More Choice Without <span className="cs-accent">Adding Complexity.</span>
         </Reveal>
         <Reveal as="p" className="cs-lede cs-lede--muted" delay={1}>
-          Traditional ride-booking experiences often provide limited control over
-          pricing and ride options. Hao Cabs needed a simple bidding experience
-          that could give riders greater choice while keeping the booking process
-          fast, clear, and easy to understand.
+          Traditional ride-booking experiences often provide limited control over pricing and ride
+          options. Hao Cabs needed a simple bidding experience that could give riders greater choice
+          while keeping the booking process fast, clear, and easy to understand.
         </Reveal>
       </div>
 
@@ -286,10 +290,9 @@ function Process() {
           From Understanding The Problem To Designing The Experience.
         </Reveal>
         <Reveal as="p" className="cs-lede" delay={1}>
-          The design process focused on understanding ride-booking pain points,
-          mapping Rider and Driver journeys, exploring user flows, and
-          progressively refining the interface through wireframes, prototypes,
-          and high-fidelity UI design.
+          The design process focused on understanding ride-booking pain points, mapping Rider and
+          Driver journeys, exploring user flows, and progressively refining the interface through
+          wireframes, prototypes, and high-fidelity UI design.
         </Reveal>
       </div>
 
@@ -324,11 +327,10 @@ function Personas() {
           Designing For The People Behind Every Ride.
         </Reveal>
         <Reveal as="p" className="cs-lede" delay={1}>
-          User personas helped define the needs, motivations, and pain points of
-          Hao Cabs' target users. The focus was on riders looking for affordable
-          and reliable transportation, with features such as fare comparison,
-          live tracking, secure payments, and scheduled rides supporting their
-          everyday needs.
+          User personas helped define the needs, motivations, and pain points of Hao Cabs' target
+          users. The focus was on riders looking for affordable and reliable transportation, with
+          features such as fare comparison, live tracking, secure payments, and scheduled rides
+          supporting their everyday needs.
         </Reveal>
       </div>
 
@@ -369,7 +371,11 @@ function Personas() {
               <img src={`${ASSETS}/4.jpg`} alt="Driver receiving ride requests" loading="lazy" />
             </Reveal>
             <Reveal className="cs-persona__phone-frame" delay={1}>
-              <img src={`${ASSETS}/7.jpg`} alt="Driver earnings and trip management" loading="lazy" />
+              <img
+                src={`${ASSETS}/7.jpg`}
+                alt="Driver earnings and trip management"
+                loading="lazy"
+              />
             </Reveal>
           </div>
           <div className="cs-persona__points">
@@ -400,13 +406,13 @@ function FinalExperience() {
       <SectionHead kicker="05) FINAL EXPERIENCE" />
       <div className="cs-final__col">
         <Reveal as="h2" className="cs-final__headline cs-display">
-          A Transparent Ride-Booking Experience, From <span style={{ color: "#111111" }}>Bid To Destination.</span>
+          A Transparent Ride-Booking Experience, From{" "}
+          <span style={{ color: "#111111" }}>Bid To Destination.</span>
         </Reveal>
         <Reveal as="p" className="cs-lede cs-final__lede" delay={1}>
-          The final experience brings together real-time bidding, driver
-          selection, OTP verification, live tracking, payments, scheduling,
-          wallet management, and post-ride feedback into a unified mobile
-          experience for Riders and Drivers.
+          The final experience brings together real-time bidding, driver selection, OTP
+          verification, live tracking, payments, scheduling, wallet management, and post-ride
+          feedback into a unified mobile experience for Riders and Drivers.
         </Reveal>
       </div>
 
@@ -463,7 +469,7 @@ function Ending() {
 /* ============================ MAIN ROUTE PAGE ========================== */
 
 function CaseStudy() {
-  const { slug } = Route.useParams();
+  const { project, slug } = Route.useLoaderData();
 
   const [activeChapter, setActiveChapter] = useState("01");
   const [isScrolled, setIsScrolled] = useState(false);
@@ -506,11 +512,17 @@ function CaseStudy() {
     }
   };
 
-  if (slug !== "haocabs") {
+  if (!project || slug !== "haocabs") {
     return (
-      <main className="cs" style={{ minHeight: "100svh", display: "grid", placeItems: "center", padding: "40px" }}>
+      <main
+        className="cs"
+        style={{ minHeight: "100svh", display: "grid", placeItems: "center", padding: "40px" }}
+      >
         <div style={{ textAlign: "center", maxWidth: 500 }}>
-          <h1 className="cs-display" style={{ fontSize: "clamp(48px, 8vw, 80px)", marginBottom: 16 }}>
+          <h1
+            className="cs-display"
+            style={{ fontSize: "clamp(48px, 8vw, 80px)", marginBottom: 16 }}
+          >
             Case Study Not Found
           </h1>
           <p className="cs-lede" style={{ margin: "0 auto 32px" }}>
@@ -519,7 +531,13 @@ function CaseStudy() {
           <Link
             to="/"
             className="cs-nav__link"
-            style={{ display: "inline-flex", padding: "12px 24px", background: "var(--cs-black)", color: "var(--cs-white)", borderRadius: 999 }}
+            style={{
+              display: "inline-flex",
+              padding: "12px 24px",
+              background: "var(--cs-black)",
+              color: "var(--cs-white)",
+              borderRadius: 999,
+            }}
           >
             <ArrowLeft size={16} /> RETURN TO PORTFOLIO
           </Link>
@@ -528,10 +546,30 @@ function CaseStudy() {
     );
   }
 
+  const creativeWorkSchema = getCreativeWorkSchema({
+    name: project.name,
+    headline: project.line,
+    description: project.metaDescription,
+    image: project.ogImage,
+    url: `/projects/${project.slug}`,
+    datePublished: project.publishedDate,
+    client: project.client,
+  });
+
+  const breadcrumbSchema = getBreadcrumbSchema([
+    { name: "Home", item: "/" },
+    { name: "Projects", item: "/#work" },
+    { name: project.name, item: `/projects/${project.slug}` },
+  ]);
+
   return (
     <main className="cs">
+      <StructuredData data={[creativeWorkSchema, breadcrumbSchema]} />
       {/* Minimal Sticky Navigation */}
-      <nav className={`cs-nav ${isScrolled ? "cs-nav--scrolled" : ""}`} aria-label="Case study navigation">
+      <nav
+        className={`cs-nav ${isScrolled ? "cs-nav--scrolled" : ""}`}
+        aria-label="Case study navigation"
+      >
         <Link to="/" className="cs-nav__brand">
           HAO CABS
         </Link>

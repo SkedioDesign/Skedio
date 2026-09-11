@@ -47,10 +47,10 @@ export class SmoothScroll {
     const onWheel = (e: WheelEvent) => {
       // Allow ctrl/cmd + wheel zooming
       if (e.ctrlKey || e.metaKey) return;
-      
+
       e.preventDefault();
       this.updateMaxScroll();
-      
+
       const delta = e.deltaY * this.wheelMultiplier;
       this.targetScroll = Math.max(0, Math.min(this.targetScroll + delta, this.maxScroll));
 
@@ -100,15 +100,12 @@ export class SmoothScroll {
   }
 
   private updateMaxScroll() {
-    this.maxScroll = Math.max(
-      0,
-      document.documentElement.scrollHeight - window.innerHeight,
-    );
+    this.maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
   }
 
   private tick = () => {
     this.updateMaxScroll();
-    
+
     // Sub-pixel linear interpolation
     const diff = this.targetScroll - this.currentScroll;
     this.currentScroll += diff * this.lerpFactor;

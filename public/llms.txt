@@ -1,0 +1,27 @@
+# Skédio
+
+> Skédio is a creative studio crafting bold brands, intuitive digital experiences, and scalable digital products that help businesses grow.
+
+## About
+- [About Skédio](https://skedio.studio/about): Meet the team, leadership, and craft philosophy behind Skédio.
+
+## Core Services
+- [Brand Strategy & Positioning](https://skedio.studio/services/brand-strategy): Market positioning, audience persona mapping, value proposition frameworks, and competitive differentiation.
+- [Brand Identity & Visual Systems](https://skedio.studio/services/brand-identity): Distinctive logomarks, typography hierarchies, custom color systems, and comprehensive brand design books.
+- [UI/UX & Digital Product Design](https://skedio.studio/services/ui-ux-design): User flow architecture, interactive wireframing, high-fidelity interfaces, and accessible design systems.
+- [Full-Stack Product Development](https://skedio.studio/services/product-development): Modern SSR web applications (React, TanStack, TypeScript), mobile development, and scalable cloud architectures.
+
+## Selected Work & Case Studies
+- [HAO Cabs — Taxi Bidding Experience Case Study](https://skedio.studio/projects/haocabs): Complete product design and UX architecture for a real-time ride-bidding mobile platform connecting passengers and drivers.
+
+## Insights & Thought Leadership
+- [The Future of Brand Building in an AI Era](https://skedio.studio/insights/future-of-brand-building-digital-world)
+- [Designing Fast, Trustworthy UX for Real-Time Marketplaces](https://skedio.studio/insights/designing-real-time-bidding-marketplace-ux)
+- [Typography in Modern Branding: Voice and Performance](https://skedio.studio/insights/typography-in-branding-more-than-just-fonts)
+
+## Contact & Inquiries
+- Website: https://skedio.studio
+- Email: hello@skedio.studio
+- LinkedIn: https://www.linkedin.com/company/skedio
+- Instagram: https://www.instagram.com/skedio.studio
+- Behance: https://www.behance.net/skedio

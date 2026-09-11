@@ -3,7 +3,9 @@ import { useEffect, useRef, type ReactNode } from "react";
 /**
  * Hook to trigger GPU-accelerated reveal animations when elements enter the viewport.
  */
-export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(options?: IntersectionObserverInit) {
+export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
+  options?: IntersectionObserverInit,
+) {
   const ref = useRef<T | null>(null);
 
   useEffect(() => {

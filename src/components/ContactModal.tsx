@@ -14,7 +14,16 @@ export function ContactModal() {
   });
   const [errorMessage, setErrorMessage] = useState("");
 
+  const handleClose = () => {
+    closeContactModal();
+    setTimeout(() => {
+      setStatus("idle");
+      setErrorMessage("");
+    }, 200);
+  };
+
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -44,14 +53,6 @@ export function ContactModal() {
     }));
   };
 
-  const handleClose = () => {
-    closeContactModal();
-    setTimeout(() => {
-      setStatus("idle");
-      setErrorMessage("");
-    }, 200);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("loading");
@@ -77,7 +78,7 @@ export function ContactModal() {
 
       setStatus("sent");
       setFormData({ name: "", email: "", message: "" });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.warn("Direct submission notice:", err);
       setStatus("sent");
       setFormData({ name: "", email: "", message: "" });
@@ -119,7 +120,8 @@ export function ContactModal() {
             </h3>
 
             <p className="type-body mt-3 max-w-sm text-muted-foreground sm:text-base">
-              Your message has been delivered to skediodesignspace@gmail.com. Our team will review your inquiry and get back to you shortly.
+              Your message has been delivered to skediodesignspace@gmail.com. Our team will review
+              your inquiry and get back to you shortly.
             </p>
 
             <button
@@ -147,7 +149,10 @@ export function ContactModal() {
 
             <form onSubmit={handleSubmit} className="mt-8 space-y-5">
               <div className="space-y-1.5">
-                <label htmlFor="contact-name" className="block text-xs font-semibold uppercase tracking-wider text-foreground/80">
+                <label
+                  htmlFor="contact-name"
+                  className="block text-xs font-semibold uppercase tracking-wider text-foreground/80"
+                >
                   Your Name <span className="text-primary">*</span>
                 </label>
                 <input
@@ -164,7 +169,10 @@ export function ContactModal() {
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="contact-email" className="block text-xs font-semibold uppercase tracking-wider text-foreground/80">
+                <label
+                  htmlFor="contact-email"
+                  className="block text-xs font-semibold uppercase tracking-wider text-foreground/80"
+                >
                   Email ID <span className="text-primary">*</span>
                 </label>
                 <input
@@ -181,7 +189,10 @@ export function ContactModal() {
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="contact-message" className="block text-xs font-semibold uppercase tracking-wider text-foreground/80">
+                <label
+                  htmlFor="contact-message"
+                  className="block text-xs font-semibold uppercase tracking-wider text-foreground/80"
+                >
                   Message <span className="text-primary">*</span>
                 </label>
                 <textarea
@@ -229,6 +240,6 @@ export function ContactModal() {
         )}
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }

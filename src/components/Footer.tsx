@@ -1,6 +1,8 @@
 import { ArrowUpRight, Instagram, Linkedin, Check } from "lucide-react";
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { useContactModal } from "@/context/contact-modal-context";
+import { siteConfig } from "@/lib/site-config";
 
 function Wordmark({ className = "" }: { className?: string }) {
   return (
@@ -14,11 +16,41 @@ function Wordmark({ className = "" }: { className?: string }) {
   );
 }
 
-const columns = [
-  { h: "Company", l: ["About Us", "Our Process", "Careers", "Contact"] },
-  { h: "Services", l: ["Brand Strategy", "Brand Identity", "UI/UX", "Product Development"] },
-  { h: "Work", l: ["Case Studies", "Clients"] },
-  { h: "Resources", l: ["Blogs", "Medium"] },
+const navSections = [
+  {
+    title: "Company",
+    links: [
+      { label: "About Us", href: "/about" },
+      { label: "Our Process", href: "/#services" },
+      { label: "Insights", href: "/insights" },
+      { label: "Contact", action: "contact" },
+    ],
+  },
+  {
+    title: "Services",
+    links: [
+      { label: "Brand Strategy", href: "/services/brand-strategy" },
+      { label: "Brand Identity", href: "/services/brand-identity" },
+      { label: "UI/UX Design", href: "/services/ui-ux-design" },
+      { label: "Product Development", href: "/services/product-development" },
+    ],
+  },
+  {
+    title: "Work",
+    links: [
+      { label: "HAO Cabs Case Study", href: "/projects/haocabs" },
+      { label: "Featured Work", href: "/#work" },
+      { label: "Clients", href: "/#clients" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { label: "Insights Journal", href: "/insights" },
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Terms & Conditions", href: "/terms" },
+    ],
+  },
 ];
 
 export function Footer() {
@@ -58,35 +90,72 @@ export function Footer() {
         <div>
           <Wordmark className="brightness-0 invert" />
           <p className="type-sm mt-5 max-w-xs leading-relaxed text-white/60">
-            A creative studio building brands and digital experiences that drive impact and
-            inspire growth.
+            A creative studio building brands and digital experiences that drive impact and inspire
+            growth.
           </p>
           <div className="mt-7 flex gap-5 text-white/70">
-            <a href="#contact" aria-label="LinkedIn"><Linkedin className="size-5 transition-colors hover:text-primary-light" /></a>
-            <a href="#contact" aria-label="Instagram"><Instagram className="size-5 transition-colors hover:text-primary-light" /></a>
-            <a href="#contact" aria-label="Behance">
-              <svg className="size-5 transition-colors hover:text-primary-light" viewBox="0 0 24 24" fill="currentColor"><path d="M22 7h-7V5h7v2zm1.726 10c-.442 1.297-2.029 3-5.101 3-3.074 0-5.564-1.729-5.564-5.675 0-3.91 2.325-5.92 5.466-5.92 3.082 0 4.964 1.782 5.375 4.426.078.506.109 1.188.095 2.14H15.97c.13 3.211 3.483 3.312 4.588 2.029h3.168zm-7.686-4h4.965c-.105-1.547-1.136-2.219-2.477-2.219-1.466 0-2.277.768-2.488 2.219zm-9.574 6.988H0V5.021h6.953c5.476.081 5.58 5.444 2.72 6.906 3.461 1.26 3.577 8.061-3.207 8.061zM3 11h3.584c2.508 0 2.906-3-.312-3H3v3zm3.391 3H3v3.016h3.341c3.055 0 2.868-3.016.05-3.016z"/></svg>
+            <a
+              href={siteConfig.socials.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+            >
+              <Linkedin className="size-5 transition-colors hover:text-primary-light" />
+            </a>
+            <a
+              href={siteConfig.socials.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+            >
+              <Instagram className="size-5 transition-colors hover:text-primary-light" />
+            </a>
+            <a
+              href={siteConfig.socials.behance}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Behance"
+            >
+              <svg
+                className="size-5 transition-colors hover:text-primary-light"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M22 7h-7V5h7v2zm1.726 10c-.442 1.297-2.029 3-5.101 3-3.074 0-5.564-1.729-5.564-5.675 0-3.91 2.325-5.92 5.466-5.92 3.082 0 4.964 1.782 5.375 4.426.078.506.109 1.188.095 2.14H15.97c.13 3.211 3.483 3.312 4.588 2.029h3.168zm-7.686-4h4.965c-.105-1.547-1.136-2.219-2.477-2.219-1.466 0-2.277.768-2.488 2.219zm-9.574 6.988H0V5.021h6.953c5.476.081 5.58 5.444 2.72 6.906 3.461 1.26 3.577 8.061-3.207 8.061zM3 11h3.584c2.508 0 2.906-3-.312-3H3v3zm3.391 3H3v3.016h3.341c3.055 0 2.868-3.016.05-3.016z" />
+              </svg>
             </a>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-10 sm:grid-cols-4">
-          {columns.map((col) => (
-            <div key={col.h}>
-              <h4 className="type-label uppercase tracking-[0.08em]">{col.h}</h4>
+          {navSections.map((col) => (
+            <div key={col.title}>
+              <h4 className="type-label uppercase tracking-[0.08em]">{col.title}</h4>
               <ul className="mt-5 space-y-3 text-sm text-white/60">
-                {col.l.map((x) => (
-                  <li key={x}>
-                    {x === "Contact" ? (
+                {col.links.map((x) => (
+                  <li key={x.label}>
+                    {x.action === "contact" ? (
                       <button
                         type="button"
                         onClick={openContactModal}
                         className="cursor-pointer whitespace-nowrap transition-colors duration-200 hover:text-primary-light"
                       >
-                        {x}
+                        {x.label}
                       </button>
+                    ) : x.href.startsWith("/") && !x.href.startsWith("/#") ? (
+                      <Link
+                        to={x.href}
+                        className="whitespace-nowrap transition-colors duration-200 hover:text-primary-light"
+                      >
+                        {x.label}
+                      </Link>
                     ) : (
-                      <a href="#contact" className="whitespace-nowrap transition-colors duration-200 hover:text-primary-light">{x}</a>
+                      <a
+                        href={x.href}
+                        className="whitespace-nowrap transition-colors duration-200 hover:text-primary-light"
+                      >
+                        {x.label}
+                      </a>
                     )}
                   </li>
                 ))}
@@ -97,8 +166,8 @@ export function Footer() {
 
         <div>
           <h4 className="type-h6">Let's create something great</h4>
-          <p className="type-sm mt-5 text-white/60">hello@skedio.studio</p>
-          <p className="type-sm text-white/60">+91 98765 43210</p>
+          <p className="type-sm mt-5 text-white/60">{siteConfig.email}</p>
+          <p className="type-sm text-white/60">{siteConfig.phone}</p>
           {footerSent ? (
             <div className="mt-6 flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-5 py-3 text-sm font-semibold text-emerald-400">
               <Check className="size-4" />
@@ -146,8 +215,12 @@ export function Footer() {
         <div className="mx-auto flex w-full max-w-[1200px] flex-wrap items-center justify-between gap-3 px-6 pt-3 pb-6 text-xs text-white/50">
           <p>© 2026 Skédio. All rights reserved.</p>
           <div className="flex gap-7">
-            <a href="#contact" className="transition-colors hover:text-white">Privacy Policy</a>
-            <a href="#contact" className="transition-colors hover:text-white">Terms &amp; Conditions</a>
+            <Link to="/privacy" className="transition-colors hover:text-white">
+              Privacy Policy
+            </Link>
+            <Link to="/terms" className="transition-colors hover:text-white">
+              Terms &amp; Conditions
+            </Link>
           </div>
         </div>
       </div>

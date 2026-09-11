@@ -1,6 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { useContactModal } from "@/context/contact-modal-context";
+import { seo, canonicalLink } from "@/lib/seo";
+import { siteConfig } from "@/lib/site-config";
+import { StructuredData } from "@/components/StructuredData";
+import { getBreadcrumbSchema } from "@/lib/schema";
 
 type TeamMember = { name: string; role: string; img?: string };
 
@@ -24,11 +28,14 @@ const teamGroups = [
 
 export const Route = createFileRoute("/about")({
   head: () => ({
-    meta: [
-      { title: "About — Skédio" },
-      { name: "description", content: "Meet the creative minds behind Skédio." },
-      { name: "theme-color", content: "#8537F4" },
-    ],
+    meta: seo({
+      title: "About Skédio — Meet the Creative Minds & Studio Team",
+      description:
+        "Meet the multidisciplinary team of designers, strategists, and engineers at Skédio crafting high-impact brands and digital products.",
+      url: "/about",
+      type: "profile",
+    }),
+    links: canonicalLink("/about"),
   }),
   component: About,
 });
@@ -69,8 +76,29 @@ function TeamCard({ member }: { member: TeamMember }) {
 function About() {
   const { openContactModal } = useContactModal();
 
+  const breadcrumbs = getBreadcrumbSchema([
+    { name: "Home", item: "/" },
+    { name: "About", item: "/about" },
+  ]);
+
+  const personSchemas = teamGroups.flatMap((g) =>
+    g.members.map((m) => ({
+      "@context": "https://schema.org",
+      "@type": "Person",
+      name: m.name,
+      jobTitle: m.role,
+      image: m.img ? `${siteConfig.url}${m.img}` : undefined,
+      worksFor: {
+        "@type": "Organization",
+        name: siteConfig.name,
+        url: siteConfig.url,
+      },
+    })),
+  );
+
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <StructuredData data={[breadcrumbs, ...personSchemas]} />
       {/* Nav */}
       <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-md">
         <nav className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-6 py-5 md:px-12">
