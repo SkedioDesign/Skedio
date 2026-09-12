@@ -97,7 +97,7 @@ function About() {
   );
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div id="main-content" className="min-h-screen bg-background text-foreground">
       <StructuredData data={[breadcrumbs, ...personSchemas]} />
       {/* Nav */}
       <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-md">

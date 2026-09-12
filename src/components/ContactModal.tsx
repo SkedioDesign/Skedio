@@ -11,6 +11,7 @@ export function ContactModal() {
     name: "",
     email: "",
     message: "",
+    _honey: "",
   });
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -55,12 +56,16 @@ export function ContactModal() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Honeypot: silently ignore spam submissions
+    if (formData._honey) return;
+
     setStatus("loading");
     setErrorMessage("");
 
     try {
       // Free endpoint with JSON response & zero redirects
-      await fetch("https://formsubmit.co/ajax/skediodesignspace@gmail.com", {
+      const res = await fetch("https://formsubmit.co/ajax/skediodesignspace@gmail.com", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -70,18 +75,25 @@ export function ContactModal() {
           name: formData.name,
           email: formData.email,
           message: formData.message,
+          _honey: formData._honey,
           _subject: `New Project Inquiry from ${formData.name} (Skedio Studio)`,
           _template: "table",
-          _captcha: "false",
+          _captcha: "true",
         }),
       });
 
+      if (!res.ok) {
+        setStatus("error");
+        setErrorMessage("Something went wrong. Please try again or email us directly at hello@skedio.studio");
+        return;
+      }
+
       setStatus("sent");
-      setFormData({ name: "", email: "", message: "" });
+      setFormData({ name: "", email: "", message: "", _honey: "" });
     } catch (err: unknown) {
       console.warn("Direct submission notice:", err);
-      setStatus("sent");
-      setFormData({ name: "", email: "", message: "" });
+      setStatus("error");
+      setErrorMessage("Something went wrong. Please try again or email us directly at hello@skedio.studio");
     }
   };
 
@@ -98,7 +110,10 @@ export function ContactModal() {
       />
 
       {/* Modal Dialog Content */}
-      <div className="relative z-10 w-full max-w-[540px] rounded-3xl border border-border/80 bg-background p-7 shadow-2xl transition-all duration-300 sm:p-10">
+      <div
+        aria-live="polite"
+        className="relative z-10 w-full max-w-[540px] rounded-3xl border border-border/80 bg-background p-7 shadow-2xl transition-all duration-300 sm:p-10"
+      >
         {/* Close Button */}
         <button
           type="button"
@@ -147,8 +162,18 @@ export function ContactModal() {
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
-              <div className="space-y-1.5">
+<form onSubmit={handleSubmit} className="mt-8 space-y-5">
+  <input
+    type="text"
+    name="_honey"
+    tabIndex={-1}
+    autoComplete="off"
+    aria-hidden="true"
+    value={formData._honey}
+    onChange={handleChange}
+    style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", overflow: "hidden" }}
+  />
+  <div className="space-y-1.5">
                 <label
                   htmlFor="contact-name"
                   className="block text-xs font-semibold uppercase tracking-wider text-foreground/80"

@@ -58,27 +58,39 @@ export function Footer() {
   const [footerEmail, setFooterEmail] = useState("");
   const [footerSent, setFooterSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [honey, setHoney] = useState("");
 
   const handleFooterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!footerEmail) return;
+
+    // Honeypot: silently ignore spam submissions
+    if (honey) return;
+
     setLoading(true);
+    setErrorMessage("");
 
     try {
-      await fetch("https://formsubmit.co/ajax/skediodesignspace@gmail.com", {
+      const res = await fetch("https://formsubmit.co/ajax/skediodesignspace@gmail.com", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
           email: footerEmail,
           message: "Lead submitted via Footer newsletter / quick inquiry",
           _subject: `New Lead Email: ${footerEmail} (Skedio Studio)`,
+          _honey: honey,
+          _captcha: "true",
         }),
       });
+      if (!res.ok) {
+        setErrorMessage("Something went wrong. Please try again or email us directly at hello@skedio.studio");
+        return;
+      }
       setFooterSent(true);
       setFooterEmail("");
     } catch {
-      setFooterSent(true);
-      setFooterEmail("");
+      setErrorMessage("Something went wrong. Please try again or email us directly at hello@skedio.studio");
     } finally {
       setLoading(false);
     }
@@ -174,11 +186,21 @@ export function Footer() {
               <span>Sent</span>
             </div>
           ) : (
-            <form
-              className="mt-6 flex items-center gap-2 rounded-full border border-white/15 bg-white/10 p-1.5 pl-5 backdrop-blur-sm"
-              onSubmit={handleFooterSubmit}
-            >
-              <input
+<form
+  className="mt-6 flex items-center gap-2 rounded-full border border-white/15 bg-white/10 p-1.5 pl-5 backdrop-blur-sm"
+  onSubmit={handleFooterSubmit}
+>
+  <input
+    type="text"
+    name="_honey"
+    tabIndex={-1}
+    autoComplete="off"
+    aria-hidden="true"
+    value={honey}
+    onChange={(e) => setHoney(e.target.value)}
+    style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", overflow: "hidden" }}
+  />
+  <input
                 type="email"
                 required
                 placeholder="Enter your email"
@@ -197,6 +219,9 @@ export function Footer() {
                 <ArrowUpRight className="size-4 transition-transform duration-250 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </button>
             </form>
+          )}
+          {errorMessage && (
+            <p className="mt-3 text-xs font-medium text-red-400">{errorMessage}</p>
           )}
         </div>
       </div>

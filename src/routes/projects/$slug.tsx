@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowDown, ArrowDownRight, ArrowLeft } from "lucide-react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 
@@ -12,6 +12,7 @@ import "./case-study.css";
 export const Route = createFileRoute("/projects/$slug")({
   loader: async ({ params }) => {
     const project = getProjectBySlug(params.slug);
+    if (!project) throw notFound();
     return { project, slug: params.slug };
   },
   head: ({ loaderData }) => {
@@ -39,7 +40,43 @@ export const Route = createFileRoute("/projects/$slug")({
     };
   },
   component: CaseStudy,
+  notFoundComponent: CaseStudyNotFound,
 });
+
+function CaseStudyNotFound() {
+  return (
+    <main
+      id="main-content"
+      className="cs"
+      style={{ minHeight: "100svh", display: "grid", placeItems: "center", padding: "40px" }}
+    >
+      <div style={{ textAlign: "center", maxWidth: 500 }}>
+        <h1
+          className="cs-display"
+          style={{ fontSize: "clamp(48px, 8vw, 80px)", marginBottom: 16 }}
+        >
+          Case Study Not Found
+        </h1>
+        <p className="cs-lede" style={{ margin: "0 auto 32px" }}>
+          The requested project case study could not be located.
+        </p>
+        <Link
+          to="/"
+          className="cs-nav__link"
+          style={{
+            display: "inline-flex",
+            padding: "12px 24px",
+            background: "var(--cs-black)",
+            color: "var(--cs-white)",
+            borderRadius: 999,
+          }}
+        >
+          <ArrowLeft size={16} /> RETURN TO PORTFOLIO
+        </Link>
+      </div>
+    </main>
+  );
+}
 
 const ASSETS = "/HaoCabs";
 const CHAPTERS = [
@@ -49,6 +86,33 @@ const CHAPTERS = [
   { id: "personas", num: "04", label: "Personas" },
   { id: "final", num: "05", label: "Final" },
 ];
+
+function CsImage({
+  name,
+  alt,
+  className,
+  loading = "lazy",
+  fetchPriority,
+}: {
+  name: string;
+  alt: string;
+  className?: string;
+  loading?: "lazy" | "eager";
+  fetchPriority?: "high" | "low" | "auto";
+}) {
+  return (
+    <picture className="contents">
+      <source srcSet={`${ASSETS}/${name}.webp`} type="image/webp" />
+      <img
+        src={`${ASSETS}/${name}.jpg`}
+        alt={alt}
+        className={className}
+        loading={loading}
+        fetchPriority={fetchPriority}
+      />
+    </picture>
+  );
+}
 
 /* ------------------------- Reusable Primitives ------------------------- */
 
@@ -174,9 +238,10 @@ function Cover() {
 
       <figure className="cs-cover__art" ref={artRef as never}>
         <div className="cs-cover__art-inner">
-          <img
-            src={`${ASSETS}/1.jpg`}
+          <CsImage
+            name="1"
             alt="HAO Cabs — Taxi bidding experience platform"
+            loading="eager"
             fetchPriority="high"
           />
         </div>
@@ -221,10 +286,9 @@ function Overview() {
       </div>
 
       <Reveal className="cs-overview__visual" delay={2}>
-        <img
-          src={`${ASSETS}/1.jpg`}
+        <CsImage
+          name="1"
           alt="HAO Cabs product promotional visual and editorial artwork"
-          loading="lazy"
         />
       </Reveal>
     </Section>
@@ -260,13 +324,13 @@ function Challenges() {
 
       <div className="cs-bid-stage">
         <Reveal className="cs-phone-card cs-phone-card--offset-up">
-          <img src={`${ASSETS}/2.jpg`} alt="Available driver bids" loading="lazy" />
+          <CsImage name="2" alt="Available driver bids" />
         </Reveal>
         <Reveal className="cs-phone-card" delay={1}>
-          <img src={`${ASSETS}/4.jpg`} alt="Ride request screen" loading="lazy" />
+          <CsImage name="4" alt="Ride request screen" />
         </Reveal>
         <Reveal className="cs-phone-card cs-phone-card--offset-down" delay={2}>
-          <img src={`${ASSETS}/5.jpg`} alt="Fare comparison and bidding interface" loading="lazy" />
+          <CsImage name="5" alt="Fare comparison and bidding interface" />
         </Reveal>
       </div>
     </Section>
@@ -307,10 +371,9 @@ function Process() {
       </div>
 
       <Reveal className="cs-process__visual" delay={2}>
-        <img
-          src={`${ASSETS}/6.jpg`}
+        <CsImage
+          name="6"
           alt="HAO Cabs design system, user flows and interface fragments"
-          loading="lazy"
         />
       </Reveal>
     </Section>
@@ -350,10 +413,10 @@ function Personas() {
           </div>
           <div className="cs-persona__stage">
             <Reveal className="cs-persona__phone-frame">
-              <img src={`${ASSETS}/2.jpg`} alt="Rider fare comparison" loading="lazy" />
+              <CsImage name="2" alt="Rider fare comparison" />
             </Reveal>
             <Reveal className="cs-persona__phone-frame" delay={1}>
-              <img src={`${ASSETS}/5.jpg`} alt="Rider selecting a driver" loading="lazy" />
+              <CsImage name="5" alt="Rider selecting a driver" />
             </Reveal>
           </div>
         </div>
@@ -368,13 +431,12 @@ function Personas() {
         <div className="cs-persona__grid">
           <div className="cs-persona__stage">
             <Reveal className="cs-persona__phone-frame">
-              <img src={`${ASSETS}/4.jpg`} alt="Driver receiving ride requests" loading="lazy" />
+              <CsImage name="4" alt="Driver receiving ride requests" />
             </Reveal>
             <Reveal className="cs-persona__phone-frame" delay={1}>
-              <img
-                src={`${ASSETS}/7.jpg`}
+              <CsImage
+                name="7"
                 alt="Driver earnings and trip management"
-                loading="lazy"
               />
             </Reveal>
           </div>
@@ -417,10 +479,9 @@ function FinalExperience() {
       </div>
 
       <Reveal className="cs-final__showcase" delay={2}>
-        <img
-          src={`${ASSETS}/3.jpg`}
+        <CsImage
+          name="3"
           alt="HAO Cabs final mobile application — complete unified ride experience"
-          loading="lazy"
         />
       </Reveal>
 
@@ -454,11 +515,7 @@ function Ending() {
           <span>RIDE.</span>
         </div>
         <Reveal className="cs-end__visual">
-          <img
-            src={`${ASSETS}/1.jpg`}
-            alt="HAO Cabs final brand statement artwork"
-            loading="lazy"
-          />
+          <CsImage name="1" alt="HAO Cabs final brand statement artwork" />
         </Reveal>
         <p className="cs-end__foot">End of case study — Skédio</p>
       </div>
@@ -512,40 +569,6 @@ function CaseStudy() {
     }
   };
 
-  if (!project || slug !== "haocabs") {
-    return (
-      <main
-        className="cs"
-        style={{ minHeight: "100svh", display: "grid", placeItems: "center", padding: "40px" }}
-      >
-        <div style={{ textAlign: "center", maxWidth: 500 }}>
-          <h1
-            className="cs-display"
-            style={{ fontSize: "clamp(48px, 8vw, 80px)", marginBottom: 16 }}
-          >
-            Case Study Not Found
-          </h1>
-          <p className="cs-lede" style={{ margin: "0 auto 32px" }}>
-            The requested project case study could not be located.
-          </p>
-          <Link
-            to="/"
-            className="cs-nav__link"
-            style={{
-              display: "inline-flex",
-              padding: "12px 24px",
-              background: "var(--cs-black)",
-              color: "var(--cs-white)",
-              borderRadius: 999,
-            }}
-          >
-            <ArrowLeft size={16} /> RETURN TO PORTFOLIO
-          </Link>
-        </div>
-      </main>
-    );
-  }
-
   const creativeWorkSchema = getCreativeWorkSchema({
     name: project.name,
     headline: project.line,
@@ -563,7 +586,7 @@ function CaseStudy() {
   ]);
 
   return (
-    <main className="cs">
+    <main id="main-content" className="cs">
       <StructuredData data={[creativeWorkSchema, breadcrumbSchema]} />
       {/* Minimal Sticky Navigation */}
       <nav

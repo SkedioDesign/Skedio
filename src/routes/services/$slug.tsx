@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, ArrowUpRight, CheckCircle2, HelpCircle } from "lucide-react";
 import { useState } from "react";
 
@@ -12,6 +12,7 @@ import { ScrollReveal } from "@/hooks/use-scroll-animation";
 export const Route = createFileRoute("/services/$slug")({
   loader: async ({ params }) => {
     const service = getServiceBySlug(params.slug);
+    if (!service) throw notFound();
     return { service, slug: params.slug };
   },
   head: ({ loaderData }) => {
@@ -38,29 +39,30 @@ export const Route = createFileRoute("/services/$slug")({
     };
   },
   component: ServiceDetail,
+  notFoundComponent: ServiceNotFound,
 });
+
+function ServiceNotFound() {
+  return (
+    <main id="main-content" className="grid min-h-[70vh] place-items-center px-6 py-24 text-center">
+      <div className="max-w-md">
+        <h1 className="type-h2">Service Not Found</h1>
+        <p className="mt-4 text-muted-foreground">The requested service could not be located.</p>
+        <Link
+          to="/"
+          className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground"
+        >
+          <ArrowLeft className="size-4" /> Return to Home
+        </Link>
+      </div>
+    </main>
+  );
+}
 
 function ServiceDetail() {
   const { service, slug } = Route.useLoaderData();
   const { openContactModal } = useContactModal();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-
-  if (!service) {
-    return (
-      <main className="grid min-h-[70vh] place-items-center px-6 py-24 text-center">
-        <div className="max-w-md">
-          <h1 className="type-h2">Service Not Found</h1>
-          <p className="mt-4 text-muted-foreground">The requested service could not be located.</p>
-          <Link
-            to="/"
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground"
-          >
-            <ArrowLeft className="size-4" /> Return to Home
-          </Link>
-        </div>
-      </main>
-    );
-  }
 
   const serviceSchema = getServiceSchema({
     name: service.title,
@@ -81,7 +83,7 @@ function ServiceDetail() {
   const otherServices = servicesData.filter((s) => s.slug !== slug);
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main id="main-content" className="min-h-screen bg-background text-foreground">
       <StructuredData data={[serviceSchema, breadcrumbSchema, faqSchema]} />
 
       {/* Header / Nav Back */}

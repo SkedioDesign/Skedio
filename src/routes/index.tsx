@@ -115,7 +115,7 @@ function Index() {
   const faqSchema = getFAQSchema(generalFaqs);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div id="main-content" className="min-h-screen bg-background text-foreground">
       <StructuredData data={[...serviceSchemas, faqSchema]} />
 
       {/* Nav */}

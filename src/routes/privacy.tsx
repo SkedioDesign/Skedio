@@ -5,6 +5,7 @@ import { seo, canonicalLink } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 import { StructuredData } from "@/components/StructuredData";
 import { getBreadcrumbSchema } from "@/lib/schema";
+import { openCookieSettings } from "@/lib/analytics";
 
 export const Route = createFileRoute("/privacy")({
   head: () => ({
@@ -25,7 +26,7 @@ function PrivacyPolicy() {
   ]);
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main id="main-content" className="min-h-screen bg-background text-foreground">
       <StructuredData data={breadcrumbSchema} />
 
       {/* Header */}
@@ -68,7 +69,8 @@ function PrivacyPolicy() {
               </li>
               <li>
                 <strong>Analytics &amp; Usage Data:</strong> Anonymized site interaction metrics
-                (pages visited, time on page, device type) used solely to enhance performance.
+                (pages visited, time on page, device type) used solely to enhance performance. This
+                is only collected if you accept optional analytics cookies.
               </li>
             </ul>
           </section>
@@ -87,10 +89,24 @@ function PrivacyPolicy() {
           <section className="space-y-4">
             <h2 className="text-2xl font-bold text-foreground">4. Cookies and Tracking</h2>
             <p>
-              We use necessary cookies for site functionality and optional analytics cookies to
-              understand traffic patterns. You may control cookie preferences through browser
-              settings.
+              We use necessary cookies that are essential for the site to function. We do not use
+              any tracking or advertising cookies, and we do not collect analytics data without your
+              consent.
             </p>
+            <p>
+              When you first visit the site, you may be offered the choice to accept optional
+              analytics cookies. These are only activated after you accept, and only collect
+              anonymized usage metrics to help us improve the site. Your choice is stored in your
+              browser and used strictly to respect your preference.
+            </p>
+            <p>You can change your cookie preferences at any time:</p>
+            <button
+              type="button"
+              onClick={openCookieSettings}
+              className="mt-1 inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-200 hover:bg-primary-hover hover:scale-105 active:scale-95 cursor-pointer"
+            >
+              Manage Cookie Preferences
+            </button>
           </section>
 
           <section className="space-y-4">

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, ArrowUpRight, Calendar, Clock, User } from "lucide-react";
 
 import { getInsightBySlug, insightsArticles } from "@/data/insights";
@@ -10,6 +10,7 @@ import { useContactModal } from "@/context/contact-modal-context";
 export const Route = createFileRoute("/insights/$slug")({
   loader: async ({ params }) => {
     const article = getInsightBySlug(params.slug);
+    if (!article) throw notFound();
     return { article, slug: params.slug };
   },
   head: ({ loaderData }) => {
@@ -36,30 +37,31 @@ export const Route = createFileRoute("/insights/$slug")({
     };
   },
   component: InsightPost,
+  notFoundComponent: ArticleNotFound,
 });
+
+function ArticleNotFound() {
+  return (
+    <main id="main-content" className="grid min-h-[70vh] place-items-center px-6 py-24 text-center">
+      <div className="max-w-md">
+        <h1 className="type-h2">Article Not Found</h1>
+        <p className="mt-4 text-muted-foreground">
+          The article you are looking for does not exist.
+        </p>
+        <Link
+          to="/insights"
+          className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground"
+        >
+          <ArrowLeft className="size-4" /> Return to Insights
+        </Link>
+      </div>
+    </main>
+  );
+}
 
 function InsightPost() {
   const { article, slug } = Route.useLoaderData();
   const { openContactModal } = useContactModal();
-
-  if (!article) {
-    return (
-      <main className="grid min-h-[70vh] place-items-center px-6 py-24 text-center">
-        <div className="max-w-md">
-          <h1 className="type-h2">Article Not Found</h1>
-          <p className="mt-4 text-muted-foreground">
-            The article you are looking for does not exist.
-          </p>
-          <Link
-            to="/insights"
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground"
-          >
-            <ArrowLeft className="size-4" /> Return to Insights
-          </Link>
-        </div>
-      </main>
-    );
-  }
 
   const articleSchema = getArticleSchema({
     title: article.title,
@@ -79,7 +81,7 @@ function InsightPost() {
   const moreArticles = insightsArticles.filter((a) => a.slug !== slug);
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main id="main-content" className="min-h-screen bg-background text-foreground">
       <StructuredData data={[articleSchema, breadcrumbSchema]} />
 
       {/* Header */}
