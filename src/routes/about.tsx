@@ -4,7 +4,8 @@ import { useContactModal } from "@/context/contact-modal-context";
 import { seo, canonicalLink } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 import { StructuredData } from "@/components/StructuredData";
-import { getBreadcrumbSchema } from "@/lib/schema";
+import { getBreadcrumbSchema, type BreadcrumbItem } from "@/lib/schema";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 type TeamMember = { name: string; role: string; img?: string };
 
@@ -20,7 +21,7 @@ const teamGroups = [
     label: "02 — Craft & Technology",
     members: [
       { name: "Harshita Upadhyay", role: "UI UX Lead", img: "/harshita.jpeg" },
-      { name: "Shrishti Kori", role: "Graphics Lead" },
+      { name: "Shrishti Kori", role: "Graphics Lead", img: "/shrishti.jpeg" },
       { name: "Aman Raj", role: "Developer", img: "/aman.jpeg" },
     ],
   },
@@ -76,10 +77,11 @@ function TeamCard({ member }: { member: TeamMember }) {
 function About() {
   const { openContactModal } = useContactModal();
 
-  const breadcrumbs = getBreadcrumbSchema([
+  const breadcrumbItems: BreadcrumbItem[] = [
     { name: "Home", item: "/" },
     { name: "About", item: "/about" },
-  ]);
+  ];
+  const breadcrumbs = getBreadcrumbSchema(breadcrumbItems);
 
   const personSchemas = teamGroups.flatMap((g) =>
     g.members.map((m) => ({
@@ -129,6 +131,11 @@ function About() {
           </div>
         </nav>
       </header>
+
+      <Breadcrumbs
+        items={breadcrumbItems}
+        className="mx-auto w-full max-w-[1200px] px-6 pt-8 md:pt-10"
+      />
 
       {/* Team */}
       <section id="team" className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 py-20 md:py-28">

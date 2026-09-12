@@ -41,4 +41,34 @@ export const generalFaqs: FAQItem[] = [
       "Skédio is based in India and serves clients worldwide across North America, Europe, Asia, and the Middle East, operating across global timezones seamlessly.",
     category: "General",
   },
+  {
+    question: "How many revision rounds are included in a project?",
+    answer:
+      "Every deliverable includes structured feedback rounds, typically two to three per milestone, captured clearly in Figma comments or shared docs. This keeps changes scoped and on schedule. Objective pivots outside the agreed scope are handled as small, separately quoted additions rather than open-ended revisions.",
+    category: "Process",
+  },
+  {
+    question: "How does Skédio approach startups differently from established brands?",
+    answer:
+      "For startups, we move fast on tightly scoped sprints — positioning, identity, and MVP design that is investor-ready and launch-focused. For established brands, we dig deeper: stakeholder alignment, category repositioning, and scalable design systems that protect long-term equity during transformation.",
+    category: "Clients",
+  },
+  {
+    question: "Should we start with brand strategy or brand identity first?",
+    answer:
+      "Always start with strategy. Positioning, audience, and messaging are the foundation on which a distinctive visual identity is built. Starting with a logo before that foundation is set usually means redoing the design once the strategy firms up.",
+    category: "General",
+  },
+  {
+    question: "Who owns the final deliverables and source files?",
+    answer:
+      "You do, fully. On completion of the final milestone, you receive ownership of all source files — design systems, vector assets, code repositories, and documentation — with no ongoing licensing or lock-in.",
+    category: "Pricing & Engagement",
+  },
+  {
+    question: "How do we get a project started with Skédio?",
+    answer:
+      "Reach out through our inquiry form or email hello@skedio.studio. We reply within one to two business days, set up a discovery call to understand your goals, budget, and timeline, and come back with a proposal covering scope, deliverables, and pricing. Most projects begin within two weeks of that call.",
+    category: "Process",
+  },
 ];

@@ -5,7 +5,8 @@ import { type ReactNode, useEffect, useRef, useState } from "react";
 import { getProjectBySlug } from "@/data/projects";
 import { seo, canonicalLink } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
-import { getCreativeWorkSchema, getBreadcrumbSchema } from "@/lib/schema";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { getCreativeWorkSchema, getBreadcrumbSchema, type BreadcrumbItem } from "@/lib/schema";
 
 import "./case-study.css";
 
@@ -51,10 +52,7 @@ function CaseStudyNotFound() {
       style={{ minHeight: "100svh", display: "grid", placeItems: "center", padding: "40px" }}
     >
       <div style={{ textAlign: "center", maxWidth: 500 }}>
-        <h1
-          className="cs-display"
-          style={{ fontSize: "clamp(48px, 8vw, 80px)", marginBottom: 16 }}
-        >
+        <h1 className="cs-display" style={{ fontSize: "clamp(48px, 8vw, 80px)", marginBottom: 16 }}>
           Case Study Not Found
         </h1>
         <p className="cs-lede" style={{ margin: "0 auto 32px" }}>
@@ -90,12 +88,16 @@ const CHAPTERS = [
 function CsImage({
   name,
   alt,
+  width,
+  height,
   className,
   loading = "lazy",
   fetchPriority,
 }: {
   name: string;
   alt: string;
+  width?: number;
+  height?: number;
   className?: string;
   loading?: "lazy" | "eager";
   fetchPriority?: "high" | "low" | "auto";
@@ -106,6 +108,8 @@ function CsImage({
       <img
         src={`${ASSETS}/${name}.jpg`}
         alt={alt}
+        width={width}
+        height={height}
         className={className}
         loading={loading}
         fetchPriority={fetchPriority}
@@ -190,12 +194,13 @@ function SectionHead({ kicker, children }: { kicker: string; children?: ReactNod
 
 /* ============================ EDITORIAL SECTIONS ======================= */
 
-function Cover() {
+function Cover({ crumbs }: { crumbs: BreadcrumbItem[] }) {
   const artRef = useInView<HTMLDivElement>();
 
   return (
     <header className="cs-cover" id="top">
       <div className="cs-cover__title-wrap">
+        <Breadcrumbs items={crumbs} className="cs-cover__crumbs" />
         <h1 className="cs-cover__word cs-display">
           <span className="row">HAO</span>
           <span className="row row--accent">CABS</span>
@@ -289,6 +294,8 @@ function Overview() {
         <CsImage
           name="1"
           alt="HAO Cabs product promotional visual and editorial artwork"
+          width={6000}
+          height={3375}
         />
       </Reveal>
     </Section>
@@ -324,13 +331,18 @@ function Challenges() {
 
       <div className="cs-bid-stage">
         <Reveal className="cs-phone-card cs-phone-card--offset-up">
-          <CsImage name="2" alt="Available driver bids" />
+          <CsImage name="2" alt="Available driver bids" width={3375} height={3375} />
         </Reveal>
         <Reveal className="cs-phone-card" delay={1}>
-          <CsImage name="4" alt="Ride request screen" />
+          <CsImage name="4" alt="Ride request screen" width={3375} height={3375} />
         </Reveal>
         <Reveal className="cs-phone-card cs-phone-card--offset-down" delay={2}>
-          <CsImage name="5" alt="Fare comparison and bidding interface" />
+          <CsImage
+            name="5"
+            alt="Fare comparison and bidding interface"
+            width={3375}
+            height={3375}
+          />
         </Reveal>
       </div>
     </Section>
@@ -374,6 +386,8 @@ function Process() {
         <CsImage
           name="6"
           alt="HAO Cabs design system, user flows and interface fragments"
+          width={6000}
+          height={3375}
         />
       </Reveal>
     </Section>
@@ -413,10 +427,10 @@ function Personas() {
           </div>
           <div className="cs-persona__stage">
             <Reveal className="cs-persona__phone-frame">
-              <CsImage name="2" alt="Rider fare comparison" />
+              <CsImage name="2" alt="Rider fare comparison" width={3375} height={3375} />
             </Reveal>
             <Reveal className="cs-persona__phone-frame" delay={1}>
-              <CsImage name="5" alt="Rider selecting a driver" />
+              <CsImage name="5" alt="Rider selecting a driver" width={3375} height={3375} />
             </Reveal>
           </div>
         </div>
@@ -431,12 +445,14 @@ function Personas() {
         <div className="cs-persona__grid">
           <div className="cs-persona__stage">
             <Reveal className="cs-persona__phone-frame">
-              <CsImage name="4" alt="Driver receiving ride requests" />
+              <CsImage name="4" alt="Driver receiving ride requests" width={3375} height={3375} />
             </Reveal>
             <Reveal className="cs-persona__phone-frame" delay={1}>
               <CsImage
                 name="7"
                 alt="Driver earnings and trip management"
+                width={6000}
+                height={3375}
               />
             </Reveal>
           </div>
@@ -482,6 +498,8 @@ function FinalExperience() {
         <CsImage
           name="3"
           alt="HAO Cabs final mobile application — complete unified ride experience"
+          width={3375}
+          height={3375}
         />
       </Reveal>
 
@@ -515,7 +533,12 @@ function Ending() {
           <span>RIDE.</span>
         </div>
         <Reveal className="cs-end__visual">
-          <CsImage name="1" alt="HAO Cabs final brand statement artwork" />
+          <CsImage
+            name="1"
+            alt="HAO Cabs final brand statement artwork"
+            width={6000}
+            height={3375}
+          />
         </Reveal>
         <p className="cs-end__foot">End of case study — Skédio</p>
       </div>
@@ -579,11 +602,12 @@ function CaseStudy() {
     client: project.client,
   });
 
-  const breadcrumbSchema = getBreadcrumbSchema([
+  const breadcrumbItems: BreadcrumbItem[] = [
     { name: "Home", item: "/" },
     { name: "Projects", item: "/#work" },
     { name: project.name, item: `/projects/${project.slug}` },
-  ]);
+  ];
+  const breadcrumbSchema = getBreadcrumbSchema(breadcrumbItems);
 
   return (
     <main id="main-content" className="cs">
@@ -615,7 +639,7 @@ function CaseStudy() {
       </nav>
 
       {/* Case Study Editorial Sections */}
-      <Cover />
+      <Cover crumbs={breadcrumbItems} />
       <Overview />
       <Challenges />
       <Process />

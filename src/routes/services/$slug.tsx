@@ -5,9 +5,15 @@ import { useState } from "react";
 import { getServiceBySlug, servicesData } from "@/data/services";
 import { seo, canonicalLink } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
-import { getServiceSchema, getBreadcrumbSchema, getFAQSchema } from "@/lib/schema";
+import {
+  getServiceSchema,
+  getBreadcrumbSchema,
+  getFAQSchema,
+  type BreadcrumbItem,
+} from "@/lib/schema";
 import { useContactModal } from "@/context/contact-modal-context";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 export const Route = createFileRoute("/services/$slug")({
   loader: async ({ params }) => {
@@ -72,11 +78,12 @@ function ServiceDetail() {
     deliverables: service.deliverables,
   });
 
-  const breadcrumbSchema = getBreadcrumbSchema([
+  const breadcrumbItems: BreadcrumbItem[] = [
     { name: "Home", item: "/" },
     { name: "Services", item: "/#services" },
     { name: service.shortTitle, item: `/services/${service.slug}` },
-  ]);
+  ];
+  const breadcrumbSchema = getBreadcrumbSchema(breadcrumbItems);
 
   const faqSchema = getFAQSchema(service.faqs);
 
@@ -107,6 +114,7 @@ function ServiceDetail() {
 
       {/* Hero Section */}
       <section className="mx-auto max-w-[1200px] px-6 pt-16 pb-20 md:pt-24 md:pb-28">
+        <Breadcrumbs items={breadcrumbItems} className="mb-8" />
         <div className="max-w-3xl">
           <p className="eyebrow">Service Overview</p>
           <h1 className="type-h1 mt-5 leading-tight">{service.title}</h1>

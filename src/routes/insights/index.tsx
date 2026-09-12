@@ -14,7 +14,15 @@ export const Route = createFileRoute("/insights/")({
         "Explore articles, design thinking frameworks, and strategic essays on brand building, user experience design, and digital product development.",
       url: "/insights",
     }),
-    links: canonicalLink("/insights"),
+    links: [
+      ...canonicalLink("/insights"),
+      {
+        rel: "alternate",
+        type: "application/rss+xml",
+        title: "Skédio Insights RSS",
+        href: "/insights/feed.xml",
+      },
+    ],
   }),
   component: InsightsList,
 });

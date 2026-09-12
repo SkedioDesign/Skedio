@@ -9,6 +9,7 @@ export interface InsightArticle {
     name: string;
     role: string;
     avatar?: string;
+    email?: string;
   };
   tags: string[];
   content: Array<{

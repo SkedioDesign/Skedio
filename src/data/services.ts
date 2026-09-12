@@ -81,6 +81,21 @@ export const servicesData: ServiceItem[] = [
         answer:
           "Brand strategy defines 'why' you exist, 'who' you serve, and 'what' you say. Visual brand identity translates that strategic foundation into logos, typography, color palettes, and graphic systems.",
       },
+      {
+        question: "Can we do brand strategy before we have customers or traction?",
+        answer:
+          "Yes. Most of our strategy work happens pre-traction: we help founders sharpen positioning, validate audience hypotheses, and build messaging frameworks that make the go-to-market sharper. The frameworks are built to be tested against real customers and iterated as you learn.",
+      },
+      {
+        question: "How do you position a brand in a crowded or commoditized market?",
+        answer:
+          "Through a structured competitor audit, we map where every meaningful player sits, then find the differentiation wedge your category leaves open. We turn that into a positioning built on your specific strength for a specific audience, rather than generic 'best-in-class' claims.",
+      },
+      {
+        question: "Do strategy recommendations come with an execution roadmap?",
+        answer:
+          "Yes. Every engagement ends with a clear roadmap that sequences strategy into visual identity, website copy, product UX, and marketing channels. We can also execute the adjoining work ourselves if you want a single partner from strategy to launch.",
+      },
     ],
   },
   {
@@ -150,6 +165,21 @@ export const servicesData: ServiceItem[] = [
         answer:
           "Brand identity pricing depends on scope, deliverables, and company scale. Contact us for a tailored proposal matching your timeline and milestones.",
       },
+      {
+        question: "How do you ensure a logo works across apps, packaging, and social media?",
+        answer:
+          "We stress-test every concept — from a 16px favicon to large-format print — on digital apps, packaging, social avatars, and merchandise before finalizing. You receive flexible lockups, clear-space rules, and responsive variants so the mark stays legible everywhere it appears.",
+      },
+      {
+        question: "Can you adapt an existing identity, or do we need a full redesign?",
+        answer:
+          "Both paths are covered by the same audit-first process. We assess the equity in your current marks and systems, then recommend a targeted refresh that keeps what works and evolves the rest, or a full redesign when a category reset is what you need.",
+      },
+      {
+        question: "How long does a complete brand identity project take?",
+        answer:
+          "A full identity project typically takes 3 to 5 weeks, including concept exploration, refinement, real-world mockups, and the final design system and brand guidelines.",
+      },
     ],
   },
   {
@@ -218,6 +248,21 @@ export const servicesData: ServiceItem[] = [
         answer:
           "Yes, our design team adheres to Apple Human Interface Guidelines and Google Material Design specifications to ensure native feel on every device.",
       },
+      {
+        question: "How do you incorporate user research and usability testing?",
+        answer:
+          "We run stakeholder interviews, competitor teardowns, and lightweight usability tests on interactive prototypes at key decision points. Findings feed directly into the flows and screens, so the design decisions are based on observed user behavior instead of assumptions.",
+      },
+      {
+        question: "Can you improve the UX of an existing product without a full rebuild?",
+        answer:
+          "Yes. We start with a UX audit of your current flows, analytics, and fundamentals, then prioritize low-effort, high-impact fixes into iterative design sprints. You see improvements incrementally without pausing development.",
+      },
+      {
+        question: "How do you hand off designs to our own engineering team?",
+        answer:
+          "We hand off component-driven Figma files with auto-layout, documented design tokens, annotated developer specs, and interactive prototypes. We also run an alignment session with your engineers so implementation stays true to the system.",
+      },
     ],
   },
   {
@@ -285,6 +330,21 @@ export const servicesData: ServiceItem[] = [
         question: "Can you take over existing codebases?",
         answer:
           "Yes, we conduct comprehensive code audits and can modernize, refactor, or build on top of existing repositories.",
+      },
+      {
+        question: "How long does it take to build an MVP?",
+        answer:
+          "A scoped MVP with core features typically takes 6 to 10 weeks, including design and development. Complexity, integrations, and the breadth of the feature set are the main variables — we lock real timing in the proposal after discovery.",
+      },
+      {
+        question: "Do you handle hosting, deployment, and infrastructure?",
+        answer:
+          "Yes. We configure deployment pipelines, edge CDNs, monitoring, logging, and cloud infrastructure on Vercel or AWS as part of delivery. We also offer ongoing maintenance and security oversight after launch.",
+      },
+      {
+        question: "How do you estimate cost and scope for a development project?",
+        answer:
+          "We run a discovery and architecture workshop, then break the product into features and effort to produce a phased, milestone-based estimate. You pay per agreed milestone rather than by nebulous hourly effort.",
       },
     ],
   },

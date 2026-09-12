@@ -237,6 +237,18 @@
   padding-right: clamp(20px, 5vw, 48px);
 }
 
+.cs-cover__crumbs {
+  margin-bottom: clamp(12px, 2vw, 20px);
+}
+
+.cs-cover__crumbs .sk-breadcrumbs__link {
+  color: var(--cs-gray-muted);
+}
+
+.cs-cover__crumbs .sk-breadcrumbs__link:hover {
+  color: var(--cs-black);
+}
+
 .cs-cover__word {
   font-size: clamp(4rem, 14vw, 13.5rem);
   line-height: 0.88;

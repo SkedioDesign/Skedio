@@ -15,6 +15,7 @@ import { StructuredData } from "../components/StructuredData";
 import { getOrganizationSchema, getWebSiteSchema } from "../lib/schema";
 import { siteConfig } from "../lib/site-config";
 import { NotFound } from "../components/NotFound";
+import { ErrorFallback } from "../components/ErrorFallback";
 import { CookieConsent } from "../components/CookieConsent";
 
 export const Route = createRootRoute({
@@ -23,6 +24,16 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: siteConfig.name },
+      // ──────────────────────────────────────────────────────────────────────
+      // SEARCH CONSOLE VERIFICATION — PLACEHOLDERS
+      // Replace these placeholder values with real codes before deploying:
+      //   • Google:  search.google.com/search-console → Add property → "HTML tag" method
+      //   • Bing:    www.bing.com/webmasters → verify site → "Meta tag" method
+      // Keep "REPLACE_WITH_CODE" until you have real codes from each dashboard.
+      // See docs/seo-verification.md for the alternative HTML-file method.
+      // ──────────────────────────────────────────────────────────────────────
+      { name: "google-site-verification", content: "REPLACE_WITH_CODE" },
+      { name: "msvalidate.01", content: "REPLACE_WITH_CODE" },
     ],
     links: [
       { rel: "icon", type: "image/png", href: "/skedio-logomark.png" },
@@ -46,6 +57,7 @@ export const Route = createRootRoute({
     ],
   }),
   component: RootComponent,
+  errorComponent: ErrorFallback,
   notFoundComponent: NotFound,
 });
 

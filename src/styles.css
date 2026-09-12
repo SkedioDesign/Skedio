@@ -7,7 +7,8 @@
   font-family: "Gilroy";
   font-weight: 300;
   font-style: normal;
-  src: url("./assets/fonts/Gilroy-Light.otf") format("opentype");
+  src: url("./assets/fonts/Gilroy-Light.woff2") format("woff2"),
+    url("./assets/fonts/Gilroy-Light.otf") format("opentype");
   font-display: swap;
 }
 
@@ -15,7 +16,8 @@
   font-family: "Gilroy";
   font-weight: 700 800;
   font-style: normal;
-  src: url("./assets/fonts/Gilroy-ExtraBold.otf") format("opentype");
+  src: url("./assets/fonts/Gilroy-ExtraBold.woff2") format("woff2"),
+    url("./assets/fonts/Gilroy-ExtraBold.otf") format("opentype");
   font-display: swap;
 }
 

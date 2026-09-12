@@ -18,6 +18,7 @@
 - [The Future of Brand Building in an AI Era](https://skedio.studio/insights/future-of-brand-building-digital-world)
 - [Designing Fast, Trustworthy UX for Real-Time Marketplaces](https://skedio.studio/insights/designing-real-time-bidding-marketplace-ux)
 - [Typography in Modern Branding: Voice and Performance](https://skedio.studio/insights/typography-in-branding-more-than-just-fonts)
+- [Insights RSS Feed](https://skedio.studio/insights/feed.xml): Subscribe to new insights articles via this RSS 2.0 feed.
 
 ## Contact & Inquiries
 - Website: https://skedio.studio

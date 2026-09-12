@@ -4,8 +4,9 @@ import { ArrowLeft, ArrowUpRight, Calendar, Clock, User } from "lucide-react";
 import { getInsightBySlug, insightsArticles } from "@/data/insights";
 import { seo, canonicalLink } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
-import { getArticleSchema, getBreadcrumbSchema } from "@/lib/schema";
+import { getArticleSchema, getBreadcrumbSchema, type BreadcrumbItem } from "@/lib/schema";
 import { useContactModal } from "@/context/contact-modal-context";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 export const Route = createFileRoute("/insights/$slug")({
   loader: async ({ params }) => {
@@ -72,11 +73,12 @@ function InsightPost() {
     image: article.coverImage,
   });
 
-  const breadcrumbSchema = getBreadcrumbSchema([
+  const breadcrumbItems: BreadcrumbItem[] = [
     { name: "Home", item: "/" },
     { name: "Insights", item: "/insights" },
     { name: article.title, item: `/insights/${article.slug}` },
-  ]);
+  ];
+  const breadcrumbSchema = getBreadcrumbSchema(breadcrumbItems);
 
   const moreArticles = insightsArticles.filter((a) => a.slug !== slug);
 
@@ -104,6 +106,8 @@ function InsightPost() {
       </div>
 
       <article className="mx-auto max-w-[900px] px-6 pt-16 pb-24 md:pt-24 md:pb-32">
+        <Breadcrumbs items={breadcrumbItems} className="mb-8" />
+
         {/* Article Meta */}
         <div className="flex flex-wrap items-center gap-3">
           {article.tags.map((tag) => (
