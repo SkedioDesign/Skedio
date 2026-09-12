@@ -1,6 +1,7 @@
 import { siteConfig } from "./site-config";
 import { projects } from "../data/projects";
 import { servicesData } from "../data/services";
+import { blogPosts } from "../data/blog";
 import { insightsArticles } from "../data/insights";
 
 export function generateSitemapXml(): string {
@@ -35,7 +36,14 @@ export function generateSitemapXml(): string {
     lastmod: i.datePublished || currentDate,
   }));
 
-  const allEntries = [...staticRoutes, ...serviceRoutes, ...projectRoutes, ...insightRoutes];
+  const blogRoutes = blogPosts.map((p) => ({
+    path: `/blog/${p.slug}`,
+    changefreq: "monthly",
+    priority: "0.7",
+    lastmod: p.publishedAt || currentDate,
+  }));
+
+  const allEntries = [...staticRoutes, ...serviceRoutes, ...projectRoutes, ...insightRoutes, ...blogRoutes];
 
   const body = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

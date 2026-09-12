@@ -9,7 +9,7 @@ import { StructuredData } from "@/components/StructuredData";
 import { getServiceSchema, getFAQSchema } from "@/lib/schema";
 import { servicesData } from "@/data/services";
 import { generalFaqs } from "@/data/faq";
-import { insightsArticles } from "@/data/insights";
+import { blogPosts } from "@/data/blog";
 
 import hero from "@/assets/hero.png";
 import svcStrategy from "@/assets/svc-strategy.jpg";
@@ -102,6 +102,7 @@ function PillLink({
 function Index() {
   const { openContactModal } = useContactModal();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [showMore, setShowMore] = useState(false);
 
   const serviceSchemas = servicesData.map((s) =>
     getServiceSchema({
@@ -124,7 +125,7 @@ function Index() {
           <Wordmark />
           <div className="flex items-center gap-10">
             <ul className="type-label hidden items-center gap-10 uppercase md:flex">
-              {["Work", "Services", "Insights"].map((i) => (
+              {["Work", "Services", "Blog"].map((i) => (
                 <li key={i}>
                   <a
                     href={`#${i.toLowerCase()}`}
@@ -190,24 +191,42 @@ function Index() {
           {/* Right column (~40%, lower) */}
           <div className="lg:col-span-2">
             <div className="rounded-2xl border border-border bg-surface/60 p-8 lg:p-10">
-              <p className="eyebrow">Partner with</p>
+              <p className="eyebrow text-center">Partner with</p>
               <div className="sk-marquee mt-6 overflow-hidden">
                 <div className="sk-marquee-track flex w-max items-center gap-x-10">
                   {[
-                    { type: "text" as const, id: "sc", label: "Social Chums" },
+                    {
+                      type: "text" as const,
+                      id: "sc",
+                      label: "Social Chums",
+                      img: "/Social Chums.png",
+                    },
                     { type: "text" as const, id: "nt", label: "Nuvance Technology" },
-                    { type: "text" as const, id: "ed", label: "Edios" },
-                    { type: "text" as const, id: "sc2", label: "Social Chums" },
+                    { type: "text" as const, id: "ed", label: "Edios", img: "/Edios.png" },
+                    {
+                      type: "text" as const,
+                      id: "sc2",
+                      label: "Social Chums",
+                      img: "/Social Chums.png",
+                    },
                     { type: "text" as const, id: "nt2", label: "Nuvance Technology" },
-                    { type: "text" as const, id: "ed2", label: "Edios" },
+                    { type: "text" as const, id: "ed2", label: "Edios", img: "/Edios.png" },
                   ].map((item, i) => (
                     <div
                       key={`${item.id}-${i}`}
                       className="flex h-auto shrink-0 items-center justify-center px-2 py-2"
                     >
-                      <span className="whitespace-nowrap font-display text-xl font-bold tracking-tight text-foreground/50 transition-colors duration-300 hover:text-foreground">
-                        {item.label}
-                      </span>
+                      {item.img ? (
+                        <img
+                          src={item.img}
+                          alt={item.label}
+                          className="h-18 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300"
+                        />
+                      ) : (
+                        <span className="whitespace-nowrap font-display text-2xl font-bold tracking-tight text-foreground/50 transition-colors duration-300 hover:text-foreground">
+                          {item.label}
+                        </span>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -337,22 +356,22 @@ function Index() {
           </div>
         </section>
 
-        {/* Insights */}
+        {/* Articles */}
         <section
-          id="insights"
+          id="blog"
           className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 pb-24 lg:pb-32"
         >
           <ScrollReveal>
             <div className="flex flex-wrap items-end justify-between gap-6">
               <div>
-                <p className="eyebrow">Insights</p>
+                <p className="eyebrow">Blog</p>
                 <h2 className="type-h2 mt-5">Read our latest thoughts</h2>
               </div>
               <Link
-                to="/insights"
+                to="/blog"
                 className="group type-button inline-flex cursor-pointer items-center gap-2 rounded-full border border-border bg-transparent px-6 py-3 text-foreground transition-colors duration-250 ease-out hover:border-ink hover:bg-ink hover:text-ink-foreground"
               >
-                View All Insights
+                View All Articles
                 <span className="grid size-8 place-items-center rounded-full bg-foreground/10 transition-transform duration-250 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
                   <ArrowUpRight className="size-4" />
                 </span>
@@ -361,20 +380,23 @@ function Index() {
           </ScrollReveal>
 
           <div className="mt-12 grid gap-8 md:grid-cols-3">
-            {insightsArticles.slice(0, 3).map((article, idx) => (
-              <ScrollReveal key={article.slug} delay={idx}>
+            {blogPosts.slice(0, 3).map((post, idx) => (
+              <ScrollReveal key={post.slug} delay={idx} className="h-full">
                 <Link
-                  to="/insights/$slug"
-                  params={{ slug: article.slug }}
-                  className="group flex flex-col justify-between rounded-xl border border-border bg-card p-6 transition-all duration-250 ease-out hover:-translate-y-1 hover:border-primary/50 hover:shadow-card"
+                  to="/blog/$slug"
+                  params={{ slug: post.slug }}
+                  className="group flex h-full flex-col justify-between rounded-xl border border-border bg-card p-6 transition-all duration-250 ease-out hover:-translate-y-1 hover:border-primary/50 hover:shadow-card"
                 >
                   <div>
-                    <p className="type-caption text-muted-foreground">{article.datePublished}</p>
-                    <h3 className="mt-2 text-base font-semibold leading-snug group-hover:text-primary transition-colors">
-                      {article.title}
+                    <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                      {post.category}
+                    </span>
+                    <p className="mt-3 type-caption text-muted-foreground">{post.publishedAt}</p>
+                    <h3 className="mt-2 line-clamp-2 text-base font-semibold leading-snug group-hover:text-primary transition-colors">
+                      {post.title}
                     </h3>
-                    <p className="mt-2 text-xs leading-relaxed text-muted-foreground line-clamp-3">
-                      {article.excerpt}
+                    <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-muted-foreground">
+                      {post.metaDescription}
                     </p>
                   </div>
                   <span className="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-primary">
@@ -384,53 +406,6 @@ function Index() {
                 </Link>
               </ScrollReveal>
             ))}
-          </div>
-        </section>
-
-        {/* FAQs Section (High-Leverage AEO Surface) */}
-        <section
-          id="faqs"
-          className="mx-auto w-full max-w-[900px] scroll-mt-24 px-6 pb-24 lg:pb-32"
-        >
-          <ScrollReveal>
-            <div className="text-center">
-              <p className="eyebrow">Studio FAQs</p>
-              <h2 className="type-h2 mt-4">Questions you might have</h2>
-              <p className="mt-3 text-muted-foreground">
-                Clear answers on pricing, timelines, deliverables, and how we work with founders.
-              </p>
-            </div>
-          </ScrollReveal>
-
-          <div className="mt-12 space-y-4">
-            {generalFaqs.map((faq, index) => {
-              const isOpen = openFaq === index;
-              return (
-                <ScrollReveal key={faq.question} delay={index % 3}>
-                  <div className="rounded-xl border border-border bg-card overflow-hidden transition-colors">
-                    <button
-                      type="button"
-                      onClick={() => setOpenFaq(isOpen ? null : index)}
-                      className="flex w-full items-center justify-between p-6 text-left font-semibold text-foreground cursor-pointer"
-                      aria-expanded={isOpen}
-                    >
-                      <span className="flex items-center gap-3 pr-4">
-                        <HelpCircle className="size-5 text-primary shrink-0" />
-                        {faq.question}
-                      </span>
-                      <span className="text-xl leading-none text-muted-foreground">
-                        {isOpen ? "−" : "+"}
-                      </span>
-                    </button>
-                    {isOpen && (
-                      <div className="border-t border-border px-6 pt-4 pb-6 text-muted-foreground leading-relaxed">
-                        {faq.answer}
-                      </div>
-                    )}
-                  </div>
-                </ScrollReveal>
-              );
-            })}
           </div>
         </section>
 
@@ -468,6 +443,93 @@ function Index() {
               </ScrollReveal>
             ))}
           </div>
+        </section>
+
+        {/* FAQs Section (High-Leverage AEO Surface) */}
+        <section
+          id="faqs"
+          className="mx-auto w-full max-w-[900px] scroll-mt-24 px-6 pb-24 lg:pb-32"
+        >
+          <ScrollReveal>
+            <div className="text-center">
+              <p className="eyebrow">Studio FAQs</p>
+              <h2 className="type-h2 mt-4">Questions you might have</h2>
+              <p className="mt-3 text-muted-foreground">
+                Clear answers on pricing, timelines, deliverables, and how we work with founders.
+              </p>
+            </div>
+          </ScrollReveal>
+
+          <div className="mt-12 space-y-4">
+            {showMore
+              ? generalFaqs.map((faq, index) => {
+                  const isOpen = openFaq === index;
+                  return (
+                    <ScrollReveal key={faq.question} delay={index % 3}>
+                      <div className="rounded-xl border border-border bg-card overflow-hidden transition-colors">
+                        <button
+                          type="button"
+                          onClick={() => setOpenFaq(isOpen ? null : index)}
+                          className="flex w-full items-center justify-between p-6 text-left font-semibold text-foreground cursor-pointer"
+                          aria-expanded={isOpen}
+                        >
+                          <span className="flex items-center gap-3 pr-4">
+                            <HelpCircle className="size-5 text-primary shrink-0" />
+                            {faq.question}
+                          </span>
+                          <span className="text-xl leading-none text-muted-foreground">
+                            {isOpen ? "−" : "+"}
+                          </span>
+                        </button>
+                        {isOpen && (
+                          <div className="border-t border-border px-6 pt-4 pb-6 text-muted-foreground leading-relaxed">
+                            {faq.answer}
+                          </div>
+                        )}
+                      </div>
+                    </ScrollReveal>
+                  );
+                })
+              : generalFaqs.slice(0, 4).map((faq, index) => {
+                  const isOpen = openFaq === index;
+                  return (
+                    <ScrollReveal key={faq.question} delay={index % 3}>
+                      <div className="rounded-xl border border-border bg-card overflow-hidden transition-colors">
+                        <button
+                          type="button"
+                          onClick={() => setOpenFaq(isOpen ? null : index)}
+                          className="flex w-full items-center justify-between p-6 text-left font-semibold text-foreground cursor-pointer"
+                          aria-expanded={isOpen}
+                        >
+                          <span className="flex items-center gap-3 pr-4">
+                            <HelpCircle className="size-5 text-primary shrink-0" />
+                            {faq.question}
+                          </span>
+                          <span className="text-xl leading-none text-muted-foreground">
+                            {isOpen ? "−" : "+"}
+                          </span>
+                        </button>
+                        {isOpen && (
+                          <div className="border-t border-border px-6 pt-4 pb-6 text-muted-foreground leading-relaxed">
+                            {faq.answer}
+                          </div>
+                        )}
+                      </div>
+                    </ScrollReveal>
+                  );
+                })}
+          </div>
+
+          {generalFaqs.length > 4 && (
+            <div className="mt-6 text-center">
+              <button
+                onClick={() => setShowMore(!showMore)}
+                className="text-primary hover:underline transition-colors"
+              >
+                {showMore ? "Show less" : "Show more"}
+              </button>
+            </div>
+          )}
         </section>
       </div>
     </div>
