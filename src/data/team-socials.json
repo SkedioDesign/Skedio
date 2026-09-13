@@ -1,0 +1,74 @@
+{
+  "members": [
+    {
+      "name": "Aakash Choudhary",
+      "role": "Founder & Creative Director",
+      "socials": {
+        "instagram": "https://www.instagram.com/itsakashdesigns",
+        "twitter": "",
+        "threads": "",
+        "linkedin": "",
+        "behance": "https://www.behance.net/itsakashdesigns",
+        "dribbble": "https://dribbble.com/itsakashdesigns",
+        "portfolio": "https://itsakashdesigns.framer.website/",
+        "github": ""
+      }
+    },
+    {
+      "name": "Rishabh Khatri",
+      "role": "Manager",
+      "socials": {
+        "instagram": "",
+        "twitter": "",
+        "threads": "",
+        "linkedin": "",
+        "behance": "",
+        "dribbble": "",
+        "portfolio": "",
+        "github": ""
+      }
+    },
+    {
+      "name": "Aman Raj",
+      "role": "Developer",
+      "socials": {
+        "instagram": "",
+        "twitter": "",
+        "threads": "",
+        "linkedin": "",
+        "behance": "",
+        "dribbble": "",
+        "portfolio": "www.amanraj.codes",
+        "github": ""
+      }
+    },
+    {
+      "name": "Harshita Upadhyay",
+      "role": "UI/UX Lead",
+      "socials": {
+        "instagram": "https://www.instagram.com/velvet.drafts",
+        "twitter": "",
+        "threads": "https://www.threads.com/@velvet.drafts_",
+        "linkedin": "https://www.linkedin.com/in/velvetdrafts",
+        "behance": "https://www.behance.net/velvetdrafts",
+        "dribbble": "",
+        "portfolio": "https://harshitaupadhyay.site",
+        "github": ""
+      }
+    },
+    {
+      "name": "Shrishti Kori",
+      "role": "Graphics Lead",
+      "socials": {
+        "instagram": "",
+        "twitter": "https://twitter.com/shrishtikori11",
+        "threads": "",
+        "linkedin": "https://www.linkedin.com/in/shrishti-kori-bb29b73a5?utm_source=share_via&utm_content=profile&utm_medium=member_android",
+        "behance": "https://www.behance.net/shrishtikori",
+        "dribbble": "",
+        "portfolio": "",
+        "github": ""
+      }
+    }
+  ]
+}

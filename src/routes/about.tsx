@@ -7,6 +7,8 @@ import { siteConfig } from "@/lib/site-config";
 import { StructuredData } from "@/components/StructuredData";
 import { getBreadcrumbSchema, type BreadcrumbItem } from "@/lib/schema";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { SocialLinks, type TeamSocials } from "@/components/SocialLinks";
+import teamSocialsData from "@/data/team-socials.json";
 
 type TeamMember = {
   name: string;
@@ -15,6 +17,9 @@ type TeamMember = {
   expertise: string[];
   img?: string;
 };
+
+const socialsFor = (name: string): TeamSocials =>
+  teamSocialsData.members.find((m) => m.name === name)?.socials ?? {};
 
 const founder = {
   name: "Aakash Choudhary",
@@ -257,6 +262,8 @@ function About() {
                 </span>
               ))}
             </div>
+
+            <SocialLinks socials={socialsFor(founder.name)} className="mt-8" />
           </ScrollReveal>
         </div>
       </section>
@@ -342,6 +349,9 @@ function About() {
                     </span>
                   ))}
                 </div>
+
+                {/* Socials — only links with a value are rendered */}
+                <SocialLinks socials={socialsFor(member.name)} className="mt-4" />
               </div>
             </ScrollReveal>
           ))}
