@@ -5,7 +5,7 @@ export const siteConfig = {
   ogImage: "/og-default.png",
   description:
     "Skédio is a creative studio crafting bold brands, beautiful experiences and digital products that help businesses grow.",
-  email: "hello@skedio.studio",
+  email: "skediodesignspace@gmail.com",
   phone: "+91 98765 43210",
   socials: {
     linkedin: "https://www.linkedin.com/company/skedio",

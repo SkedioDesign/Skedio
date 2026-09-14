@@ -27,18 +27,9 @@ const navSections = [
     ],
   },
   {
-    title: "Services",
-    links: [
-      { label: "Brand Strategy", href: "/services/brand-strategy" },
-      { label: "Brand Identity", href: "/services/brand-identity" },
-      { label: "UI/UX Design", href: "/services/ui-ux-design" },
-      { label: "Product Development", href: "/services/product-development" },
-    ],
-  },
-  {
     title: "Work",
     links: [
-      { label: "HAO Cabs Case Study", href: "/projects/haocabs" },
+      { label: "Hao Cabs", href: "/projects/haocabs" },
       { label: "Featured Work", href: "/#work" },
       { label: "Clients", href: "/#clients" },
     ],
@@ -84,13 +75,13 @@ export function Footer() {
         }),
       });
       if (!res.ok) {
-        setErrorMessage("Something went wrong. Please try again or email us directly at hello@skedio.studio");
+        setErrorMessage("Something went wrong. Please try again or email us directly at skediodesignspace@gmail.com");
         return;
       }
       setFooterSent(true);
       setFooterEmail("");
     } catch {
-      setErrorMessage("Something went wrong. Please try again or email us directly at hello@skedio.studio");
+      setErrorMessage("Something went wrong. Please try again or email us directly at skediodesignspace@gmail.com");
     } finally {
       setLoading(false);
     }
