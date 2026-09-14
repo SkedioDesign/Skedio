@@ -273,6 +273,25 @@
     font-weight: 600;
   }
 
+  /* Homepage hero heading — sized to keep both forced lines
+     on exactly two lines at every viewport width */
+  .sk-hero-title {
+    font-size: clamp(1.25rem, 6.5vw, 2.5rem);
+    line-height: 1.1;
+  }
+  @media (min-width: 768px) {
+    .sk-hero-title {
+      font-size: clamp(2.25rem, 6vw, 2.75rem);
+      line-height: 1.08;
+    }
+  }
+  @media (min-width: 1024px) {
+    .sk-hero-title {
+      font-size: clamp(2.25rem, 3.5vw, 3rem);
+      line-height: 1.05;
+    }
+  }
+
   /* Eyebrow label — small caps voice used sparingly above section headings */
   .eyebrow {
     font-size: 0.8125rem;

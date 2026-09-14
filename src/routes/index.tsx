@@ -123,7 +123,7 @@ function Index() {
         <div className="grid grid-cols-1 items-end gap-16 lg:grid-cols-5 lg:gap-10">
           {/* Left column (~60%) */}
           <div className="lg:col-span-3">
-            <h1 className="type-h1 sk-rise">
+            <h1 className="type-h1 sk-rise sk-hero-title">
               We build brands and digital
               <br />
               products that make an <span className="font-extrabold text-primary">impact.</span>
