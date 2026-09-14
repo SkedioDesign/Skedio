@@ -134,7 +134,7 @@ function Index() {
       />
 
       {/* Hero */}
-      <section className="mx-auto w-full max-w-[1440px] px-6 pt-8 pb-16 md:px-12 md:py-24 lg:py-28">
+      <section className="mx-auto w-full max-w-[1440px] px-6 pt-8 pb-0 md:px-12 md:py-24 lg:py-28">
         <div className="grid grid-cols-1 items-end gap-16 lg:grid-cols-5 lg:gap-10">
           {/* Left column (~60%) */}
           <div className="lg:col-span-3">
@@ -259,7 +259,7 @@ function Index() {
         {/* Services */}
         <section
           id="services"
-          className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 py-24 lg:py-28"
+          className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 pt-12 pb-24 lg:py-28"
         >
           <ScrollReveal>
             <p className="eyebrow">What we do</p>
@@ -306,16 +306,18 @@ function Index() {
                 <p className="eyebrow">Featured project</p>
                 <h2 className="type-h2 mt-5">Selected work</h2>
               </div>
-              <Link
-                to="/projects/$slug"
-                params={{ slug: "haocabs" }}
-                className="group type-button inline-flex cursor-pointer items-center gap-2 rounded-full border border-border bg-transparent px-6 py-3 text-foreground transition-colors duration-250 ease-out hover:border-ink hover:bg-ink hover:text-ink-foreground"
-              >
-                Explore Case Study
-                <span className="grid size-8 place-items-center rounded-full bg-foreground/10 transition-transform duration-250 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-                  <ArrowUpRight className="size-4" />
-                </span>
-              </Link>
+              {projects.length > 3 && (
+                <Link
+                  to="/projects/$slug"
+                  params={{ slug: "haocabs" }}
+                  className="group type-button inline-flex cursor-pointer items-center gap-2 rounded-full border border-border bg-transparent px-6 py-3 text-foreground transition-colors duration-250 ease-out hover:border-ink hover:bg-ink hover:text-ink-foreground"
+                >
+                  Explore Case Study
+                  <span className="grid size-8 place-items-center rounded-full bg-foreground/10 transition-transform duration-250 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                    <ArrowUpRight className="size-4" />
+                  </span>
+                </Link>
+              )}
             </div>
           </ScrollReveal>
 
@@ -373,15 +375,17 @@ function Index() {
                 <p className="eyebrow">Blog</p>
                 <h2 className="type-h2 mt-5">Read our latest thoughts</h2>
               </div>
-              <Link
-                to="/blog"
-                className="group type-button inline-flex cursor-pointer items-center gap-2 rounded-full border border-border bg-transparent px-6 py-3 text-foreground transition-colors duration-250 ease-out hover:border-ink hover:bg-ink hover:text-ink-foreground"
-              >
-                View All Articles
-                <span className="grid size-8 place-items-center rounded-full bg-foreground/10 transition-transform duration-250 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-                  <ArrowUpRight className="size-4" />
-                </span>
-              </Link>
+              {blogPosts.length > 3 && (
+                <Link
+                  to="/blog"
+                  className="group type-button inline-flex cursor-pointer items-center gap-2 rounded-full border border-border bg-transparent px-6 py-3 text-foreground transition-colors duration-250 ease-out hover:border-ink hover:bg-ink hover:text-ink-foreground"
+                >
+                  View All Articles
+                  <span className="grid size-8 place-items-center rounded-full bg-foreground/10 transition-transform duration-250 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                    <ArrowUpRight className="size-4" />
+                  </span>
+                </Link>
+              )}
             </div>
           </ScrollReveal>
 
