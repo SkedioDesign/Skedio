@@ -54,6 +54,15 @@ const clientLogos = Array.from({ length: 14 }, (_, i) => ({
   alt: `Client logo ${i + 1}`,
 }));
 
+const partnerLogos = [
+  { type: "text" as const, id: "sc", label: "Social Chums", img: "/Social Chums.png" },
+  { type: "text" as const, id: "nt", label: "Nuvance Technology" },
+  { type: "text" as const, id: "ed", label: "Edios", img: "/Edios.png" },
+  { type: "text" as const, id: "sc2", label: "Social Chums", img: "/Social Chums.png" },
+  { type: "text" as const, id: "nt2", label: "Nuvance Technology" },
+  { type: "text" as const, id: "ed2", label: "Edios", img: "/Edios.png" },
+];
+
 function PillLink({
   href,
   onClick,
@@ -72,7 +81,7 @@ function PillLink({
         ? "bg-ink text-ink-foreground hover:bg-primary"
         : "bg-primary text-primary-foreground hover:bg-primary-hover";
 
-  const sizes = variant === "ink" ? "px-5 py-3.5 md:px-7" : "px-6 py-3";
+  const sizes = variant === "ink" ? "px-5 py-3 md:px-7" : "px-6 py-3";
 
   const Comp = onClick ? "button" : "a";
   const props = onClick ? { type: "button" as const, onClick } : { href };
@@ -135,13 +144,13 @@ function Index() {
               products that make an <span className="sk-hero-accent">impact.</span>
             </h1>
 
-            <div className="mt-10 flex flex-wrap items-center gap-3">
+            <div className="mt-10 flex flex-wrap items-center gap-x-2 gap-y-2 sm:flex-nowrap sm:gap-x-2">
               {servicesData.map((s) => (
                 <Link
                   key={s.slug}
                   to="/services/$slug"
                   params={{ slug: s.slug }}
-                  className="rounded-md border border-border bg-surface px-4 py-1.5 text-sm font-medium text-foreground/70 transition-colors hover:border-primary/50 hover:text-primary"
+                  className="whitespace-nowrap rounded-md border border-border bg-surface px-4 py-1.5 text-sm font-medium leading-tight text-foreground/70 transition-colors hover:border-primary/50 hover:text-primary sm:px-3 sm:text-[0.8125rem] lg:px-2.5"
                 >
                   {s.shortTitle}
                 </Link>
@@ -163,30 +172,13 @@ function Index() {
             </p>
           </div>
 
-          {/* Right column (~40%, lower) */}
-          <div className="lg:col-span-2">
+          {/* Right column (~40%, lower) — partner card only on desktop */}
+          <div className="hidden lg:col-span-2 lg:block">
             <div className="rounded-2xl border border-border bg-surface/60 p-8 lg:p-10">
               <p className="eyebrow text-center">Partner with</p>
               <div className="sk-marquee mt-6 overflow-hidden">
                 <div className="sk-marquee-track flex w-max items-center gap-x-10">
-                  {[
-                    {
-                      type: "text" as const,
-                      id: "sc",
-                      label: "Social Chums",
-                      img: "/Social Chums.png",
-                    },
-                    { type: "text" as const, id: "nt", label: "Nuvance Technology" },
-                    { type: "text" as const, id: "ed", label: "Edios", img: "/Edios.png" },
-                    {
-                      type: "text" as const,
-                      id: "sc2",
-                      label: "Social Chums",
-                      img: "/Social Chums.png",
-                    },
-                    { type: "text" as const, id: "nt2", label: "Nuvance Technology" },
-                    { type: "text" as const, id: "ed2", label: "Edios", img: "/Edios.png" },
-                  ].map((item, i) => (
+                  {partnerLogos.map((item, i) => (
                     <div
                       key={`${item.id}-${i}`}
                       className="flex h-auto shrink-0 items-center justify-center px-2 py-2"
@@ -209,10 +201,49 @@ function Index() {
             </div>
           </div>
         </div>
+
+        {/* Responsive: hero visual after the copy */}
+        <div className="mt-10 lg:hidden">
+          <img
+            src={hero}
+            alt="Skédio design studio hero showcase — bold brand strategy and product design"
+            fetchPriority="high"
+            loading="eager"
+            width={1440}
+            height={810}
+            className="aspect-[16/9] w-full rounded-2xl object-cover"
+          />
+        </div>
+
+        {/* Responsive: bare logo marquee below the copy (no card, no label) */}
+        <div className="mt-10 lg:hidden">
+          <div className="sk-marquee overflow-hidden">
+            <div className="sk-marquee-track flex w-max items-center gap-x-10">
+              {partnerLogos.map((item, i) => (
+                <div
+                  key={`${item.id}-${i}`}
+                  className="flex h-auto shrink-0 items-center justify-center px-2 py-2"
+                >
+                  {item.img ? (
+                    <img
+                      src={item.img}
+                      alt={item.label}
+                      className="h-18 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300"
+                    />
+                  ) : (
+                    <span className="whitespace-nowrap font-display text-2xl font-bold tracking-tight text-foreground/50 transition-colors duration-300 hover:text-foreground">
+                      {item.label}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* Hero visual with LCP optimization */}
-      <section className="mx-auto w-full max-w-[1440px] px-6 md:px-12">
+      {/* Hero visual with LCP optimization — desktop only; mobile version sits below the copy */}
+      <section className="mx-auto hidden w-full max-w-[1440px] px-6 md:px-12 lg:block">
         <img
           src={hero}
           alt="Skédio design studio hero showcase — bold brand strategy and product design"
