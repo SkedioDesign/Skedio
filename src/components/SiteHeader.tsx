@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import { useContactModal } from "@/context/contact-modal-context";
@@ -26,15 +26,8 @@ function Wordmark({ className = "" }: { className?: string }) {
 export function SiteHeader({ links }: { links: HeaderLink[] }) {
   const { openContactModal } = useContactModal();
   const [menuOpen, setMenuOpen] = useState(false);
-  const unlockTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    // cancel any pending unlock queued by a previous close
-    if (unlockTimer.current) {
-      clearTimeout(unlockTimer.current);
-      unlockTimer.current = null;
-    }
-
     if (menuOpen) {
       document.body.style.overflow = "hidden";
     }
@@ -52,10 +45,7 @@ export function SiteHeader({ links }: { links: HeaderLink[] }) {
     mq.addEventListener("change", onViewportChange);
 
     return () => {
-      // delay unlock so body stays locked during the 500 ms slide-out
-      unlockTimer.current = setTimeout(() => {
-        document.body.style.overflow = "";
-      }, 500);
+      document.body.style.overflow = "";
       window.removeEventListener("keydown", onKeyDown);
       mq.removeEventListener("change", onViewportChange);
     };

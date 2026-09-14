@@ -72,17 +72,23 @@ function PillLink({
         ? "bg-ink text-ink-foreground hover:bg-primary"
         : "bg-primary text-primary-foreground hover:bg-primary-hover";
 
+  const sizes = variant === "ink" ? "px-5 py-3.5 md:px-7" : "px-6 py-3";
+
   const Comp = onClick ? "button" : "a";
   const props = onClick ? { type: "button" as const, onClick } : { href };
 
   return (
     <Comp
       {...props}
-      className={`group type-button inline-flex cursor-pointer items-center gap-2 rounded-full px-6 py-3 transition-colors duration-250 ease-out ${styles}`}
+      className={`group type-button inline-flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-full transition-colors duration-250 ease-out ${sizes} ${styles}`}
     >
       {children}
-      <span className="grid size-8 place-items-center rounded-full bg-foreground/10 transition-transform duration-250 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-        <ArrowUpRight className="size-4" />
+      <span
+        className={`grid place-items-center rounded-full transition-transform duration-250 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5 ${
+          variant === "ink" ? "size-7 bg-white/20 md:size-8" : "size-7 bg-foreground/10"
+        }`}
+      >
+        <ArrowUpRight className={variant === "ink" ? "size-3.5 md:size-4" : "size-3.5"} />
       </span>
     </Comp>
   );
@@ -119,14 +125,14 @@ function Index() {
       />
 
       {/* Hero */}
-      <section className="mx-auto w-full max-w-[1440px] px-6 py-16 md:px-12 md:py-24 lg:py-28">
+      <section className="mx-auto w-full max-w-[1440px] px-6 pt-8 pb-16 md:px-12 md:py-24 lg:py-28">
         <div className="grid grid-cols-1 items-end gap-16 lg:grid-cols-5 lg:gap-10">
           {/* Left column (~60%) */}
           <div className="lg:col-span-3">
             <h1 className="type-h1 sk-rise sk-hero-title">
               We build brands and digital
               <br />
-              products that make an <span className="font-extrabold text-primary">impact.</span>
+              products that make an <span className="sk-hero-accent">impact.</span>
             </h1>
 
             <div className="mt-10 flex flex-wrap items-center gap-3">
@@ -142,7 +148,7 @@ function Index() {
               ))}
             </div>
 
-            <div className="mt-9 flex flex-wrap items-center gap-4">
+            <div className="mt-8 flex items-center gap-2 md:gap-3">
               <PillLink href="#work" variant="ink">
                 View our works
               </PillLink>
