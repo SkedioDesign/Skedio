@@ -6,6 +6,7 @@ import { useContactModal } from "@/context/contact-modal-context";
 import { seo, canonicalLink } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 import { StructuredData } from "@/components/StructuredData";
+import { SiteHeader } from "@/components/SiteHeader";
 import { getServiceSchema, getFAQSchema } from "@/lib/schema";
 import { servicesData } from "@/data/services";
 import { generalFaqs } from "@/data/faq";
@@ -52,18 +53,6 @@ const clientLogos = Array.from({ length: 14 }, (_, i) => ({
   src: `/Clients/${i + 1}.png`,
   alt: `Client logo ${i + 1}`,
 }));
-
-function Wordmark({ className = "" }: { className?: string }) {
-  return (
-    <img
-      src="/skedio-primary.png"
-      alt="Skédio"
-      width={818}
-      height={297}
-      className={`h-12 w-auto ${className}`}
-    />
-  );
-}
 
 function PillLink({
   href,
@@ -120,34 +109,14 @@ function Index() {
       <StructuredData data={[...serviceSchemas, faqSchema]} />
 
       {/* Nav */}
-      <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-md">
-        <nav className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-6 py-5 md:px-12">
-          <Wordmark />
-          <div className="flex items-center gap-10">
-            <ul className="type-label hidden items-center gap-10 uppercase md:flex">
-              {["Work", "Services", "Blog"].map((i) => (
-                <li key={i}>
-                  <a
-                    href={`#${i.toLowerCase()}`}
-                    className="type-body tracking-[0.08em] text-foreground/70 transition-colors duration-200 hover:text-primary"
-                  >
-                    {i}
-                  </a>
-                </li>
-              ))}
-              <li>
-                <Link
-                  to="/about"
-                  className="type-body tracking-[0.08em] text-foreground/70 transition-colors duration-200 hover:text-primary"
-                >
-                  About
-                </Link>
-              </li>
-            </ul>
-            <PillLink onClick={openContactModal}>Let's Talk</PillLink>
-          </div>
-        </nav>
-      </header>
+      <SiteHeader
+        links={[
+          { label: "Work", to: "/", hash: "work" },
+          { label: "Services", to: "/", hash: "services" },
+          { label: "Blog", to: "/", hash: "blog" },
+          { label: "About", to: "/about" },
+        ]}
+      />
 
       {/* Hero */}
       <section className="mx-auto w-full max-w-[1440px] px-6 py-16 md:px-12 md:py-24 lg:py-28">

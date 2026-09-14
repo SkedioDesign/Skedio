@@ -1,10 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { useContactModal } from "@/context/contact-modal-context";
 import { seo, canonicalLink } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 import { StructuredData } from "@/components/StructuredData";
+import { SiteHeader } from "@/components/SiteHeader";
 import { getBreadcrumbSchema, type BreadcrumbItem } from "@/lib/schema";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { SocialLinks, type TeamSocials } from "@/components/SocialLinks";
@@ -74,18 +75,6 @@ export const Route = createFileRoute("/about")({
   component: About,
 });
 
-function Wordmark({ className = "" }: { className?: string }) {
-  return (
-    <img
-      src="/skedio-primary.png"
-      alt="Skédio"
-      width={818}
-      height={297}
-      className={`h-12 w-auto ${className}`}
-    />
-  );
-}
-
 function About() {
   const { openContactModal } = useContactModal();
 
@@ -114,59 +103,15 @@ function About() {
       <StructuredData data={[breadcrumbs, ...personSchemas]} />
 
       {/* ── Nav ─────────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-md">
-        <nav className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-6 py-5 md:px-12">
-          <Link to="/">
-            <Wordmark />
-          </Link>
-          <div className="flex items-center gap-10">
-            <ul className="type-label hidden items-center gap-10 uppercase md:flex">
-              <li>
-                <Link
-                  to="/"
-                  className="type-body tracking-[0.08em] text-foreground/70 transition-colors duration-200 hover:text-primary"
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <a
-                  href="/#work"
-                  className="type-body tracking-[0.08em] text-foreground/70 transition-colors duration-200 hover:text-primary"
-                >
-                  Work
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/#services"
-                  className="type-body tracking-[0.08em] text-foreground/70 transition-colors duration-200 hover:text-primary"
-                >
-                  Services
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/#blog"
-                  className="type-body tracking-[0.08em] text-foreground/70 transition-colors duration-200 hover:text-primary"
-                >
-                  Blog
-                </a>
-              </li>
-              <li>
-                <span className="type-body tracking-[0.08em] text-primary">About</span>
-              </li>
-            </ul>
-            <button
-              type="button"
-              onClick={openContactModal}
-              className="group type-button inline-flex cursor-pointer items-center gap-2 rounded-full bg-primary px-6 py-3 text-primary-foreground transition-colors duration-250 ease-out hover:bg-primary-hover"
-            >
-              Let's Talk
-            </button>
-          </div>
-        </nav>
-      </header>
+      <SiteHeader
+        links={[
+          { label: "Home", to: "/" },
+          { label: "Work", to: "/", hash: "work" },
+          { label: "Services", to: "/", hash: "services" },
+          { label: "Blog", to: "/", hash: "blog" },
+          { label: "About", current: true },
+        ]}
+      />
 
       <Breadcrumbs
         items={breadcrumbItems}
