@@ -947,6 +947,29 @@
     padding-bottom: 0;
   }
 
+  .cs-cover__facts {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .cs-cover__fact-item {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .cs-cover__fact-label {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+  }
+
+  .cs-cover__fact-val {
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
   .cs-cover__art {
     margin-bottom: calc(2 * clamp(96px, 12vw, 180px));
   }
