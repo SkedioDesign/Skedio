@@ -263,6 +263,21 @@ const OVERVIEW_INDEX: Array<[string, string]> = [
   ["05", "Outcome"],
 ];
 
+function ChapterNav() {
+  return (
+    <div className="cs-chapter-nav">
+      <ol className="cs-chapter-nav__list">
+        {OVERVIEW_INDEX.map(([num, label]) => (
+          <li key={num} className="cs-chapter-nav__item">
+            <span className="cs-chapter-nav__num">{num}</span>
+            <span className="cs-chapter-nav__label">{label}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
 function Overview() {
   return (
     <Section className="cs-overview" id="overview" dataChapter="01">
@@ -640,6 +655,7 @@ function CaseStudy() {
 
       {/* Case Study Editorial Sections */}
       <Cover crumbs={breadcrumbItems} />
+      <ChapterNav />
       <Overview />
       <Challenges />
       <Process />

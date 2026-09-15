@@ -356,6 +356,12 @@
   display: block;
 }
 
+/* ------------------------- Chapter Nav (Responsive) --------------------- */
+
+.cs-chapter-nav {
+  display: none;
+}
+
 /* ------------------------- Section 01: Overview ------------------------- */
 
 .cs-overview {
@@ -937,6 +943,55 @@
     padding: 16px 20px;
   }
 
+  .cs-cover {
+    padding-bottom: 0;
+  }
+
+  .cs-cover__art {
+    margin-bottom: calc(2 * clamp(96px, 12vw, 180px));
+  }
+
+  .cs-chapter-nav {
+    display: flex;
+    justify-content: center;
+    padding: 0 clamp(20px, 5vw, 48px);
+    margin: 0 0 clamp(96px, 12vw, 180px);
+  }
+
+  .cs-chapter-nav__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(16px, 3vw, 28px);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .cs-chapter-nav__item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--cs-gray-muted);
+  }
+
+  .cs-chapter-nav__num {
+    color: var(--cs-black);
+    font-weight: 800;
+  }
+
+  .cs-overview__index {
+    display: none;
+  }
+
+  .cs-sechead {
+    justify-content: flex-start;
+  }
+
   .cs-problem-words {
     flex-direction: column;
     align-items: flex-start;
@@ -954,8 +1009,13 @@
   }
 
   .cs-timeline__row {
-    grid-template-columns: 1fr;
-    gap: 8px;
+    grid-template-columns: auto 1fr;
+    gap: 12px 16px;
+    align-items: baseline;
+  }
+
+  .cs-timeline__desc {
+    grid-column: 1 / -1;
   }
 
   .cs-persona__stage {
@@ -963,8 +1023,13 @@
   }
 
   .cs-journey__row {
-    grid-template-columns: 1fr;
-    gap: 8px;
+    grid-template-columns: auto 1fr;
+    gap: 12px 16px;
+    align-items: baseline;
+  }
+
+  .cs-journey__desc {
+    grid-column: 1 / -1;
   }
 
   .cs-journey__arrow {
