@@ -1,3 +1,14 @@
+export type ProjectCategory = "UI/UX" | "Branding" | "Social Media";
+export type ProjectTagColor = "purple" | "orange" | "teal";
+export type ProjectCellSize = "hero" | "wide" | "normal";
+
+/*
+ * The single source of truth for portfolio projects. One entry per project:
+ * full case-study metadata (used by the /projects/[slug] route) plus the
+ * bento-grid fields (category, tagColor, size) the SelectedWork section
+ * renders from. `published` gates the case-study page — set false until the
+ * writeup exists so the route returns a 404 instead of a half-built page.
+ */
 export interface ProjectSummary {
   slug: string;
   name: string;
@@ -16,6 +27,10 @@ export interface ProjectSummary {
   client: string;
   summary: string;
   services: string[];
+  category: ProjectCategory;
+  tagColor: ProjectTagColor;
+  size: ProjectCellSize;
+  published: boolean;
 }
 
 export const projects: ProjectSummary[] = [
@@ -39,8 +54,56 @@ export const projects: ProjectSummary[] = [
     summary:
       "A modern taxi-bidding platform where riders compare driver bids in real time and choose the ride that best fits their budget and schedule.",
     services: ["UI/UX Design", "Brand Strategy", "Product Development"],
+    category: "UI/UX",
+    tagColor: "purple",
+    size: "hero",
+    published: true,
+  },
+  {
+    slug: "edios",
+    name: "EDIOS",
+    line: "video production studio",
+    tag: "Brand Identity, Art Direction",
+    cover: "/EDIOS/1.jpg",
+    metaTitle: "EDIOS — Video Production Studio Brand Identity | Skédio",
+    metaDescription: "Brand identity and art direction for EDIOS, a video production studio.",
+    ogImage: "/EDIOS/1.jpg",
+    themeColor: "#f97316",
+    year: "2026",
+    platform: "Brand Identity System",
+    discipline: "Branding & Identity",
+    scope: "Identity Design, Art Direction, Brand Guidelines",
+    publishedDate: "2026-02-10",
+    client: "EDIOS",
+    summary: "A bold visual identity for EDIOS, a video production studio.",
+    services: ["Brand Identity", "Art Direction"],
+    category: "Branding",
+    tagColor: "orange",
+    size: "normal",
+    published: true,
   },
 ];
+
+/* Bento grid shape used by the SelectedWork section — derived from projects. */
+export interface SelectedWorkItem {
+  slug: string;
+  title: string;
+  subtitle: string;
+  category: ProjectCategory;
+  tagColor: ProjectTagColor;
+  image: string;
+  size: ProjectCellSize;
+}
+
+export const selectedWork: SelectedWorkItem[] = projects.map((p) => ({
+  slug: p.slug,
+  title: p.name,
+  subtitle: p.line,
+  category: p.category,
+  tagColor: p.tagColor,
+  image: p.cover,
+  size: p.size,
+}));
 
 export function getProjectBySlug(slug: string): ProjectSummary | undefined {
   return projects.find((p) => p.slug === slug);

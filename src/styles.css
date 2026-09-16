@@ -583,6 +583,32 @@ img {
 }
 
 /* ------------------------------------------------------------------
+   Dual-row Client logo marquee
+   Two opposite-direction rows drifting at different linear speeds.
+   Each track carries two identical copies so a -50% translate loops
+   seamlessly; rows pause on hover/focus so logos stay readable.
+------------------------------------------------------------------- */
+.sk-logo-row {
+  overflow: hidden;
+}
+.sk-logo-track {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  will-change: transform;
+}
+.sk-logo-track--rtl {
+  animation: sk-marquee 40s linear infinite;
+}
+.sk-logo-track--ltr {
+  animation: sk-marquee 30s linear infinite reverse;
+}
+.sk-logo-row:hover .sk-logo-track,
+.sk-logo-row:focus-within .sk-logo-track {
+  animation-play-state: paused;
+}
+
+/* ------------------------------------------------------------------
    120fps Hardware-Accelerated Scroll Reveals
 ------------------------------------------------------------------- */
 .sk-reveal-base {
@@ -615,6 +641,21 @@ img {
   transform: translate3d(0, 0, 0) scale(1);
 }
 
+/* Accordion-with-preview — content fades up on service switch */
+@keyframes sk-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.sk-fade-up {
+  animation: sk-fade-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 /* Subtle magnetic / fluid card transitions */
 .sk-card-interactive {
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
@@ -635,7 +676,9 @@ img {
   .sk-rise,
   .sk-reveal,
   .sk-marquee-track,
-  .sk-reveal-base {
+  .sk-logo-track,
+  .sk-reveal-base,
+  .sk-fade-up {
     animation: none !important;
     transition: none !important;
     opacity: 1 !important;

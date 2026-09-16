@@ -7,6 +7,11 @@
   --cs-yellow: #FFC400;
   --cs-yellow-hover: #E5B000;
   --cs-yellow-subtle: #FFFBEA;
+  /* Per-project accent, set inline on .cs from projects.ts themeColor.
+     Defaults keep the HAO Cabs yellow look when no override is present. */
+  --cs-accent: var(--cs-yellow);
+  --cs-accent-hover: var(--cs-accent-hover);
+  --cs-accent-subtle: var(--cs-accent-subtle);
   --cs-black: #111111;
   --cs-dark-surface: #181818;
   --cs-dark-border: rgba(255, 255, 255, 0.12);
@@ -46,7 +51,7 @@
 }
 
 .cs-accent {
-  color: var(--cs-yellow);
+  color: var(--cs-accent);
 }
 
 .cs-kicker {
@@ -67,7 +72,7 @@
 }
 
 .cs-kicker--dark {
-  color: var(--cs-yellow);
+  color: var(--cs-accent);
 }
 
 .cs-lede {
@@ -181,7 +186,7 @@
 .cs-nav__chapter-btn.is-active {
   color: var(--cs-black);
   font-weight: 800;
-  border-bottom: 2px solid var(--cs-yellow);
+  border-bottom: 2px solid var(--cs-accent);
 }
 
 .cs-nav__link {
@@ -260,7 +265,7 @@
 }
 
 .cs-cover__word .row--accent {
-  color: var(--cs-yellow);
+  color: var(--cs-accent);
 }
 
 .cs-cover__meta-grid {
@@ -330,7 +335,7 @@
 
 .cs-cover__scroll:hover {
   transform: translateY(4px);
-  color: var(--cs-yellow-hover);
+  color: var(--cs-accent-hover);
 }
 
 .cs-cover__art {
@@ -468,7 +473,7 @@
 }
 
 .cs-problem-word:hover {
-  color: var(--cs-yellow);
+  color: var(--cs-accent);
   transform: translateY(-4px);
 }
 
@@ -623,7 +628,7 @@
 }
 
 .cs-persona--rider {
-  background: var(--cs-yellow-subtle);
+  background: var(--cs-accent-subtle);
   border: 1px solid rgba(255, 196, 0, 0.3);
 }
 
@@ -665,7 +670,7 @@
 }
 
 .cs-persona--driver .cs-persona__role {
-  color: var(--cs-yellow);
+  color: var(--cs-accent);
 }
 
 .cs-persona__grid {
@@ -738,7 +743,7 @@
 /* ------------------------- Section 05: Final Experience ------------------ */
 
 .cs-final {
-  background: var(--cs-yellow);
+  background: var(--cs-accent);
   color: var(--cs-black);
 }
 
@@ -808,7 +813,7 @@
 }
 
 .cs-journey__row:hover {
-  background: var(--cs-yellow-subtle);
+  background: var(--cs-accent-subtle);
   padding-left: 12px;
 }
 
@@ -843,7 +848,184 @@
 
 .cs-journey__row:hover .cs-journey__arrow {
   transform: translate(4px, 4px);
-  color: var(--cs-yellow-hover);
+  color: var(--cs-accent-hover);
+}
+
+/* ------------------------- Editorial Sections --------------------------- */
+
+.cs-editorial {
+  background: var(--cs-white);
+  color: var(--cs-black);
+}
+
+.cs-editorial--dark {
+  background: var(--cs-black);
+  color: var(--cs-white);
+}
+
+.cs-editorial--dark .cs-sechead {
+  border-bottom: 1px solid var(--cs-dark-border);
+}
+
+.cs-editorial--dark .cs-kicker {
+  color: var(--cs-dark-muted);
+}
+
+.cs-editorial__layout {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: clamp(36px, 6vw, 80px);
+  align-items: start;
+  margin-bottom: clamp(60px, 8vw, 96px);
+}
+
+.cs-editorial__headline {
+  font-size: clamp(2.5rem, 5.2vw, 5.25rem);
+  line-height: 0.96;
+  color: inherit;
+}
+
+.cs-editorial--dark .cs-editorial__headline {
+  color: var(--cs-white);
+}
+
+.cs-editorial__body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.cs-editorial--dark .cs-editorial__body .cs-lede {
+  color: var(--cs-dark-muted);
+}
+
+.cs-editorial__footnote {
+  color: var(--cs-black);
+  font-weight: 600;
+}
+
+.cs-editorial--dark .cs-editorial__footnote {
+  color: var(--cs-white);
+}
+
+.cs-editorial__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cs-editorial__tag {
+  font-family: var(--font-heading, "Gilroy", sans-serif);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--cs-gray-light);
+  color: var(--cs-black);
+  border: 1px solid var(--cs-gray-border);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.cs-editorial__tag:hover {
+  transform: translateY(-2px);
+  border-color: var(--cs-accent);
+}
+
+.cs-editorial--dark .cs-editorial__tag {
+  background: var(--cs-dark-surface);
+  color: var(--cs-white);
+  border-color: var(--cs-dark-border);
+}
+
+.cs-editorial__points {
+  display: flex;
+  flex-direction: column;
+  border-top: 2px solid var(--cs-black);
+}
+
+.cs-editorial--dark .cs-editorial__points {
+  border-top-color: var(--cs-white);
+}
+
+.cs-editorial__point {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--cs-gray-border);
+}
+
+.cs-editorial--dark .cs-editorial__point {
+  border-bottom-color: var(--cs-dark-border);
+}
+
+.cs-editorial__point-label {
+  font-family: var(--font-heading, "Gilroy", sans-serif);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: inherit;
+}
+
+.cs-editorial__point-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+}
+
+.cs-editorial__point-item {
+  list-style: none;
+  display: flex;
+  gap: 12px;
+  font-family: var(--font-sans, "Montserrat", sans-serif);
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--cs-gray-muted);
+}
+
+.cs-editorial--dark .cs-editorial__point-item {
+  color: var(--cs-dark-muted);
+}
+
+.cs-editorial__point-item::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  margin-top: 10px;
+  border-radius: 50%;
+  background: var(--cs-accent);
+}
+
+.cs-editorial__visual {
+  width: 100%;
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--cs-gray-light);
+  border: 1px solid var(--cs-gray-border);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
+}
+
+.cs-editorial--dark .cs-editorial__visual {
+  background: var(--cs-dark-surface);
+  border-color: var(--cs-dark-border);
+}
+
+.cs-editorial__visual img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.cs-editorial__visuals {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(16px, 2.5vw, 28px);
 }
 
 /* ------------------------- Ending Section -------------------------------- */
@@ -913,7 +1095,8 @@
   .cs-challenge__row,
   .cs-process__grid,
   .cs-personas__head,
-  .cs-final__col {
+  .cs-final__col,
+  .cs-editorial__layout {
     grid-template-columns: 1fr;
     gap: 32px;
   }
@@ -931,6 +1114,10 @@
   .cs-journey__row {
     grid-template-columns: 60px 160px 1fr 40px;
     gap: 16px;
+  }
+
+  .cs-editorial__visuals {
+    grid-template-columns: 1fr;
   }
 }
 

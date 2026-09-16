@@ -1,8 +1,14 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowDown, ArrowDownRight, ArrowLeft } from "lucide-react";
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { Fragment, type CSSProperties, type ReactNode, useEffect, useRef, useState } from "react";
 
 import { getProjectBySlug } from "@/data/projects";
+import {
+  getCaseStudy,
+  type CaseStudyDocument,
+  type CaseStudySection,
+  type ImageRef,
+} from "@/data/case-studies";
 import { seo, canonicalLink } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -13,7 +19,9 @@ import "./case-study.css";
 export const Route = createFileRoute("/projects/$slug")({
   loader: async ({ params }) => {
     const project = getProjectBySlug(params.slug);
-    if (!project) throw notFound();
+    if (!project || !project.published) throw notFound();
+    const caseStudy = getCaseStudy(params.slug);
+    if (!caseStudy) throw notFound();
     return { project, slug: params.slug };
   },
   head: ({ loaderData }) => {
@@ -76,45 +84,76 @@ function CaseStudyNotFound() {
   );
 }
 
-const ASSETS = "/HaoCabs";
-const CHAPTERS = [
-  { id: "overview", num: "01", label: "Overview" },
-  { id: "challenges", num: "02", label: "Challenges" },
-  { id: "process", num: "03", label: "Process" },
-  { id: "personas", num: "04", label: "Personas" },
-  { id: "final", num: "05", label: "Final" },
-];
+/* ------------------------- Image & Text Primitives --------------------- */
 
 function CsImage({
-  name,
-  alt,
-  width,
-  height,
+  image,
+  assets,
   className,
   loading = "lazy",
   fetchPriority,
 }: {
-  name: string;
-  alt: string;
-  width?: number;
-  height?: number;
+  image: ImageRef;
+  assets: string;
   className?: string;
   loading?: "lazy" | "eager";
   fetchPriority?: "high" | "low" | "auto";
 }) {
+  const dims =
+    image.width != null && image.height != null ? { width: image.width, height: image.height } : {};
   return (
-    <picture className="contents">
-      <source srcSet={`${ASSETS}/${name}.webp`} type="image/webp" />
-      <img
-        src={`${ASSETS}/${name}.jpg`}
-        alt={alt}
-        width={width}
-        height={height}
-        className={className}
-        loading={loading}
-        fetchPriority={fetchPriority}
-      />
-    </picture>
+    <img
+      src={`${assets}/${image.name}.jpg`}
+      alt={image.alt}
+      {...dims}
+      className={className}
+      loading={loading}
+      fetchPriority={fetchPriority}
+    />
+  );
+}
+
+/**
+ * Renders inline content markers:
+ *   "**text**"  → .cs-accent span
+ *   "##text##"  → dark-ink span
+ *   "\n"        → <br />
+ */
+function Rich({ text }: { text: string }) {
+  const parts = text.split(/(\*\*[^*]+\*\*|##[^#]+##)/g);
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (part.startsWith("##") && part.endsWith("##") && part.length > 4) {
+          return (
+            <span key={i} style={{ color: "#111111" }}>
+              {part.slice(2, -2)}
+            </span>
+          );
+        }
+        if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
+          return (
+            <span key={i} className="cs-accent">
+              {part.slice(2, -2)}
+            </span>
+          );
+        }
+        return <Fragment key={i}>{part}</Fragment>;
+      })}
+    </>
+  );
+}
+
+function RichText({ text }: { text: string }) {
+  return (
+    <>
+      {text.split("\n").map((line, i) => (
+        <Fragment key={i}>
+          {i > 0 && <br />}
+          <Rich text={line} />
+        </Fragment>
+      ))}
+    </>
   );
 }
 
@@ -194,7 +233,15 @@ function SectionHead({ kicker, children }: { kicker: string; children?: ReactNod
 
 /* ============================ EDITORIAL SECTIONS ======================= */
 
-function Cover({ crumbs }: { crumbs: BreadcrumbItem[] }) {
+function CoverSection({
+  doc,
+  section,
+  crumbs,
+}: {
+  doc: CaseStudyDocument;
+  section: Extract<CaseStudySection, { type: "cover" }>;
+  crumbs: BreadcrumbItem[];
+}) {
   const artRef = useInView<HTMLDivElement>();
 
   return (
@@ -202,36 +249,32 @@ function Cover({ crumbs }: { crumbs: BreadcrumbItem[] }) {
       <div className="cs-cover__title-wrap">
         <Breadcrumbs items={crumbs} className="cs-cover__crumbs" />
         <h1 className="cs-cover__word cs-display">
-          <span className="row">HAO</span>
-          <span className="row row--accent">CABS</span>
+          {section.wordmark.map((w, i) => (
+            <span key={i} className={`row ${w.accent ? "row--accent" : ""}`}>
+              {w.text}
+            </span>
+          ))}
         </h1>
       </div>
 
       <div className="cs-cover__meta-grid">
         <div className="cs-cover__facts">
-          <div className="cs-cover__fact-item">
-            <span className="cs-cover__fact-label">Platform</span>
-            <span className="cs-cover__fact-val">Mobile App</span>
-          </div>
-          <div className="cs-cover__fact-item">
-            <span className="cs-cover__fact-label">Discipline</span>
-            <span className="cs-cover__fact-val">Product Design</span>
-          </div>
-          <div className="cs-cover__fact-item">
-            <span className="cs-cover__fact-label">Scope</span>
-            <span className="cs-cover__fact-val">UI/UX</span>
-          </div>
-          <div className="cs-cover__fact-item">
-            <span className="cs-cover__fact-label">Year</span>
-            <span className="cs-cover__fact-val">2026</span>
-          </div>
+          {section.facts.map((f) => (
+            <div key={f.label} className="cs-cover__fact-item">
+              <span className="cs-cover__fact-label">{f.label}</span>
+              <span className="cs-cover__fact-val">{f.value}</span>
+            </div>
+          ))}
         </div>
 
         <div>
           <h2 className="cs-cover__sub">
-            A Taxi Bidding
-            <br />
-            Experience App
+            {section.subtitle.map((line, i) => (
+              <Fragment key={i}>
+                {i > 0 && <br />}
+                {line}
+              </Fragment>
+            ))}
           </h2>
           <div className="cs-cover__scroll-row">
             <a href="#overview" className="cs-cover__scroll">
@@ -244,8 +287,8 @@ function Cover({ crumbs }: { crumbs: BreadcrumbItem[] }) {
       <figure className="cs-cover__art" ref={artRef as never}>
         <div className="cs-cover__art-inner">
           <CsImage
-            name="1"
-            alt="HAO Cabs — Taxi bidding experience platform"
+            image={section.coverImage}
+            assets={doc.assets}
             loading="eager"
             fetchPriority="high"
           />
@@ -255,22 +298,14 @@ function Cover({ crumbs }: { crumbs: BreadcrumbItem[] }) {
   );
 }
 
-const OVERVIEW_INDEX: Array<[string, string]> = [
-  ["01", "Overview"],
-  ["02", "Challenge"],
-  ["03", "Approach"],
-  ["04", "Design"],
-  ["05", "Outcome"],
-];
-
-function ChapterNav() {
+function ChapterNav({ chapters }: { chapters: CaseStudyDocument["chapters"] }) {
   return (
     <div className="cs-chapter-nav">
       <ol className="cs-chapter-nav__list">
-        {OVERVIEW_INDEX.map(([num, label]) => (
-          <li key={num} className="cs-chapter-nav__item">
-            <span className="cs-chapter-nav__num">{num}</span>
-            <span className="cs-chapter-nav__label">{label}</span>
+        {chapters.map((c) => (
+          <li key={c.num} className="cs-chapter-nav__item">
+            <span className="cs-chapter-nav__num">{c.num}</span>
+            <span className="cs-chapter-nav__label">{c.label}</span>
           </li>
         ))}
       </ol>
@@ -278,15 +313,21 @@ function ChapterNav() {
   );
 }
 
-function Overview() {
+function OverviewSection({
+  doc,
+  section,
+}: {
+  doc: CaseStudyDocument;
+  section: Extract<CaseStudySection, { type: "overview" }>;
+}) {
   return (
-    <Section className="cs-overview" id="overview" dataChapter="01">
-      <SectionHead kicker="01) PROJECT OVERVIEW">
+    <Section className="cs-overview" id={section.id} dataChapter={section.num}>
+      <SectionHead kicker={section.kicker}>
         <ol className="cs-overview__index">
-          {OVERVIEW_INDEX.map(([num, label]) => (
-            <li key={num}>
-              <span>{num}</span>
-              {label}
+          {section.index.map((it) => (
+            <li key={it.num}>
+              <span>{it.num}</span>
+              {it.label}
             </li>
           ))}
         </ol>
@@ -294,238 +335,187 @@ function Overview() {
 
       <div className="cs-overview__head">
         <Reveal as="h2" className="cs-overview__headline cs-display">
-          A Smarter Way To
-          <br />
-          Book, <span className="cs-accent">Bid &amp; Ride.</span>
+          <RichText text={section.headline} />
         </Reveal>
         <Reveal as="p" className="cs-lede" delay={1}>
-          Hao Cabs is a modern taxi-bidding platform that reimagines traditional ride booking
-          through real-time driver bidding. Instead of fixed fares, riders can compare multiple
-          offers from nearby drivers and choose the ride that best fits their needs.
+          <RichText text={section.lede} />
         </Reveal>
       </div>
 
       <Reveal className="cs-overview__visual" delay={2}>
-        <CsImage
-          name="1"
-          alt="HAO Cabs product promotional visual and editorial artwork"
-          width={6000}
-          height={3375}
-        />
+        <CsImage image={section.visual} assets={doc.assets} />
       </Reveal>
     </Section>
   );
 }
 
-function Challenges() {
+function ChallengesSection({
+  doc,
+  section,
+}: {
+  doc: CaseStudyDocument;
+  section: Extract<CaseStudySection, { type: "challenge" }>;
+}) {
   return (
-    <Section className="cs-challenge" id="challenges" dataChapter="02">
-      <SectionHead kicker="02) CHALLENGES" />
+    <Section className="cs-challenge" id={section.id} dataChapter={section.num}>
+      <SectionHead kicker={section.kicker} />
       <div className="cs-challenge__row">
         <Reveal as="h2" className="cs-challenge__headline cs-display">
-          Giving Riders More Choice Without <span className="cs-accent">Adding Complexity.</span>
+          <RichText text={section.headline} />
         </Reveal>
         <Reveal as="p" className="cs-lede cs-lede--muted" delay={1}>
-          Traditional ride-booking experiences often provide limited control over pricing and ride
-          options. Hao Cabs needed a simple bidding experience that could give riders greater choice
-          while keeping the booking process fast, clear, and easy to understand.
+          <RichText text={section.lede} />
         </Reveal>
       </div>
 
       <div className="cs-problem-words">
-        <Reveal className="cs-problem-word">
-          LIMITED<strong>CONTROL</strong>
-        </Reveal>
-        <Reveal className="cs-problem-word" delay={1}>
-          FIXED<strong>FARES</strong>
-        </Reveal>
-        <Reveal className="cs-problem-word" delay={2}>
-          FEWER<strong>OPTIONS</strong>
-        </Reveal>
+        {section.problemWords.map((w, i) => (
+          <Reveal key={i} className="cs-problem-word" delay={i}>
+            {w.base}
+            <strong>{w.strong}</strong>
+          </Reveal>
+        ))}
       </div>
 
       <div className="cs-bid-stage">
-        <Reveal className="cs-phone-card cs-phone-card--offset-up">
-          <CsImage name="2" alt="Available driver bids" width={3375} height={3375} />
-        </Reveal>
-        <Reveal className="cs-phone-card" delay={1}>
-          <CsImage name="4" alt="Ride request screen" width={3375} height={3375} />
-        </Reveal>
-        <Reveal className="cs-phone-card cs-phone-card--offset-down" delay={2}>
-          <CsImage
-            name="5"
-            alt="Fare comparison and bidding interface"
-            width={3375}
-            height={3375}
-          />
-        </Reveal>
+        {section.phoneCards.map((card, i) => (
+          <Reveal
+            key={i}
+            className={`cs-phone-card ${card.offset ? `cs-phone-card--offset-${card.offset}` : ""}`}
+            delay={i % 3}
+          >
+            <CsImage image={card.image} assets={doc.assets} />
+          </Reveal>
+        ))}
       </div>
     </Section>
   );
 }
 
-const PROCESS_STEPS = [
-  ["01", "DISCOVER", "Understanding the problem"],
-  ["02", "DEFINE", "Rider & Driver journeys"],
-  ["03", "EXPLORE", "User flows & wireframes"],
-  ["04", "REFINE", "Prototypes & iterations"],
-  ["05", "DELIVER", "High-fidelity UI"],
-];
-
-function Process() {
+function ProcessSection({
+  doc,
+  section,
+}: {
+  doc: CaseStudyDocument;
+  section: Extract<CaseStudySection, { type: "process" }>;
+}) {
   return (
-    <Section className="cs-process" id="process" dataChapter="03">
-      <SectionHead kicker="03) DESIGN PROCESS" />
+    <Section className="cs-process" id={section.id} dataChapter={section.num}>
+      <SectionHead kicker={section.kicker} />
       <div className="cs-process__grid">
         <Reveal as="h2" className="cs-process__headline cs-display">
-          From Understanding The Problem To Designing The Experience.
+          <RichText text={section.headline} />
         </Reveal>
         <Reveal as="p" className="cs-lede" delay={1}>
-          The design process focused on understanding ride-booking pain points, mapping Rider and
-          Driver journeys, exploring user flows, and progressively refining the interface through
-          wireframes, prototypes, and high-fidelity UI design.
+          <RichText text={section.lede} />
         </Reveal>
       </div>
 
       <div className="cs-timeline">
-        {PROCESS_STEPS.map(([num, title, desc], idx) => (
-          <Reveal key={num} className="cs-timeline__row" delay={(idx % 3) as 1 | 2 | 3}>
-            <span className="cs-timeline__num">{num}</span>
-            <h3 className="cs-timeline__title">{title}</h3>
-            <p className="cs-timeline__desc">{desc}</p>
+        {section.steps.map((step, idx) => (
+          <Reveal key={step.num} className="cs-timeline__row" delay={(idx % 3) as 1 | 2 | 3}>
+            <span className="cs-timeline__num">{step.num}</span>
+            <h3 className="cs-timeline__title">{step.title}</h3>
+            <p className="cs-timeline__desc">{step.desc}</p>
           </Reveal>
         ))}
       </div>
 
       <Reveal className="cs-process__visual" delay={2}>
-        <CsImage
-          name="6"
-          alt="HAO Cabs design system, user flows and interface fragments"
-          width={6000}
-          height={3375}
-        />
+        <CsImage image={section.visual} assets={doc.assets} />
       </Reveal>
     </Section>
   );
 }
 
-function Personas() {
+function PersonasSection({
+  doc,
+  section,
+}: {
+  doc: CaseStudyDocument;
+  section: Extract<CaseStudySection, { type: "personas" }>;
+}) {
   return (
-    <Section className="cs-personas" id="personas" dataChapter="04">
-      <SectionHead kicker="04) USER PERSONAS" />
+    <Section className="cs-personas" id={section.id} dataChapter={section.num}>
+      <SectionHead kicker={section.kicker} />
 
       <div className="cs-personas__head">
         <Reveal as="h2" className="cs-personas__headline cs-display">
-          Designing For The People Behind Every Ride.
+          <RichText text={section.headline} />
         </Reveal>
         <Reveal as="p" className="cs-lede" delay={1}>
-          User personas helped define the needs, motivations, and pain points of Hao Cabs' target
-          users. The focus was on riders looking for affordable and reliable transportation, with
-          features such as fare comparison, live tracking, secure payments, and scheduled rides
-          supporting their everyday needs.
+          <RichText text={section.lede} />
         </Reveal>
       </div>
 
-      {/* Persona: Rider */}
-      <section className="cs-persona cs-persona--rider">
-        <div className="cs-persona__header">
-          <span className="cs-persona__name cs-display">RIDER</span>
-          <span className="cs-persona__role">The Passenger</span>
-        </div>
-        <div className="cs-persona__grid">
-          <div className="cs-persona__points">
-            <span className="cs-persona__pill">Fare comparison</span>
-            <span className="cs-persona__pill">Live tracking</span>
-            <span className="cs-persona__pill">Secure payments</span>
-            <span className="cs-persona__pill">Scheduled rides</span>
-            <span className="cs-persona__pill">Choosing a driver</span>
+      {section.personas.map((persona) => (
+        <section key={persona.title} className={`cs-persona cs-persona--${persona.variant}`}>
+          <div className="cs-persona__header">
+            {persona.variant === "rider" ? (
+              <>
+                <span className="cs-persona__name cs-display">{persona.title}</span>
+                <span className="cs-persona__role">{persona.role}</span>
+              </>
+            ) : (
+              <>
+                <span className="cs-persona__role">{persona.role}</span>
+                <span className="cs-persona__name cs-display">{persona.title}</span>
+              </>
+            )}
           </div>
-          <div className="cs-persona__stage">
-            <Reveal className="cs-persona__phone-frame">
-              <CsImage name="2" alt="Rider fare comparison" width={3375} height={3375} />
-            </Reveal>
-            <Reveal className="cs-persona__phone-frame" delay={1}>
-              <CsImage name="5" alt="Rider selecting a driver" width={3375} height={3375} />
-            </Reveal>
+          <div className="cs-persona__grid">
+            <div className="cs-persona__points">
+              {persona.pills.map((pill) => (
+                <span key={pill} className="cs-persona__pill">
+                  {pill}
+                </span>
+              ))}
+            </div>
+            <div className="cs-persona__stage">
+              {persona.phones.map((phone, i) => (
+                <Reveal key={i} className="cs-persona__phone-frame" delay={i}>
+                  <CsImage image={phone} assets={doc.assets} />
+                </Reveal>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
-
-      {/* Persona: Driver */}
-      <section className="cs-persona cs-persona--driver">
-        <div className="cs-persona__header">
-          <span className="cs-persona__role">The Driver</span>
-          <span className="cs-persona__name cs-display">DRIVER</span>
-        </div>
-        <div className="cs-persona__grid">
-          <div className="cs-persona__stage">
-            <Reveal className="cs-persona__phone-frame">
-              <CsImage name="4" alt="Driver receiving ride requests" width={3375} height={3375} />
-            </Reveal>
-            <Reveal className="cs-persona__phone-frame" delay={1}>
-              <CsImage
-                name="7"
-                alt="Driver earnings and trip management"
-                width={6000}
-                height={3375}
-              />
-            </Reveal>
-          </div>
-          <div className="cs-persona__points">
-            <span className="cs-persona__pill">Receiving ride requests</span>
-            <span className="cs-persona__pill">Submitting bids</span>
-            <span className="cs-persona__pill">Managing rides</span>
-            <span className="cs-persona__pill">Navigation &amp; earnings</span>
-          </div>
-        </div>
-      </section>
+        </section>
+      ))}
     </Section>
   );
 }
 
-const JOURNEY_STEPS = [
-  ["01", "REQUEST", "Passenger creates a ride request."],
-  ["02", "BID", "Nearby drivers submit their offers."],
-  ["03", "CHOOSE", "Passenger compares offers and selects a driver."],
-  ["04", "VERIFY", "OTP verification confirms the ride."],
-  ["05", "TRACK", "Passenger follows the ride in real time."],
-  ["06", "PAY", "Complete the payment securely."],
-  ["07", "COMPLETE", "Rate the experience and manage the trip afterward."],
-];
-
-function FinalExperience() {
+function FinalSection({
+  doc,
+  section,
+}: {
+  doc: CaseStudyDocument;
+  section: Extract<CaseStudySection, { type: "final" }>;
+}) {
   return (
-    <Section className="cs-final" id="final" dataChapter="05">
-      <SectionHead kicker="05) FINAL EXPERIENCE" />
+    <Section className="cs-final" id={section.id} dataChapter={section.num}>
+      <SectionHead kicker={section.kicker} />
       <div className="cs-final__col">
         <Reveal as="h2" className="cs-final__headline cs-display">
-          A Transparent Ride-Booking Experience, From{" "}
-          <span style={{ color: "#111111" }}>Bid To Destination.</span>
+          <RichText text={section.headline} />
         </Reveal>
         <Reveal as="p" className="cs-lede cs-final__lede" delay={1}>
-          The final experience brings together real-time bidding, driver selection, OTP
-          verification, live tracking, payments, scheduling, wallet management, and post-ride
-          feedback into a unified mobile experience for Riders and Drivers.
+          <RichText text={section.lede} />
         </Reveal>
       </div>
 
       <Reveal className="cs-final__showcase" delay={2}>
-        <CsImage
-          name="3"
-          alt="HAO Cabs final mobile application — complete unified ride experience"
-          width={3375}
-          height={3375}
-        />
+        <CsImage image={section.showcase} assets={doc.assets} />
       </Reveal>
 
       <div className="cs-journey">
-        <h3 className="cs-kicker cs-kicker--solid">Product Story &amp; Flow</h3>
+        <h3 className="cs-kicker cs-kicker--solid">{section.journeyKicker}</h3>
         <div className="cs-journey__rows">
-          {JOURNEY_STEPS.map(([num, title, desc], idx) => (
-            <Reveal key={num} className="cs-journey__row" delay={(idx % 3) as 1 | 2 | 3}>
-              <span className="cs-journey__num">{num}</span>
-              <h4 className="cs-journey__title">{title}</h4>
-              <p className="cs-journey__desc">{desc}</p>
+          {section.journey.map((step, idx) => (
+            <Reveal key={step.num} className="cs-journey__row" delay={(idx % 3) as 1 | 2 | 3}>
+              <span className="cs-journey__num">{step.num}</span>
+              <h4 className="cs-journey__title">{step.title}</h4>
+              <p className="cs-journey__desc">{step.desc}</p>
               <span className="cs-journey__arrow">
                 <ArrowDownRight size={20} />
               </span>
@@ -537,25 +527,110 @@ function FinalExperience() {
   );
 }
 
-function Ending() {
+function EditorialSectionRenderer({
+  doc,
+  section,
+}: {
+  doc: CaseStudyDocument;
+  section: Extract<CaseStudySection, { type: "editorial" }>;
+}) {
+  const theme = section.theme ?? "light";
+  return (
+    <Section
+      className={`cs-editorial cs-editorial--${theme}`}
+      id={section.id}
+      dataChapter={section.num}
+    >
+      <SectionHead kicker={section.kicker} />
+      <div className="cs-editorial__layout">
+        {section.headline && (
+          <Reveal as="h2" className="cs-editorial__headline cs-display">
+            <RichText text={section.headline} />
+          </Reveal>
+        )}
+        <div className="cs-editorial__body">
+          {section.lede?.map((p, i) => (
+            <Reveal key={i} as="p" className="cs-lede" delay={(i % 3) as 1 | 2 | 3}>
+              <RichText text={p} />
+            </Reveal>
+          ))}
+
+          {section.tags && section.tags.length > 0 && (
+            <Reveal className="cs-editorial__tags" delay={(section.lede?.length ?? 1) % 3}>
+              {section.tags.map((tag) => (
+                <span key={tag} className="cs-editorial__tag">
+                  {tag}
+                </span>
+              ))}
+            </Reveal>
+          )}
+
+          {section.points && section.points.length > 0 && (
+            <Reveal className="cs-editorial__points">
+              {section.points.map((point, i) => (
+                <article key={i} className="cs-editorial__point">
+                  {point.label && <h3 className="cs-editorial__point-label">{point.label}</h3>}
+                  <ul className="cs-editorial__point-items">
+                    {point.items?.map((item, j) => (
+                      <li key={j} className="cs-editorial__point-item">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
+            </Reveal>
+          )}
+
+          {section.footnote && (
+            <Reveal as="p" className="cs-lede cs-editorial__footnote">
+              {section.footnote}
+            </Reveal>
+          )}
+        </div>
+      </div>
+
+      {section.visual && (
+        <Reveal className="cs-editorial__visual" delay={2}>
+          <CsImage image={section.visual} assets={doc.assets} />
+        </Reveal>
+      )}
+
+      {section.visuals && section.visuals.length > 0 && (
+        <div className="cs-editorial__visuals">
+          {section.visuals.map((v, i) => (
+            <Reveal key={i} className="cs-editorial__visual" delay={i % 3}>
+              <CsImage image={v} assets={doc.assets} />
+            </Reveal>
+          ))}
+        </div>
+      )}
+    </Section>
+  );
+}
+
+function EndingSection({
+  doc,
+  section,
+}: {
+  doc: CaseStudyDocument;
+  section: Extract<CaseStudySection, { type: "ending" }>;
+}) {
   return (
     <footer className="cs-end">
       <div className="cs-end__inner">
-        <h2 className="cs-end__word cs-display">HAO CABS</h2>
+        <h2 className="cs-end__word cs-display">{section.word}</h2>
         <div className="cs-end__tag cs-display">
-          <span>BID. </span>
-          <span className="cs-accent">CHOOSE. </span>
-          <span>RIDE.</span>
+          {section.tag.map((t, i) => (
+            <span key={i} className={t.accent ? "cs-accent" : ""}>
+              {t.text}
+            </span>
+          ))}
         </div>
         <Reveal className="cs-end__visual">
-          <CsImage
-            name="1"
-            alt="HAO Cabs final brand statement artwork"
-            width={6000}
-            height={3375}
-          />
+          <CsImage image={section.visual} assets={doc.assets} />
         </Reveal>
-        <p className="cs-end__foot">End of case study — Skédio</p>
+        <p className="cs-end__foot">{section.foot}</p>
       </div>
     </footer>
   );
@@ -563,14 +638,33 @@ function Ending() {
 
 /* ============================ MAIN ROUTE PAGE ========================== */
 
+function SectionRenderer({ doc, section }: { doc: CaseStudyDocument; section: CaseStudySection }) {
+  switch (section.type) {
+    case "overview":
+      return <OverviewSection doc={doc} section={section} />;
+    case "challenge":
+      return <ChallengesSection doc={doc} section={section} />;
+    case "process":
+      return <ProcessSection doc={doc} section={section} />;
+    case "personas":
+      return <PersonasSection doc={doc} section={section} />;
+    case "final":
+      return <FinalSection doc={doc} section={section} />;
+    case "editorial":
+      return <EditorialSectionRenderer doc={doc} section={section} />;
+    default:
+      return null;
+  }
+}
+
 function CaseStudy() {
   const { project, slug } = Route.useLoaderData();
+  const doc = getCaseStudy(slug)!;
 
   const [activeChapter, setActiveChapter] = useState("01");
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
-    if (slug !== "haocabs") return;
     const sections = [...document.querySelectorAll<HTMLElement>("[data-chapter]")];
     const observer = new IntersectionObserver(
       (entries) => {
@@ -588,7 +682,6 @@ function CaseStudy() {
   }, [slug]);
 
   useEffect(() => {
-    if (slug !== "haocabs") return;
     const onScroll = () => setIsScrolled(window.scrollY > 50);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -596,7 +689,6 @@ function CaseStudy() {
   }, [slug]);
 
   useEffect(() => {
-    if (slug !== "haocabs") return;
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [slug]);
 
@@ -624,8 +716,29 @@ function CaseStudy() {
   ];
   const breadcrumbSchema = getBreadcrumbSchema(breadcrumbItems);
 
+  const coverSection = doc.sections.find(
+    (s): s is Extract<CaseStudySection, { type: "cover" }> => s.type === "cover",
+  );
+  const endingSection = doc.sections.find(
+    (s): s is Extract<CaseStudySection, { type: "ending" }> => s.type === "ending",
+  );
+  const bodySections = doc.sections.filter(
+    (s): s is Exclude<CaseStudySection, { type: "cover" } | { type: "ending" }> =>
+      s.type !== "cover" && s.type !== "ending",
+  );
+
   return (
-    <main id="main-content" className="cs">
+    <main
+      id="main-content"
+      className="cs"
+      style={
+        {
+          "--cs-accent": project.themeColor,
+          "--cs-accent-hover": `color-mix(in srgb, ${project.themeColor} 82%, #000000)`,
+          "--cs-accent-subtle": `color-mix(in srgb, ${project.themeColor} 11%, #ffffff)`,
+        } as CSSProperties
+      }
+    >
       <StructuredData data={[creativeWorkSchema, breadcrumbSchema]} />
       {/* Minimal Sticky Navigation */}
       <nav
@@ -633,10 +746,10 @@ function CaseStudy() {
         aria-label="Case study navigation"
       >
         <Link to="/" className="cs-nav__brand">
-          HAO CABS
+          {doc.brand}
         </Link>
         <div className="cs-nav__chapters" aria-label="Chapter progress">
-          {CHAPTERS.map((c) => (
+          {doc.chapters.map((c) => (
             <button
               key={c.num}
               type="button"
@@ -654,14 +767,12 @@ function CaseStudy() {
       </nav>
 
       {/* Case Study Editorial Sections */}
-      <Cover crumbs={breadcrumbItems} />
-      <ChapterNav />
-      <Overview />
-      <Challenges />
-      <Process />
-      <Personas />
-      <FinalExperience />
-      <Ending />
+      {coverSection && <CoverSection doc={doc} section={coverSection} crumbs={breadcrumbItems} />}
+      <ChapterNav chapters={doc.chapters} />
+      {bodySections.map((section) => (
+        <SectionRenderer key={`${section.type}-${section.id}`} doc={doc} section={section} />
+      ))}
+      {endingSection && <EndingSection doc={doc} section={endingSection} />}
     </main>
   );
 }
