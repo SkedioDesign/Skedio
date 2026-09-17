@@ -99,7 +99,7 @@ function ListEntry({ post, index }: { post: BlogPost; index: string }) {
 
 export function BlogPreview() {
   return (
-    <section id="blog" className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 pb-28 lg:pb-36">
+    <section id="blog" className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 pb-20 lg:pb-24">
       <ScrollReveal>
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>

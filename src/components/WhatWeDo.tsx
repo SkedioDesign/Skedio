@@ -221,7 +221,7 @@ export function WhatWeDo() {
   return (
     <section
       id="services"
-      className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 pt-12 pb-24 lg:py-28"
+      className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 pt-20 pb-20 lg:pt-24 lg:pb-24"
     >
       <ScrollReveal>
         <p className="eyebrow">What we do</p>

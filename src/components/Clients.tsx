@@ -70,7 +70,7 @@ export function Clients() {
   return (
     <section
       id="clients"
-      className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 py-24 lg:py-28"
+      className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 pb-20 lg:pb-24"
     >
       <div className="lg:grid lg:grid-cols-5 lg:items-center lg:gap-[4.5rem]">
         <ScrollReveal className="lg:col-span-2">

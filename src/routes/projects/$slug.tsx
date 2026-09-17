@@ -1,5 +1,8 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowDown, ArrowDownRight, ArrowLeft } from "lucide-react";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Fragment, type CSSProperties, type ReactNode, useEffect, useRef, useState } from "react";
 
 import { getProjectBySlug } from "@/data/projects";
@@ -15,6 +18,8 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { getCreativeWorkSchema, getBreadcrumbSchema, type BreadcrumbItem } from "@/lib/schema";
 
 import "./case-study.css";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export const Route = createFileRoute("/projects/$slug")({
   loader: async ({ params }) => {
@@ -161,27 +166,24 @@ function RichText({ text }: { text: string }) {
 
 function useInView<T extends HTMLElement>(options?: IntersectionObserverInit) {
   const ref = useRef<T | null>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
-      el.classList.add("is-inview");
-      return;
-    }
-    const io = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (entry && entry.isIntersecting) {
-          el.classList.add("is-inview");
-          io.disconnect();
-        }
-      },
-      { threshold: 0.15, rootMargin: "0px 0px -6% 0px", ...options },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [options]);
+  useGSAP(
+    () => {
+      const el = ref.current;
+      if (!el) return;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce) {
+        el.classList.add("is-inview");
+        return;
+      }
+      ScrollTrigger.create({
+        trigger: el,
+        start: "top 90%",
+        once: true,
+        onEnter: () => el.classList.add("is-inview"),
+      });
+    },
+    { scope: ref, dependencies: [options] },
+  );
   return ref;
 }
 

@@ -18,6 +18,7 @@ const filters: Array<{ label: string; value: WorkFilter }> = [
   { label: "UI/UX", value: "UI/UX" },
   { label: "Branding", value: "Branding" },
   { label: "Social Media", value: "Social Media" },
+  { label: "Development", value: "Development" },
 ];
 
 const filterDotColors: Record<WorkFilter, string> = {
@@ -25,6 +26,7 @@ const filterDotColors: Record<WorkFilter, string> = {
   "UI/UX": "bg-primary",
   Branding: "bg-[#f97316]",
   "Social Media": "bg-[#0d9488]",
+  Development: "bg-[#2563eb]",
 };
 
 const tagColors: Record<ProjectTagColor, string> = {
@@ -34,16 +36,12 @@ const tagColors: Record<ProjectTagColor, string> = {
 };
 
 const sizeClasses: Record<ProjectCellSize, string> = {
-  hero: "aspect-[3/4] md:col-span-2 md:row-span-2 md:aspect-auto",
-  wide: "aspect-[16/9] md:col-span-2 md:aspect-auto",
+  hero: "col-span-2 aspect-[16/9] sm:aspect-[21/9] md:col-span-2 md:row-span-2 md:aspect-auto",
+  wide: "col-span-2 aspect-[16/9] sm:aspect-[21/9] md:col-span-2 md:aspect-auto",
   normal: "aspect-[4/3] md:aspect-auto",
 };
 
-const showsButton: Record<ProjectCellSize, boolean> = {
-  hero: true,
-  wide: true,
-  normal: false,
-};
+const isCompactSize = (size: ProjectCellSize) => size === "normal";
 
 const MORPH_MS = 480;
 const EXIT_MS = 340;
@@ -62,6 +60,12 @@ function ProjectCard({
   registerRef?: RegisterRef;
 }) {
   const isBillboard = layout === "billboard";
+  const isCompact = !isBillboard && isCompactSize(project.size);
+  const bottomClasses = isCompact
+    ? "justify-end p-4 md:justify-between md:p-7"
+    : isBillboard
+      ? "justify-between p-8 md:p-12"
+      : "justify-between p-5 md:p-7";
   return (
     <ScrollReveal
       key={project.slug}
@@ -89,12 +93,8 @@ function ProjectCard({
           {project.category}
         </span>
 
-        <div
-          className={`absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 ${
-            isBillboard ? "p-8 md:p-12" : "p-5 md:p-7"
-          }`}
-        >
-          <div className="min-w-0">
+        <div className={`absolute inset-x-0 bottom-0 flex items-end gap-4 ${bottomClasses}`}>
+          <div className={cn("min-w-0", isCompact && "hidden md:block")}>
             <h3
               className={`font-display font-extrabold leading-none text-white ${
                 isBillboard ? "text-2xl sm:text-4xl" : "text-xl md:text-2xl"
@@ -111,15 +111,23 @@ function ProjectCard({
             </p>
           </div>
 
-          {(isBillboard || showsButton[project.size]) && (
-            <span className="flex shrink-0 items-center gap-2 rounded-full bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-white transition-colors duration-200 ease-out group-hover:bg-primary-hover">
-              View Project
-              <ArrowUpRight
-                size={14}
-                className="transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-              />
-            </span>
-          )}
+          <span className="hidden shrink-0 items-center gap-2 rounded-full bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-white opacity-0 transition duration-200 ease-out group-hover:bg-primary-hover group-hover:opacity-100 md:inline-flex">
+            View Project
+            <ArrowUpRight
+              size={14}
+              className="transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            />
+          </span>
+
+          <span
+            aria-hidden="true"
+            className="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-white transition-colors duration-200 ease-out group-hover:bg-primary-hover md:hidden"
+          >
+            <ArrowUpRight
+              size={14}
+              className="transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            />
+          </span>
         </div>
       </Link>
     </ScrollReveal>
@@ -222,7 +230,7 @@ export function SelectedWork() {
   }, [filter]);
 
   return (
-    <section id="work" className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 pb-24 lg:pb-28">
+    <section id="work" className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 pb-20 lg:pb-24">
       <ScrollReveal>
         <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-6">
           <div>
@@ -233,7 +241,7 @@ export function SelectedWork() {
           </div>
 
           <div
-            className="flex flex-wrap items-center gap-2"
+            className="flex max-w-full flex-nowrap items-center gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] sm:gap-2 [&::-webkit-scrollbar]:hidden"
             role="group"
             aria-label="Filter projects by category"
           >
@@ -244,7 +252,7 @@ export function SelectedWork() {
                 onClick={() => handleFilter(f.value)}
                 aria-pressed={filter === f.value}
                 className={cn(
-                  "inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors duration-200",
+                  "inline-flex shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors duration-200 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm",
                   filter === f.value
                     ? "border-primary bg-primary text-primary-foreground"
                     : "border-border bg-surface text-foreground/70 hover:border-primary/50 hover:text-primary",
@@ -253,7 +261,7 @@ export function SelectedWork() {
                 <span
                   aria-hidden="true"
                   className={cn(
-                    "size-2 rounded-full transition-colors duration-200",
+                    "size-1.5 rounded-full transition-colors duration-200 sm:size-2",
                     filter === f.value ? "bg-white" : filterDotColors[f.value],
                   )}
                 />
@@ -277,7 +285,7 @@ export function SelectedWork() {
             registerRef={registerRef}
           />
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 md:auto-rows-[15rem] md:grid-flow-dense lg:grid-cols-4 lg:auto-rows-[17rem]">
+          <div className="grid grid-cols-2 gap-4 sm:gap-5 md:auto-rows-[15rem] md:grid-flow-dense lg:grid-cols-4 lg:auto-rows-[17rem]">
             {visible.map((project, index) => (
               <ProjectCard
                 key={project.slug}

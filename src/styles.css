@@ -527,33 +527,15 @@ img {
 
 /* ------------------------------------------------------------------
    One authored moment: hero entrance (respects reduced motion)
-------------------------------------------------------------------- */
-@keyframes sk-rise {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+   Initial hidden state — GSAP (SplitText + timeline) animates it in.
+   ------------------------------------------------------------------- */
+.sk-hero-start {
+  opacity: 0;
 }
-@keyframes sk-reveal {
-  from {
-    opacity: 0;
-    clip-path: inset(6% 4% 6% 4% round 1rem);
-  }
-  to {
-    opacity: 1;
-    clip-path: inset(0 0 0 0 round 1rem);
-  }
-}
-.sk-rise {
-  animation: sk-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-.sk-reveal {
-  animation: sk-reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
-}
+
+/* ------------------------------------------------------------------
+   Marquee (partner logos)
+------------------------------------------------------------------ */
 @keyframes sk-marquee {
   from {
     transform: translate3d(0, 0, 0);
@@ -617,32 +599,6 @@ img {
 ------------------------------------------------------------------- */
 .sk-reveal-base {
   opacity: 0;
-  will-change: opacity, transform;
-  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-.sk-reveal-up {
-  transform: translate3d(0, 32px, 0);
-}
-
-.sk-reveal-left {
-  transform: translate3d(-32px, 0, 0);
-}
-
-.sk-reveal-right {
-  transform: translate3d(32px, 0, 0);
-}
-
-.sk-reveal-fade {
-  transform: translate3d(0, 0, 0) scale(0.97);
-}
-
-.sk-reveal-base.sk-revealed {
-  opacity: 1;
-  transform: translate3d(0, 0, 0) scale(1);
 }
 
 /* Accordion-with-preview — content fades up on service switch */
@@ -741,8 +697,7 @@ img {
   html {
     scroll-behavior: auto;
   }
-  .sk-rise,
-  .sk-reveal,
+  .sk-hero-start,
   .sk-marquee-track,
   .sk-logo-track,
   .sk-reveal-base,

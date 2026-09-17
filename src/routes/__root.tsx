@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import {
   HeadContent,
   Outlet,
@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-router";
 import appCss from "../styles.css?url";
 import { Footer } from "../components/Footer";
-import { smoothScroll } from "../lib/smooth-scroll";
+import { LenisProvider } from "../components/LenisProvider";
 import { ContactModalProvider } from "../context/contact-modal-context";
 import { ContactModal } from "../components/ContactModal";
 import { StructuredData } from "../components/StructuredData";
@@ -64,20 +64,17 @@ export const Route = createRootRoute({
 function RootComponent() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
-  useEffect(() => {
-    smoothScroll.init();
-    return () => smoothScroll.destroy();
-  }, []);
-
   return (
-    <RootDocument>
-      <ContactModalProvider>
-        <Outlet />
-        <ContactModal />
-        {!pathname.startsWith("/projects") && <Footer />}
-        <CookieConsent />
-      </ContactModalProvider>
-    </RootDocument>
+    <LenisProvider>
+      <RootDocument>
+        <ContactModalProvider>
+          <Outlet />
+          <ContactModal />
+          {!pathname.startsWith("/projects") && <Footer />}
+          <CookieConsent />
+        </ContactModalProvider>
+      </RootDocument>
+    </LenisProvider>
   );
 }
 

@@ -1,4 +1,4 @@
-export type ProjectCategory = "UI/UX" | "Branding" | "Social Media";
+export type ProjectCategory = "UI/UX" | "Branding" | "Social Media" | "Development";
 export type ProjectTagColor = "purple" | "orange" | "teal";
 export type ProjectCellSize = "hero" | "wide" | "normal";
 

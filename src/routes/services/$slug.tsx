@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, ArrowUpRight, CheckCircle2, HelpCircle } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 
 import { getServiceBySlug, servicesData } from "@/data/services";
@@ -14,6 +14,7 @@ import {
 import { useContactModal } from "@/context/contact-modal-context";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { FaqItem } from "@/components/FaqAccordion";
 
 export const Route = createFileRoute("/services/$slug")({
   loader: async ({ params }) => {
@@ -236,35 +237,15 @@ function ServiceDetail() {
           </div>
 
           <div className="mt-12 space-y-4">
-            {service.faqs.map((faq, index) => {
-              const isOpen = openFaq === index;
-              return (
-                <div
-                  key={faq.question}
-                  className="rounded-xl border border-border bg-card overflow-hidden transition-colors"
-                >
-                  <button
-                    type="button"
-                    onClick={() => setOpenFaq(isOpen ? null : index)}
-                    className="flex w-full items-center justify-between p-6 text-left font-semibold text-foreground cursor-pointer"
-                    aria-expanded={isOpen}
-                  >
-                    <span className="flex items-center gap-3 pr-4">
-                      <HelpCircle className="size-5 text-primary shrink-0" />
-                      {faq.question}
-                    </span>
-                    <span className="text-xl leading-none text-muted-foreground">
-                      {isOpen ? "−" : "+"}
-                    </span>
-                  </button>
-                  {isOpen && (
-                    <div className="border-t border-border px-6 pt-4 pb-6 text-muted-foreground leading-relaxed">
-                      {faq.answer}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            {service.faqs.map((faq, index) => (
+              <FaqItem
+                key={faq.question}
+                question={faq.question}
+                answer={faq.answer}
+                isOpen={openFaq === index}
+                onToggle={() => setOpenFaq(openFaq === index ? null : index)}
+              />
+            ))}
           </div>
         </div>
       </section>
