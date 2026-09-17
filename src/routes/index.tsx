@@ -157,16 +157,16 @@ function Index() {
                   {partnerLogos.map((item, i) => (
                     <div
                       key={`${item.id}-${i}`}
-                      className="flex h-auto shrink-0 items-center justify-center px-2 py-2"
+                      className="flex h-10 w-36 shrink-0 items-center justify-center"
                     >
                       {item.img ? (
                         <img
                           src={item.img}
                           alt={item.label}
-                          className="h-18 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300"
+                          className="h-full w-full object-contain grayscale transition-all duration-300 hover:grayscale-0"
                         />
                       ) : (
-                        <span className="whitespace-nowrap font-display text-2xl font-bold tracking-tight text-foreground/50 transition-colors duration-300 hover:text-foreground">
+                        <span className="whitespace-nowrap text-center font-display text-[0.8125rem] font-bold tracking-tight text-foreground/50 transition-colors duration-300 hover:text-foreground">
                           {item.label}
                         </span>
                       )}
