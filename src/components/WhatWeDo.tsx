@@ -5,20 +5,15 @@ import { cn } from "@/lib/utils";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { servicesData } from "@/data/services";
 
-import svcStrategy from "@/assets/svc-strategy.jpg";
-import svcIdentity from "@/assets/svc-identity.jpg";
-import svcUiux from "@/assets/svc-uiux.jpg";
-import svcDesign from "@/assets/svc-design.jpg";
-
 const svcImages: Record<string, string> = {
-  "brand-strategy": svcStrategy,
-  "brand-identity": svcIdentity,
-  "ui-ux-design": svcUiux,
-  "product-development": svcDesign,
+  "product-design": "/ProductDesign.png",
+  "brand-identity": "/BrandIdentity.png",
+  "ui-ux-design": "/VisualIdentity.png",
+  "product-development": "/ProductDevelopment.png",
 };
 
 const accentColors: Record<string, string> = {
-  "brand-strategy": "#8537f4",
+  "product-design": "#8537f4",
   "brand-identity": "#7c3aed",
   "ui-ux-design": "#f97316",
   "product-development": "#0d9488",
@@ -46,10 +41,10 @@ const services: WhatWeDoItem[] = servicesData
 
 const DEFAULT_SERVICE: WhatWeDoItem = {
   index: "01",
-  slug: "brand-strategy",
-  title: "Brand Strategy",
-  description: "Positioning and strategy that give a brand real direction, not just a look.",
-  image: svcStrategy,
+  slug: "product-design",
+  title: "Product Design",
+  description: "Products that feel inevitable — shaped by strategy, research, and tested flows.",
+  image: "/ProductDesign.png",
   accentColor: "#8537f4",
 };
 

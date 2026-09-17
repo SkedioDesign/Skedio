@@ -54,7 +54,7 @@ function InsightsList() {
           <p className="eyebrow">Studio Journal</p>
           <h1 className="type-h1 mt-4">Insights &amp; Perspectives</h1>
           <p className="mt-6 text-lg text-muted-foreground">
-            Thoughtful analyses, tactical breakdowns, and design philosophies on brand strategy,
+            Thoughtful analyses, tactical breakdowns, and design philosophies on product design,
             user experience, and modern web architecture.
           </p>
         </div>

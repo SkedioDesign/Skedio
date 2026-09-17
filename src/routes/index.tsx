@@ -20,7 +20,7 @@ import hero from "@/assets/hero.png";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: seo({
-      title: "Skédio — Brand Strategy, Identity & Digital Product Design Studio",
+      title: "Skédio — Product Design, Identity & Digital Studio",
       description:
         "Skédio is a creative studio crafting bold brands, beautiful digital experiences, and high-performance digital products that help businesses grow.",
       url: "/",
@@ -182,7 +182,7 @@ function Index() {
         <div className="mt-10 lg:hidden">
           <img
             src={hero}
-            alt="Skédio design studio hero showcase — bold brand strategy and product design"
+            alt="Skédio design studio hero showcase — bold brand identity and product design"
             fetchPriority="high"
             loading="eager"
             width={1440}
@@ -222,7 +222,7 @@ function Index() {
       <section className="mx-auto hidden w-full max-w-[1440px] px-6 md:px-12 lg:block">
         <img
           src={hero}
-          alt="Skédio design studio hero showcase — bold brand strategy and product design"
+          alt="Skédio design studio hero showcase — bold brand identity and product design"
           fetchPriority="high"
           loading="eager"
           width={1440}

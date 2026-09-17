@@ -16,85 +16,85 @@ export interface ServiceItem {
 
 export const servicesData: ServiceItem[] = [
   {
-    slug: "brand-strategy",
-    title: "Brand Strategy & Positioning Services",
-    shortTitle: "Brand Strategy",
-    tagline: "Positioning and strategy that give a brand real direction, not just a look.",
+    slug: "product-design",
+    title: "Product Design & UX Strategy Services",
+    shortTitle: "Product Design",
+    tagline: "Products that feel inevitable — shaped by strategy, research, and tested flows.",
     definition:
-      "Brand strategy is the foundational process of defining a business's core positioning, audience segments, competitive advantage, and narrative architecture. Skédio's brand strategy engagements deliver market clarity, positioning frameworks, and actionable roadmaps that guide visual design and product growth.",
-    metaTitle: "Brand Strategy & Positioning Agency | Skédio",
+      "Product design is the end-to-end discipline of turning a business problem into a digital experience people actually want to use. Skédio's product design engagements span discovery research, product strategy, information architecture, interaction design, interactive prototyping, and usability testing — delivering validated, launch-ready product experiences.",
+    metaTitle: "Product Design & UX Strategy Agency | Skédio",
     metaDescription:
-      "Craft high-impact brand positioning, audience frameworks, and market narratives. Skédio helps ambitious startups and enterprises define their competitive edge.",
+      "Take digital products from idea to validated experience. Skédio pairs strategy, user research, and interaction design to craft products people love to use.",
     ogImage: "/og-default.png",
     themeColor: "#8537F4",
     deliverables: [
-      "Market & Competitor Positioning Matrix",
-      "Target Audience & Persona Mapping",
-      "Brand Archetype, Voice & Tone Guidelines",
-      "Core Value Proposition & Messaging Framework",
-      "Brand Architecture & Go-to-Market Narrative",
+      "Product Discovery & UX Research Sprints",
+      "Product Strategy, Journeys & Information Architecture",
+      "Interactive Prototypes & Usability Testing",
+      "Interaction Design & Motion Guidelines",
+      "Scalable Product Design Systems & Handoff",
     ],
     process: [
       {
         step: "01",
-        title: "Discovery & Stakeholder Interviews",
+        title: "Discovery & User Research",
         description:
-          "We audit your current brand equity, interview leadership, and map market opportunities to uncover untapped positioning whitespace.",
+          "We audit your current product, interview stakeholders and real users, and map behavior to the problems actually worth solving.",
       },
       {
         step: "02",
-        title: "Positioning & Value Architecture",
+        title: "Product Strategy & Experience Architecture",
         description:
-          "We formulate your strategic wedge — clarifying who you serve, what problem you solve uniquely, and why customers choose you.",
+          "We define what the product must do, map core journeys, and architect the flows and information that make it feel effortless.",
       },
       {
         step: "03",
-        title: "Narrative & Messaging Guide",
+        title: "Prototyping & Iterative Testing",
         description:
-          "We translate strategic positioning into clear copywriting guidelines, one-liners, pitch narratives, and brand taglines.",
+          "We turn flows into interactive prototypes and validate them with users, iterating until the experience proves itself.",
       },
       {
         step: "04",
-        title: "Execution Roadmap",
+        title: "Interaction Systems & Handoff",
         description:
-          "We deliver a clear implementation plan bridging strategy to visual identity, website copy, product UX, and marketing channels.",
+          "We deliver a reusable product design system — tokens, components, interaction states — and align with engineers for a faithful build.",
       },
     ],
     targetAudience: [
-      "Early-stage startups launching their first commercial product",
-      "Scaling companies repositioning for enterprise or international expansion",
-      "Established brands undergoing transformation or market expansion",
+      "Startups shaping a new product before a single line of code",
+      "Teams redesigning complex workflows that stall adoption",
+      "Companies wanting one partner from product strategy to launch-ready design",
     ],
     faqs: [
       {
-        question: "What is included in a brand strategy engagement?",
+        question: "What is included in a product design engagement?",
         answer:
-          "A brand strategy engagement at Skédio includes market research, competitor audits, audience persona formulation, core positioning pillars, voice/tone guidelines, and a complete messaging architecture playbook.",
+          "A product design engagement at Skédio includes discovery research, product strategy, journey mapping, information architecture, interactive prototypes, usability testing, and a production-ready design system.",
       },
       {
-        question: "How long does a brand strategy project take?",
+        question: "How long does a product design project take?",
         answer:
-          "A typical brand strategy project takes 2 to 4 weeks depending on company complexity and stakeholder availability.",
+          "A scoped product design engagement typically takes 4 to 8 weeks depending on product complexity and the number of flows being reworked.",
       },
       {
-        question: "How does brand strategy differ from visual brand identity?",
+        question: "How does product design differ from UI/UX design?",
         answer:
-          "Brand strategy defines 'why' you exist, 'who' you serve, and 'what' you say. Visual brand identity translates that strategic foundation into logos, typography, color palettes, and graphic systems.",
+          "Product design owns the strategic layer — research, product thinking, information architecture, prototyping, and validation — that decides what to build and why. UI/UX design crafts the polished interface itself. We often run the two as one continuous engagement.",
       },
       {
-        question: "Can we do brand strategy before we have customers or traction?",
+        question: "Can we start product design before we have a product or customers?",
         answer:
-          "Yes. Most of our strategy work happens pre-traction: we help founders sharpen positioning, validate audience hypotheses, and build messaging frameworks that make the go-to-market sharper. The frameworks are built to be tested against real customers and iterated as you learn.",
+          "Yes. Most of our product design work happens pre-launch: we help founders define the product, pressure-test assumptions with lightweight research, and ship a prototype ready for real users.",
       },
       {
-        question: "How do you position a brand in a crowded or commoditized market?",
+        question: "How do you design a product in a crowded or commoditized market?",
         answer:
-          "Through a structured competitor audit, we map where every meaningful player sits, then find the differentiation wedge your category leaves open. We turn that into a positioning built on your specific strength for a specific audience, rather than generic 'best-in-class' claims.",
+          "Through user research and competitor teardowns, we map where meaningful players fall short, then design the experience wedge your category leaves open — built around a specific job for a specific audience rather than generic 'best-in-class' claims.",
       },
       {
-        question: "Do strategy recommendations come with an execution roadmap?",
+        question: "Do product design recommendations come with an execution roadmap?",
         answer:
-          "Yes. Every engagement ends with a clear roadmap that sequences strategy into visual identity, website copy, product UX, and marketing channels. We can also execute the adjoining work ourselves if you want a single partner from strategy to launch.",
+          "Yes. Every engagement ends with a clear roadmap that sequences strategy into interface design, development, and launch. We can execute the adjoining work as well if you want a single partner from strategy to shipped product.",
       },
     ],
   },
@@ -123,7 +123,7 @@ export const servicesData: ServiceItem[] = [
         step: "01",
         title: "Moodboarding & Visual Direction",
         description:
-          "We explore 2–3 distinct creative directions rooted in your brand strategy, presenting moodboards and style tiles.",
+          "We explore 2–3 distinct creative directions rooted in your strategic direction, presenting moodboards and style tiles.",
       },
       {
         step: "02",
@@ -185,11 +185,11 @@ export const servicesData: ServiceItem[] = [
   {
     slug: "ui-ux-design",
     title: "UI/UX & Digital Product Design Agency",
-    shortTitle: "UI/UX Design",
+    shortTitle: "Visual Design",
     tagline: "Digital experiences built to be intuitive first, beautiful second.",
     definition:
       "UI/UX design is the discipline of researching user behaviors, structuring information architecture, and creating intuitive, aesthetically refined interfaces for web and mobile software. Skédio delivers research-backed user flows, wireframes, interactive prototypes, and production-ready design systems.",
-    metaTitle: "UI/UX Design Agency | Web & Mobile Product Design | Skédio",
+    metaTitle: "Visual Design Agency | Web & Mobile Product Design | Skédio",
     metaDescription:
       "Transform complex digital products into intuitive, high-converting web and mobile experiences. Explore Skédio's user-centric UI/UX design services.",
     ogImage: "/og-default.png",

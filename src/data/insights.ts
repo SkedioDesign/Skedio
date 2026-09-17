@@ -33,8 +33,8 @@ export const insightsArticles: InsightArticle[] = [
       role: "Founder, Skédio",
       avatar: "/aakash.jpeg",
     },
-    tags: ["Brand Strategy", "AI", "Design Trends"],
-    relatedServiceSlug: "brand-strategy",
+    tags: ["Product Design", "AI", "Design Trends"],
+    relatedServiceSlug: "product-design",
     content: [
       {
         heading: "The Commoditization of the Generic",
@@ -46,7 +46,7 @@ export const insightsArticles: InsightArticle[] = [
       {
         heading: "Positioning as a Filter, Not Just a Net",
         paragraphs: [
-          "Effective brand positioning isn't about appealing to everyone; it's about being undeniably compelling to your ideal customer while deliberately filtering out the rest. When Skédio works with founders on brand strategy, we focus on identifying the non-negotiable belief that sets the company apart from competitors.",
+          "Effective brand positioning isn't about appealing to everyone; it's about being undeniably compelling to your ideal customer while deliberately filtering out the rest. When Skédio works with founders to define their position in the market, we focus on identifying the non-negotiable belief that sets the company apart from competitors.",
           "When your positioning is sharp, visual identity decisions become straightforward. Color choices, typography pairings, and micro-copy are all grounded in an authentic strategic narrative rather than transient design fads.",
         ],
       },

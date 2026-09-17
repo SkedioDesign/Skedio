@@ -6,7 +6,7 @@
 - [About Skédio](https://skedio.studio/about): Meet the team, leadership, and craft philosophy behind Skédio.
 
 ## Core Services
-- [Brand Strategy & Positioning](https://skedio.studio/services/brand-strategy): Market positioning, audience persona mapping, value proposition frameworks, and competitive differentiation.
+- [Product Design](https://skedio.studio/services/product-design): User research, UX strategy, interaction design, prototyping, and scalable product design systems.
 - [Brand Identity & Visual Systems](https://skedio.studio/services/brand-identity): Distinctive logomarks, typography hierarchies, custom color systems, and comprehensive brand design books.
 - [UI/UX & Digital Product Design](https://skedio.studio/services/ui-ux-design): User flow architecture, interactive wireframing, high-fidelity interfaces, and accessible design systems.
 - [Full-Stack Product Development](https://skedio.studio/services/product-development): Modern SSR web applications (React, TanStack, TypeScript), mobile development, and scalable cloud architectures.

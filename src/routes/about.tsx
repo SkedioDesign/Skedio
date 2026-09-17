@@ -26,7 +26,7 @@ const founder = {
   name: "Aakash Choudhary",
   role: "Founder & Creative Director",
   bio: "Aakash is a multidisciplinary designer focused on building meaningful brands and digital experiences. At Skédio, he leads creative direction, shapes ideas, and works closely with clients to turn business goals into thoughtful design.",
-  expertise: ["Brand Strategy", "UI/UX", "Product Design"],
+  expertise: ["Product Design", "UI/UX", "Brand Identity"],
   img: "/aakash.jpeg",
 };
 
@@ -49,7 +49,7 @@ const team: TeamMember[] = [
     name: "Harshita Upadhyay",
     role: "UI/UX Lead",
     bio: "Creates simple, intuitive, and meaningful digital experiences with a strong focus on usability and user needs.",
-    expertise: ["UI/UX Design", "User Research", "Interaction Design"],
+    expertise: ["Visual Design", "User Research", "Interaction Design"],
     img: "/harshita.jpeg",
   },
   {
@@ -141,10 +141,9 @@ function About() {
         <div className="mt-8 grid grid-cols-1 gap-y-5 md:grid-cols-[3fr_2fr] md:gap-x-12 md:gap-y-0">
           <ScrollReveal>
             <p className="type-body-lg max-w-lg text-muted-foreground">
-              Skédio is a design-led creative studio helping ambitious businesses
-              turn ideas into meaningful brands. From strategy and identity to
-              UI/UX and product design, we create work that looks distinctive,
-              feels intentional, and delivers impact.
+              Skédio is a design-led creative studio helping ambitious businesses turn ideas into
+              meaningful brands. From product design and identity to UI/UX and development, we
+              create work that looks distinctive, feels intentional, and delivers impact.
             </p>
           </ScrollReveal>
 

@@ -53,7 +53,7 @@ export const projects: ProjectSummary[] = [
     client: "HAO Mobility",
     summary:
       "A modern taxi-bidding platform where riders compare driver bids in real time and choose the ride that best fits their budget and schedule.",
-    services: ["UI/UX Design", "Brand Strategy", "Product Development"],
+    services: ["Visual Design", "Product Design", "Product Development"],
     category: "UI/UX",
     tagColor: "purple",
     size: "hero",

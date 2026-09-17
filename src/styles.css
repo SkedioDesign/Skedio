@@ -1,5 +1,7 @@
 @import "@fontsource-variable/montserrat";
 @import "@fontsource-variable/plus-jakarta-sans";
+@import "@fontsource-variable/fraunces";
+@import "@fontsource-variable/fraunces/wght-italic.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -62,6 +64,8 @@
     system-ui, sans-serif;
   --font-display: var(--font-heading);
   --font-body: var(--font-sans);
+  --font-serif: "Fraunces Variable", "Fraunces", Georgia, "Times New Roman",
+    serif;
 
   --tracking-tightish: -0.04em;
 
@@ -669,6 +673,70 @@ img {
   transform: translate3d(0, -6px, 0);
 }
 
+/* ------------------------------------------------------------------
+   Blog card deck — fanned stack of article cards (BlogCardDeck.tsx)
+   A tactile "photos on a studio desk" treatment: each card rests a
+   couple of degrees off the one behind it, the top card drags off on
+   a spring, and the stack re-fans as it deals out.
+------------------------------------------------------------------ */
+.sk-deck-card {
+  transition:
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: pan-y;
+}
+.sk-deck-card--dragging {
+  transition: none !important;
+}
+@keyframes sk-deck-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 34px, 0) scale(0.94) rotate(3deg);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+  }
+}
+.sk-deck-rise {
+  animation: sk-deck-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes sk-deck-nudge {
+  0% {
+    transform: rotate(var(--sk-deck-rest)) translate3d(0, 0, 0);
+  }
+  30% {
+    transform: rotate(calc(var(--sk-deck-rest) + 1.4deg)) translate3d(0, -6px, 0);
+  }
+  55% {
+    transform: rotate(calc(var(--sk-deck-rest) - 1deg)) translate3d(0, -2px, 0);
+  }
+  78% {
+    transform: rotate(calc(var(--sk-deck-rest) + 0.5deg)) translate3d(0, 0, 0);
+  }
+  100% {
+    transform: rotate(var(--sk-deck-rest)) translate3d(0, 0, 0);
+  }
+}
+.sk-deck-card--nudge {
+  animation: sk-deck-nudge 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes sk-deck-shift {
+  0%,
+  100% {
+    transform: translateX(-3px);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+}
+.sk-deck-hint-arrow {
+  animation: sk-deck-shift 1.6s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -678,7 +746,10 @@ img {
   .sk-marquee-track,
   .sk-logo-track,
   .sk-reveal-base,
-  .sk-fade-up {
+  .sk-fade-up,
+  .sk-deck-rise,
+  .sk-deck-card--nudge,
+  .sk-deck-hint-arrow {
     animation: none !important;
     transition: none !important;
     opacity: 1 !important;

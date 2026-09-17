@@ -67,7 +67,7 @@ function TermsAndConditions() {
           <section className="space-y-4">
             <h2 className="text-2xl font-bold text-foreground">3. Client Engagements</h2>
             <p>
-              All professional services (brand strategy, visual identity, UI/UX design, software
+              All professional services (product design, visual identity, UI/UX design, software
               development) are governed by specific Master Services Agreements (MSA) and Statements
               of Work (SOW) executed between Skédio and the client.
             </p>

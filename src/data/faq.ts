@@ -8,7 +8,7 @@ export const generalFaqs: FAQItem[] = [
   {
     question: "What services does Skédio provide?",
     answer:
-      "Skédio is a creative studio specializing in Brand Strategy, Brand Identity Design, UI/UX Design, and Full-Stack Digital Product Development. We partner with startups and scaling businesses to take products from idea to launch.",
+      "Skédio is a creative studio specializing in Product Design, Brand Identity, Visual Design, and Full-Stack Digital Product Development. We partner with startups and scaling businesses to take products from idea to launch.",
     category: "General",
   },
   {
@@ -20,7 +20,7 @@ export const generalFaqs: FAQItem[] = [
   {
     question: "How long does a typical project take?",
     answer:
-      "Brand strategy and identity sprints typically take 3 to 5 weeks. Full UI/UX product design engagements take 4 to 8 weeks, while end-to-end MVP design and development typically ranges from 8 to 14 weeks.",
+      "Product design engagements typically take 4 to 8 weeks, identity sprints 3 to 5 weeks, while end-to-end MVP design and development usually ranges from 8 to 14 weeks.",
     category: "Timeline",
   },
   {
@@ -54,9 +54,9 @@ export const generalFaqs: FAQItem[] = [
     category: "Clients",
   },
   {
-    question: "Should we start with brand strategy or brand identity first?",
+    question: "Should we start with brand identity or product design first?",
     answer:
-      "Always start with strategy. Positioning, audience, and messaging are the foundation on which a distinctive visual identity is built. Starting with a logo before that foundation is set usually means redoing the design once the strategy firms up.",
+      "Always start with strategy. Positioning, audience, and messaging are the foundation on which a distinctive visual identity is built — and product design flows from the same product truths. Starting with a logo before that foundation is set usually means redoing the design once the strategy firms up.",
     category: "General",
   },
   {
