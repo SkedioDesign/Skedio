@@ -236,7 +236,7 @@ export function WhatWeDo() {
         </ScrollReveal>
         <ScrollReveal direction="right" className="lg:col-span-3">
           <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-card">
-            <div className="relative aspect-[16/11] overflow-hidden">
+            <div className="relative aspect-[16/9] overflow-hidden">
               {services.map((s, i) => (
                 <div
                   key={s.slug}
@@ -265,17 +265,17 @@ export function WhatWeDo() {
               <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-black/10" />
             </div>
 
-            <div className="p-6 md:p-8">
+            <div className="p-5 md:p-6">
               <div key={item.index} className="sk-fade-up">
                 <div className="flex items-center gap-3">
                   <span className="type-label font-extrabold text-primary">{item.index}</span>
                   <span className="h-px flex-1 bg-border" />
                   <span className="type-caption text-muted-foreground">Our services</span>
                 </div>
-                <h3 className="mt-3 font-display text-2xl font-extrabold tracking-tight">
+                <h3 className="mt-2.5 font-display text-xl font-extrabold tracking-tight">
                   {item.title}
                 </h3>
-                <p className="mt-2.5 max-w-md text-base leading-relaxed text-muted-foreground">
+                <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
                   {item.description}
                 </p>
               </div>
@@ -283,7 +283,7 @@ export function WhatWeDo() {
               <Link
                 to="/services/$slug"
                 params={{ slug: item.slug }}
-                className="group mt-5 inline-flex items-center gap-2 text-sm font-bold text-primary transition-colors duration-200 ease-out hover:text-primary-hover"
+                className="group mt-4 inline-flex items-center gap-2 text-sm font-bold text-primary transition-colors duration-200 ease-out hover:text-primary-hover"
               >
                 Explore {item.title}
                 <ArrowUpRight className="size-4 transition-transform duration-250 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
