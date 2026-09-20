@@ -236,7 +236,12 @@ export function ContactModal() {
               </div>
 
               <p className="text-center text-[11px] text-muted-foreground">
-                No spam. Your details remain confidential with Skédio.
+                No spam. Your details remain confidential with Skédio. By submitting, you agree to
+                our{" "}
+                <a href="/privacy" className="text-primary underline">
+                  Privacy Policy
+                </a>
+                .
               </p>
             </form>
           </div>

@@ -1,5 +1,6 @@
 import { defineConfig, type Plugin } from "vite";
 import { transformWithEsbuild } from "vite";
+import { sentryTanstackStart } from "@sentry/tanstackstart-react/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { nitro } from "nitro/vite";
 import viteReact from "@vitejs/plugin-react";
@@ -60,5 +61,17 @@ export default defineConfig({
     viteReact(),
     tailwindcss(),
     stripConsoleOnClient(),
+    // Uploads source maps to Sentry on build. Only active when
+    // SENTRY_AUTH_TOKEN is set (see .env.example), so local/CI builds without a
+    // token still succeed.
+    ...(process.env["SENTRY_AUTH_TOKEN"]
+      ? [
+          sentryTanstackStart({
+            org: "skedio-qm",
+            project: "javascript-tanstackstart-react",
+            authToken: process.env["SENTRY_AUTH_TOKEN"],
+          }),
+        ]
+      : []),
   ],
 });

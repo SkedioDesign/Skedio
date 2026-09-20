@@ -1,7 +1,10 @@
+import "../instrument.server.mjs";
+
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import { createStartHandler, defaultStreamHandler } from "@tanstack/react-start/server";
 import type { Register } from "@tanstack/react-router";
 import type { RequestHandler } from "@tanstack/react-start/server";
+import { wrapFetchWithSentry } from "@sentry/tanstackstart-react";
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { captureServerError, flushServerErrors } from "./lib/sentry-server";
 import { renderErrorPage } from "./lib/error-page";
@@ -21,7 +24,7 @@ function buildContentSecurityPolicy(nonce: string): string {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' data: blob:",
     "font-src 'self' data: https://fonts.gstatic.com",
-    "connect-src 'self' https://formsubmit.co https://gateway.umami.is",
+    "connect-src 'self' https://formsubmit.co https://gateway.umami.is https://o4512119811014656.ingest.us.sentry.io",
     "object-src 'none'",
     "base-uri 'self'",
     "frame-ancestors 'none'",
@@ -91,7 +94,7 @@ async function handleWeeklyDigest(request: Request): Promise<Response> {
 
 const handle = createStartHandler(defaultStreamHandler);
 
-const fetch: RequestHandler<Register> = async (request) => {
+const fetchHandler: RequestHandler<Register> = async (request) => {
   try {
     const url = new URL(request.url);
     if (url.pathname === "/sitemap.xml") {
@@ -160,4 +163,8 @@ export function createServerEntry(entry: ServerEntry): ServerEntry {
   };
 }
 
-export default createServerEntry({ fetch });
+export default createServerEntry(
+  wrapFetchWithSentry({
+    fetch: (request: Request) => fetchHandler(request),
+  }),
+);

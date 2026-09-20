@@ -29,17 +29,16 @@ const navSections: FooterNavSection[] = [
     title: "Company",
     links: [
       { label: "About Us", href: "/about" },
-      { label: "Our Process", href: "/#services" },
-      { label: "Insights", href: "/insights" },
+      { label: "Services", href: "/#services" },
       { label: "Contact", action: "contact" },
     ],
   },
   {
     title: "Work",
     links: [
-      { label: "Hao Cabs", href: "/projects/haocabs" },
       { label: "Featured Work", href: "/#work" },
       { label: "Clients", href: "/#clients" },
+      { label: "Testimonials", href: "/#testimonials" },
     ],
   },
   {
@@ -202,6 +201,13 @@ export function Footer() {
             </form>
           )}
           {errorMessage && <p className="mt-3 text-xs font-medium text-red-400">{errorMessage}</p>}
+          <p className="type-xs mt-3 text-[11px] leading-relaxed text-white/45">
+            By subscribing, you agree to receive occasional studio updates and consent to our{" "}
+            <Link to="/privacy" className="underline transition-colors hover:text-white/80">
+              Privacy Policy
+            </Link>
+            . You can unsubscribe anytime.
+          </p>
         </div>
       </div>
 

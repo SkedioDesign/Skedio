@@ -1,31 +1,8 @@
-// Client-side Sentry facade. The DSN is supplied via VITE_SENTRY_DSN (the DSN
-// is public at runtime) and everything here is inert until it is configured.
-// The SDK itself is loaded dynamically so it never lands in the server bundle.
+// Client-side Sentry helper. Initialization happens in src/instrument.client.ts
+// (imported first from src/client.tsx); this module only reports errors, and is
+// inert when Sentry hasn't been configured/initialized.
 
-let dsn: string | undefined;
-try {
-  dsn = import.meta.env["VITE_SENTRY_DSN"] as string | undefined;
-} catch {
-  dsn = undefined;
-}
-
-let initStarted = false;
-
-function loadSdk(): Promise<typeof import("@sentry/react")> {
-  return import("@sentry/react");
-}
-
-export function initClientSentry(): void {
-  if (!dsn || typeof window === "undefined" || initStarted) return;
-  initStarted = true;
-  void loadSdk().then((Sentry) => {
-    Sentry.init({
-      dsn,
-      environment: import.meta.env.MODE ?? "development",
-      tracesSampleRate: 0,
-    });
-  });
-}
+import * as Sentry from "@sentry/tanstackstart-react";
 
 export interface ClientErrorContext {
   tag?: string;
@@ -33,16 +10,14 @@ export interface ClientErrorContext {
 }
 
 export function captureClientError(error: unknown, context?: ClientErrorContext): void {
-  if (!dsn || typeof window === "undefined") return;
-  void loadSdk().then((Sentry) => {
-    Sentry.withScope((scope) => {
-      if (context?.tag) scope.setTag("source", context.tag);
-      if (context?.extra) {
-        for (const [key, value] of Object.entries(context.extra)) {
-          scope.setExtra(key, value);
-        }
+  if (typeof window === "undefined" || !Sentry.getClient()) return;
+  Sentry.withScope((scope) => {
+    if (context?.tag) scope.setTag("source", context.tag);
+    if (context?.extra) {
+      for (const [key, value] of Object.entries(context.extra)) {
+        scope.setExtra(key, value);
       }
-      Sentry.captureException(error);
-    });
+    }
+    Sentry.captureException(error);
   });
 }
