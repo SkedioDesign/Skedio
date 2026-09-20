@@ -44,7 +44,6 @@ const navSections: FooterNavSection[] = [
   {
     title: "Legal Policy",
     links: [
-      { label: "Insights Journal", href: "/insights" },
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Terms & Conditions", href: "/terms" },
     ],
