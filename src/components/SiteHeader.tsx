@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowUpRight, Menu, X } from "lucide-react";
+import { ArrowUpRight, Menu, Moon, Sun, X } from "lucide-react";
 import { useContactModal } from "@/context/use-contact-modal";
+import { useTheme } from "@/context/use-theme";
 import { cn } from "@/lib/utils";
 
 export type HeaderLink =
@@ -21,7 +22,16 @@ function Wordmark({ className = "" }: { className?: string }) {
 
 export function SiteHeader({ links }: { links: HeaderLink[] }) {
   const { openContactModal } = useContactModal();
+  const { theme, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // Defer theme-dependent UI until after hydration to avoid a
+    // server/client (system preference) markup mismatch.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (menuOpen) {
@@ -80,6 +90,23 @@ export function SiteHeader({ links }: { links: HeaderLink[] }) {
                 ),
               )}
             </ul>
+
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+              className="hidden size-10 cursor-pointer place-items-center rounded-full border border-border bg-surface text-foreground transition-colors hover:bg-surface-alt md:grid"
+            >
+              {mounted ? (
+                theme === "dark" ? (
+                  <Sun className="size-5" />
+                ) : (
+                  <Moon className="size-5" />
+                )
+              ) : (
+                <span className="size-5" />
+              )}
+            </button>
 
             <div className="hidden md:block">
               <button
@@ -154,6 +181,20 @@ export function SiteHeader({ links }: { links: HeaderLink[] }) {
           )}
 
           <div className="mt-auto flex flex-col gap-4 pt-10">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-border bg-surface px-6 py-4 text-base font-semibold text-foreground transition-colors hover:bg-surface-alt"
+            >
+              {mounted ? (
+                <>
+                  {theme === "dark" ? <Sun className="size-5" /> : <Moon className="size-5" />}
+                  {theme === "dark" ? "Light mode" : "Dark mode"}
+                </>
+              ) : (
+                <span className="size-5" />
+              )}
+            </button>
             <button
               type="button"
               onClick={handleCta}
