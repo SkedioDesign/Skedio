@@ -1,12 +1,13 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, ArrowUpRight, Calendar } from "lucide-react";
 import { marked } from "marked";
+import DOMPurify from "isomorphic-dompurify";
 
 import { blogPosts } from "@/data/blog";
 import { seo, canonicalLink } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
 import { getArticleSchema, getBreadcrumbSchema } from "@/lib/schema";
-import { useContactModal } from "@/context/contact-modal-context";
+import { useContactModal } from "@/context/use-contact-modal";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 export const Route = createFileRoute("/blog/$slug")({
@@ -111,9 +112,7 @@ function BlogPost() {
 
         {/* Article Meta */}
         <div className="flex flex-wrap items-center gap-3">
-          <span
-            className="rounded-full bg-primary/10 px-3.5 py-1 text-xs font-semibold text-primary"
-          >
+          <span className="rounded-full bg-primary/10 px-3.5 py-1 text-xs font-semibold text-primary">
             {post.category}
           </span>
         </div>
@@ -121,9 +120,7 @@ function BlogPost() {
         <h1 className="type-h1 mt-6 leading-tight">{post.title}</h1>
 
         <div className="mt-8 flex flex-wrap items-center gap-6 border-y border-border py-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2.5">
-            {/* Author info could be added here */}
-          </div>
+          <div className="flex items-center gap-2.5">{/* Author info could be added here */}</div>
           <div className="flex items-center gap-1.5">
             <Calendar className="size-4" />
             <span>{post.publishedAt}</span>
@@ -133,7 +130,9 @@ function BlogPost() {
         {/* Article Body */}
         <div
           className="prose-skedio mt-12"
-          dangerouslySetInnerHTML={{ __html: marked.parse(post.content) as string }}
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(marked.parse(post.content) as string),
+          }}
         />
 
         {/* CTA Banner */}

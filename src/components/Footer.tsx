@@ -1,7 +1,8 @@
 import { ArrowUpRight, Instagram, Linkedin, Check } from "lucide-react";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { useContactModal } from "@/context/contact-modal-context";
+import { useContactModal } from "@/context/use-contact-modal";
+import { useContactForm } from "@/hooks/use-contact-form";
 import { siteConfig } from "@/lib/site-config";
 
 function Wordmark({ className = "" }: { className?: string }) {
@@ -16,7 +17,14 @@ function Wordmark({ className = "" }: { className?: string }) {
   );
 }
 
-const navSections = [
+type FooterLink = { label: string; href: string } | { label: string; action: "contact" };
+
+type FooterNavSection = {
+  title: string;
+  links: FooterLink[];
+};
+
+const navSections: FooterNavSection[] = [
   {
     title: "Company",
     links: [
@@ -47,44 +55,20 @@ const navSections = [
 export function Footer() {
   const { openContactModal } = useContactModal();
   const [footerEmail, setFooterEmail] = useState("");
-  const [footerSent, setFooterSent] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [honey, setHoney] = useState("");
 
-  const handleFooterSubmit = async (e: React.FormEvent) => {
+  const { status, errorMessage, honey, handleHoneyChange, submit, isSubmitting } = useContactForm({
+    getBody: (honey) => ({
+      email: footerEmail,
+      message: "Lead submitted via Footer newsletter / quick inquiry",
+      _subject: `New Lead Email: ${footerEmail} (Skedio Studio)`,
+    }),
+    onSent: () => setFooterEmail(""),
+  });
+
+  const handleFooterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!footerEmail) return;
-
-    // Honeypot: silently ignore spam submissions
-    if (honey) return;
-
-    setLoading(true);
-    setErrorMessage("");
-
-    try {
-      const res = await fetch("https://formsubmit.co/ajax/skediodesignspace@gmail.com", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          email: footerEmail,
-          message: "Lead submitted via Footer newsletter / quick inquiry",
-          _subject: `New Lead Email: ${footerEmail} (Skedio Studio)`,
-          _honey: honey,
-          _captcha: "true",
-        }),
-      });
-      if (!res.ok) {
-        setErrorMessage("Something went wrong. Please try again or email us directly at skediodesignspace@gmail.com");
-        return;
-      }
-      setFooterSent(true);
-      setFooterEmail("");
-    } catch {
-      setErrorMessage("Something went wrong. Please try again or email us directly at skediodesignspace@gmail.com");
-    } finally {
-      setLoading(false);
-    }
+    void submit();
   };
 
   return (
@@ -137,7 +121,7 @@ export function Footer() {
               <ul className="mt-5 space-y-3 text-sm text-white/60">
                 {col.links.map((x) => (
                   <li key={x.label}>
-                    {x.action === "contact" ? (
+                    {"action" in x ? (
                       <button
                         type="button"
                         onClick={openContactModal}
@@ -171,39 +155,45 @@ export function Footer() {
           <h4 className="type-h6">Let's create something great</h4>
           <p className="type-sm mt-5 text-white/60">{siteConfig.email}</p>
           <p className="type-sm text-white/60">{siteConfig.phone}</p>
-          {footerSent ? (
+          {status === "sent" ? (
             <div className="mt-6 flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-5 py-3 text-sm font-semibold text-emerald-400">
               <Check className="size-4" />
               <span>Sent</span>
             </div>
           ) : (
-<form
-  className="mt-6 flex items-center gap-2 rounded-full border border-white/15 bg-white/10 p-1.5 pl-5 backdrop-blur-sm"
-  onSubmit={handleFooterSubmit}
->
-  <input
-    type="text"
-    name="_honey"
-    tabIndex={-1}
-    autoComplete="off"
-    aria-hidden="true"
-    value={honey}
-    onChange={(e) => setHoney(e.target.value)}
-    style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", overflow: "hidden" }}
-  />
-  <input
+            <form
+              className="mt-6 flex items-center gap-2 rounded-full border border-white/15 bg-white/10 p-1.5 pl-5 backdrop-blur-sm"
+              onSubmit={handleFooterSubmit}
+            >
+              <input
+                type="text"
+                name="_honey"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                value={honey}
+                onChange={handleHoneyChange}
+                style={{
+                  position: "absolute",
+                  left: "-9999px",
+                  width: "1px",
+                  height: "1px",
+                  overflow: "hidden",
+                }}
+              />
+              <input
                 type="email"
                 required
                 placeholder="Enter your email"
                 aria-label="Email address"
                 value={footerEmail}
                 onChange={(e) => setFooterEmail(e.target.value)}
-                disabled={loading}
+                disabled={isSubmitting}
                 className="type-sm min-w-0 flex-1 bg-transparent text-white outline-none placeholder:text-white/45"
               />
               <button
                 type="submit"
-                disabled={loading}
+                disabled={isSubmitting}
                 aria-label="Subscribe"
                 className="group grid size-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-colors duration-250 hover:bg-primary-hover cursor-pointer"
               >
@@ -211,9 +201,7 @@ export function Footer() {
               </button>
             </form>
           )}
-          {errorMessage && (
-            <p className="mt-3 text-xs font-medium text-red-400">{errorMessage}</p>
-          )}
+          {errorMessage && <p className="mt-3 text-xs font-medium text-red-400">{errorMessage}</p>}
         </div>
       </div>
 

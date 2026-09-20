@@ -1,15 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Menu, X } from "lucide-react";
-import { useContactModal } from "@/context/contact-modal-context";
+import { useContactModal } from "@/context/use-contact-modal";
 import { cn } from "@/lib/utils";
 
-export type HeaderLink = {
-  label: string;
-  to: string;
-  hash?: string;
-  current?: boolean;
-};
+export type HeaderLink =
+  { label: string; to: string; hash?: string; current?: false } | { label: string; current: true };
 
 function Wordmark({ className = "" }: { className?: string }) {
   return (
@@ -120,55 +116,55 @@ export function SiteHeader({ links }: { links: HeaderLink[] }) {
           menuOpen ? "translate-x-0 opacity-100" : "pointer-events-none translate-x-full opacity-0",
         )}
       >
-          <div className="flex items-center justify-between border-b border-border/70 px-6 py-5">
-            <Link to="/" onClick={() => setMenuOpen(false)} aria-label="Skédio home">
-              <Wordmark />
-            </Link>
+        <div className="flex items-center justify-between border-b border-border/70 px-6 py-5">
+          <Link to="/" onClick={() => setMenuOpen(false)} aria-label="Skédio home">
+            <Wordmark />
+          </Link>
+          <button
+            type="button"
+            onClick={() => setMenuOpen(false)}
+            aria-label="Close menu"
+            className="grid size-10 cursor-pointer place-items-center rounded-full border border-border bg-surface text-foreground transition-colors hover:bg-surface-alt"
+          >
+            <X className="size-5" />
+          </button>
+        </div>
+
+        <nav className="flex flex-1 flex-col gap-2 overflow-y-auto px-6 pb-10 pt-10">
+          {links.map((link) =>
+            link.current ? (
+              <span
+                key={link.label}
+                className="border-b border-border/60 py-6 text-lg font-semibold text-primary sm:text-xl"
+              >
+                {link.label}
+              </span>
+            ) : (
+              <Link
+                key={link.label}
+                to={link.to}
+                {...(link.hash ? { hash: link.hash } : {})}
+                onClick={() => setMenuOpen(false)}
+                className="group flex items-center justify-between border-b border-border/60 py-6 text-lg font-semibold text-foreground transition-colors hover:text-primary sm:text-xl"
+              >
+                {link.label}
+                <ArrowUpRight className="size-5 text-foreground/40 transition-transform duration-250 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary" />
+              </Link>
+            ),
+          )}
+
+          <div className="mt-auto flex flex-col gap-4 pt-10">
             <button
               type="button"
-              onClick={() => setMenuOpen(false)}
-              aria-label="Close menu"
-              className="grid size-10 cursor-pointer place-items-center rounded-full border border-border bg-surface text-foreground transition-colors hover:bg-surface-alt"
+              onClick={handleCta}
+              className="group type-button inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-primary px-6 py-4 text-primary-foreground transition-colors duration-250 ease-out hover:bg-primary-hover"
             >
-              <X className="size-5" />
+              Let's Talk
+              <ArrowUpRight className="size-4" />
             </button>
           </div>
-
-          <nav className="flex flex-1 flex-col gap-2 overflow-y-auto px-6 pb-10 pt-10">
-            {links.map((link) =>
-              link.current ? (
-                <span
-                  key={link.label}
-                  className="border-b border-border/60 py-6 text-lg font-semibold text-primary sm:text-xl"
-                >
-                  {link.label}
-                </span>
-              ) : (
-                <Link
-                  key={link.label}
-                  to={link.to}
-                  {...(link.hash ? { hash: link.hash } : {})}
-                  onClick={() => setMenuOpen(false)}
-                  className="group flex items-center justify-between border-b border-border/60 py-6 text-lg font-semibold text-foreground transition-colors hover:text-primary sm:text-xl"
-                >
-                  {link.label}
-                  <ArrowUpRight className="size-5 text-foreground/40 transition-transform duration-250 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary" />
-                </Link>
-              ),
-            )}
-
-            <div className="mt-auto flex flex-col gap-4 pt-10">
-              <button
-                type="button"
-                onClick={handleCta}
-                className="group type-button inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-primary px-6 py-4 text-primary-foreground transition-colors duration-250 ease-out hover:bg-primary-hover"
-              >
-                Let's Talk
-                <ArrowUpRight className="size-4" />
-              </button>
-            </div>
-          </nav>
-        </div>
+        </nav>
+      </div>
     </>
   );
 }

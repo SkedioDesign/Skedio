@@ -21,6 +21,8 @@ export interface CaseStudyDocument {
   slug: string;
   /** Base asset URL relative to /public, e.g. "/HaoCabs". */
   assets: string;
+  /** Set true when the asset dir also ships .webp copies of every image. */
+  hasWebp?: boolean;
   /** Brand wordmark shown in the sticky nav. */
   brand: string;
   /** Sticky-nav chapter progress (ids must match section ids). */
@@ -144,6 +146,7 @@ export const caseStudies: CaseStudyDocument[] = [
   {
     slug: "haocabs",
     assets: "/HaoCabs",
+    hasWebp: true,
     brand: "HAO CABS",
     chapters: [
       { id: "overview", num: "01", label: "Overview" },

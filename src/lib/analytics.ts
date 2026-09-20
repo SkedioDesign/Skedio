@@ -25,6 +25,7 @@ export function writeConsent(choice: ConsentChoice): void {
 }
 
 let analyticsInitialized = false;
+let analyticsScript: HTMLScriptElement | null = null;
 
 export function initAnalytics(): void {
   if (typeof window === "undefined" || analyticsInitialized) return;
@@ -44,6 +45,7 @@ export function initAnalytics(): void {
   script.setAttribute("data-website-id", umamiWebsiteId);
   if (umamiHostUrl) script.setAttribute("data-host-url", umamiHostUrl);
   script.referrerPolicy = "no-referrer-when-downgrade";
+  analyticsScript = script;
   document.head.appendChild(script);
 
   window.dispatchEvent(new Event("skedio:analytics-enabled"));
@@ -52,6 +54,10 @@ export function initAnalytics(): void {
 export function disableAnalytics(): void {
   if (typeof window === "undefined") return;
   analyticsInitialized = false;
+  if (analyticsScript) {
+    analyticsScript.remove();
+    analyticsScript = null;
+  }
   window.dispatchEvent(new Event("skedio:analytics-disabled"));
 }
 

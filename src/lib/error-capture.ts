@@ -62,6 +62,20 @@ console.error = (...args: unknown[]) => {
   originalConsoleError(...expanded);
 };
 
+// The client build strips direct `console.*` calls (esbuild drop: ["console"]),
+// so error-boundary and submission-failure diagnostics route through these
+// wrappers instead — they survive production stripping and still reach the
+// (now wrapped) console so errors keep being recorded & expanded above.
+const consoleRef = console;
+
+export function logError(...args: unknown[]): void {
+  consoleRef.error(...args);
+}
+
+export function logWarn(...args: unknown[]): void {
+  consoleRef.warn(...args);
+}
+
 if (typeof globalThis.addEventListener === "function") {
   globalThis.addEventListener("error", (event) => record((event as ErrorEvent).error ?? event));
   globalThis.addEventListener("unhandledrejection", (event) =>

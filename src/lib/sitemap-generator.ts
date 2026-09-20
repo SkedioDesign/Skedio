@@ -22,12 +22,14 @@ export function generateSitemapXml(): string {
     lastmod: currentDate,
   }));
 
-  const projectRoutes = projects.map((p) => ({
-    path: `/projects/${p.slug}`,
-    changefreq: "monthly",
-    priority: "0.9",
-    lastmod: p.publishedDate || currentDate,
-  }));
+  const projectRoutes = projects
+    .filter((p) => p.published)
+    .map((p) => ({
+      path: `/projects/${p.slug}`,
+      changefreq: "monthly",
+      priority: "0.9",
+      lastmod: p.publishedDate || currentDate,
+    }));
 
   const insightRoutes = insightsArticles.map((i) => ({
     path: `/insights/${i.slug}`,
@@ -43,7 +45,13 @@ export function generateSitemapXml(): string {
     lastmod: p.publishedAt || currentDate,
   }));
 
-  const allEntries = [...staticRoutes, ...serviceRoutes, ...projectRoutes, ...insightRoutes, ...blogRoutes];
+  const allEntries = [
+    ...staticRoutes,
+    ...serviceRoutes,
+    ...projectRoutes,
+    ...insightRoutes,
+    ...blogRoutes,
+  ];
 
   const body = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

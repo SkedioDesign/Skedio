@@ -1,27 +1,36 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { useContactModal } from "@/context/contact-modal-context";
+import { useContactModal } from "@/context/use-contact-modal";
+import { useContactForm } from "@/hooks/use-contact-form";
 import { ArrowUpRight, CheckCircle2, Loader2, Sparkles, X } from "lucide-react";
 
 export function ContactModal() {
   const { isOpen, closeContactModal } = useContactModal();
   const [mounted, setMounted] = useState(false);
-  const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     message: "",
-    _honey: "",
   });
-  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleClose = () => {
+  const { status, errorMessage, honey, handleHoneyChange, submit, reset } = useContactForm({
+    getBody: (honey) => ({
+      name: formData.name,
+      email: formData.email,
+      message: formData.message,
+      _subject: `New Project Inquiry from ${formData.name} (Skedio Studio)`,
+      _template: "table",
+    }),
+    errorCopy: "Something went wrong. Please try again or email us directly at hello@skedio.studio",
+    onSent: () => setFormData({ name: "", email: "", message: "" }),
+  });
+
+  const handleClose = useCallback(() => {
     closeContactModal();
     setTimeout(() => {
-      setStatus("idle");
-      setErrorMessage("");
+      reset();
     }, 200);
-  };
+  }, [closeContactModal, reset]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -42,8 +51,9 @@ export function ContactModal() {
       };
     } else {
       document.body.style.overflow = "";
+      return undefined;
     }
-  }, [isOpen]);
+  }, [isOpen, handleClose]);
 
   if (!mounted || !isOpen) return null;
 
@@ -54,47 +64,9 @@ export function ContactModal() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Honeypot: silently ignore spam submissions
-    if (formData._honey) return;
-
-    setStatus("loading");
-    setErrorMessage("");
-
-    try {
-      // Free endpoint with JSON response & zero redirects
-      const res = await fetch("https://formsubmit.co/ajax/skediodesignspace@gmail.com", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          message: formData.message,
-          _honey: formData._honey,
-          _subject: `New Project Inquiry from ${formData.name} (Skedio Studio)`,
-          _template: "table",
-          _captcha: "true",
-        }),
-      });
-
-      if (!res.ok) {
-        setStatus("error");
-        setErrorMessage("Something went wrong. Please try again or email us directly at hello@skedio.studio");
-        return;
-      }
-
-      setStatus("sent");
-      setFormData({ name: "", email: "", message: "", _honey: "" });
-    } catch (err: unknown) {
-      console.warn("Direct submission notice:", err);
-      setStatus("error");
-      setErrorMessage("Something went wrong. Please try again or email us directly at hello@skedio.studio");
-    }
+    void submit();
   };
 
   return createPortal(
@@ -162,18 +134,24 @@ export function ContactModal() {
               </p>
             </div>
 
-<form onSubmit={handleSubmit} className="mt-8 space-y-5">
-  <input
-    type="text"
-    name="_honey"
-    tabIndex={-1}
-    autoComplete="off"
-    aria-hidden="true"
-    value={formData._honey}
-    onChange={handleChange}
-    style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", overflow: "hidden" }}
-  />
-  <div className="space-y-1.5">
+            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+              <input
+                type="text"
+                name="_honey"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                value={honey}
+                onChange={handleHoneyChange}
+                style={{
+                  position: "absolute",
+                  left: "-9999px",
+                  width: "1px",
+                  height: "1px",
+                  overflow: "hidden",
+                }}
+              />
+              <div className="space-y-1.5">
                 <label
                   htmlFor="contact-name"
                   className="block text-xs font-semibold uppercase tracking-wider text-foreground/80"

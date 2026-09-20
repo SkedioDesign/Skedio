@@ -11,7 +11,7 @@ import {
   getFAQSchema,
   type BreadcrumbItem,
 } from "@/lib/schema";
-import { useContactModal } from "@/context/contact-modal-context";
+import { useContactModal } from "@/context/use-contact-modal";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { FaqItem } from "@/components/FaqAccordion";

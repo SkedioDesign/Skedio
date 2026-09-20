@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
-import { useContactModal } from "@/context/contact-modal-context";
+import { useContactModal } from "@/context/use-contact-modal";
 import { seo, canonicalLink } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 import { StructuredData } from "@/components/StructuredData";
@@ -150,14 +150,12 @@ function About() {
           {/* Closing statement — stronger weight, anchored to the right column */}
           <ScrollReveal direction="fade" className="md:flex md:items-end">
             <p className="type-body font-semibold text-foreground">
-              We don't just make things look good.{" "}
-              <br className="hidden sm:block" />
+              We don't just make things look good. <br className="hidden sm:block" />
               We make them matter.
             </p>
           </ScrollReveal>
         </div>
       </section>
-
 
       {/* Full-width rule */}
       <div className="border-t border-border" />
@@ -172,8 +170,10 @@ function About() {
         <div className="mt-10 grid gap-10 md:grid-cols-[280px_1fr] md:gap-16 lg:grid-cols-[320px_1fr]">
           {/* Portrait */}
           <ScrollReveal direction="left" className="md:sticky md:top-28 md:self-start">
-            <div className="group overflow-hidden rounded-2xl border border-border bg-surface"
-                 style={{ aspectRatio: "4/5" }}>
+            <div
+              className="group overflow-hidden rounded-2xl border border-border bg-surface"
+              style={{ aspectRatio: "4/5" }}
+            >
               <img
                 src={founder.img}
                 alt={founder.name}
@@ -216,10 +216,7 @@ function About() {
       <div className="border-t border-border" />
 
       {/* ── Our Team ────────────────────────────────────────────────── */}
-      <section
-        id="team"
-        className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 py-16 md:py-24"
-      >
+      <section id="team" className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 py-16 md:py-24">
         {/* Section header */}
         <div className="mb-14 md:mb-20">
           <ScrollReveal>
@@ -233,8 +230,8 @@ function About() {
           </ScrollReveal>
           <ScrollReveal>
             <p className="type-body mt-5 max-w-md text-muted-foreground">
-              A multidisciplinary team of designers, thinkers, and builders
-              working together to turn ideas into purposeful creative work.
+              A multidisciplinary team of designers, thinkers, and builders working together to turn
+              ideas into purposeful creative work.
             </p>
           </ScrollReveal>
         </div>
@@ -269,18 +266,14 @@ function About() {
 
                 {/* Identity — equal typography weight */}
                 <div className="mt-5">
-                  <h3 className="text-base font-semibold tracking-[-0.01em]">
-                    {member.name}
-                  </h3>
+                  <h3 className="text-base font-semibold tracking-[-0.01em]">{member.name}</h3>
                   <p className="mt-0.5 text-[0.75rem] font-semibold uppercase tracking-[0.1em] text-primary">
                     {member.role}
                   </p>
                 </div>
 
                 {/* Bio */}
-                <p className="type-sm mt-3 leading-relaxed text-muted-foreground">
-                  {member.bio}
-                </p>
+                <p className="type-sm mt-3 leading-relaxed text-muted-foreground">{member.bio}</p>
 
                 {/* Expertise tags */}
                 <div className="mt-4 flex flex-wrap gap-1.5">
@@ -315,15 +308,14 @@ function About() {
                 className="font-heading mt-5 font-light tracking-[-0.03em]"
                 style={{ fontSize: "clamp(2rem, 4.5vw, 3.5rem)", lineHeight: 1.05 }}
               >
-                More Than a Studio.{" "}
-                <br className="hidden sm:block" />
+                More Than a Studio. <br className="hidden sm:block" />
                 <span className="text-primary">A Creative Partner.</span>
               </h2>
             </ScrollReveal>
             <ScrollReveal>
               <p className="type-body-lg mt-6 max-w-lg text-muted-foreground">
-                We're not here to simply deliver designs. We collaborate, solve,
-                create, and build alongside the brands we work with.
+                We're not here to simply deliver designs. We collaborate, solve, create, and build
+                alongside the brands we work with.
               </p>
             </ScrollReveal>
           </div>

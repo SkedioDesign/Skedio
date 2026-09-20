@@ -5,7 +5,7 @@ import { getInsightBySlug, insightsArticles } from "@/data/insights";
 import { seo, canonicalLink } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
 import { getArticleSchema, getBreadcrumbSchema, type BreadcrumbItem } from "@/lib/schema";
-import { useContactModal } from "@/context/contact-modal-context";
+import { useContactModal } from "@/context/use-contact-modal";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 export const Route = createFileRoute("/insights/$slug")({

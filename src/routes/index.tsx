@@ -5,7 +5,7 @@ import { gsap } from "gsap";
 import { SplitText } from "gsap/SplitText";
 import { useRef, useState } from "react";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
-import { useContactModal } from "@/context/contact-modal-context";
+import { useContactModal } from "@/context/use-contact-modal";
 import { seo, canonicalLink } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 import { StructuredData } from "@/components/StructuredData";
@@ -20,7 +20,11 @@ import { getServiceSchema, getFAQSchema } from "@/lib/schema";
 import { servicesData } from "@/data/services";
 import { generalFaqs } from "@/data/faq";
 
-import hero from "@/assets/hero.png";
+import heroDesktopAvif from "@/assets/hero.avif";
+import heroDesktopWebp from "@/assets/hero.webp";
+import heroMobileAvif from "@/assets/hero-mobile.avif";
+import heroMobileWebp from "@/assets/hero-mobile.webp";
+import heroFallback from "@/assets/hero.jpg";
 
 gsap.registerPlugin(SplitText);
 
@@ -254,17 +258,23 @@ function Index() {
           </div>
         </div>
 
-        {/* Responsive: hero visual after the copy */}
-        <div data-hero-visual className="sk-hero-start mt-10 lg:hidden">
-          <img
-            src={hero}
-            alt="Skédio design studio hero showcase — bold brand identity and product design"
-            fetchPriority="high"
-            loading="eager"
-            width={1440}
-            height={810}
-            className="aspect-[16/9] w-full rounded-2xl object-cover"
-          />
+        {/* Hero visual — single <picture>, format + size chosen via media query */}
+        <div data-hero-visual className="sk-hero-start mt-10 lg:mt-24">
+          <picture>
+            <source media="(min-width: 1024px)" srcSet={heroDesktopAvif} type="image/avif" />
+            <source media="(min-width: 1024px)" srcSet={heroDesktopWebp} type="image/webp" />
+            <source srcSet={heroMobileAvif} type="image/avif" />
+            <source srcSet={heroMobileWebp} type="image/webp" />
+            <img
+              src={heroFallback}
+              alt="Skédio design studio hero showcase — bold brand identity and product design"
+              fetchPriority="high"
+              loading="eager"
+              width={1440}
+              height={810}
+              className="aspect-[16/9] w-full rounded-2xl object-cover"
+            />
+          </picture>
         </div>
 
         {/* Responsive: bare logo marquee below the copy (no card, no label) */}
@@ -292,22 +302,6 @@ function Index() {
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Hero visual with LCP optimization — desktop only; mobile version sits below the copy */}
-      <section
-        data-hero-visual
-        className="sk-hero-start mx-auto mt-20 hidden w-full max-w-[1440px] px-6 md:px-12 lg:mt-24 lg:block"
-      >
-        <img
-          src={hero}
-          alt="Skédio design studio hero showcase — bold brand identity and product design"
-          fetchPriority="high"
-          loading="eager"
-          width={1440}
-          height={810}
-          className="aspect-[16/9] w-full rounded-2xl object-cover"
-        />
       </section>
 
       <div className="bg-background">

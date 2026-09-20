@@ -1,12 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
-interface ContactModalContextType {
-  isOpen: boolean;
-  openContactModal: () => void;
-  closeContactModal: () => void;
-}
-
-const ContactModalContext = createContext<ContactModalContextType | undefined>(undefined);
+import { ContactModalContext } from "@/context/use-contact-modal";
 
 export function ContactModalProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -50,18 +44,4 @@ export function ContactModalProvider({ children }: { children: React.ReactNode }
       {children}
     </ContactModalContext.Provider>
   );
-}
-
-export function useContactModal() {
-  const context = useContext(ContactModalContext);
-  if (!context) {
-    throw new Error("useContactModal must be used within a ContactModalProvider");
-  }
-  return context;
-}
-
-export function triggerContactModal() {
-  if (typeof window !== "undefined") {
-    window.dispatchEvent(new CustomEvent("open-contact-modal"));
-  }
 }

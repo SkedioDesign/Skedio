@@ -1,6 +1,8 @@
 import { siteConfig } from "./site-config";
-import { blogPosts } from "../data/blog";
-import { insightsArticles } from "../data/insights";
+import { blogPosts, type BlogPost } from "../data/blog";
+import { insightsArticles, type InsightArticle } from "../data/insights";
+
+type FeedArticle = BlogPost | InsightArticle;
 
 function escapeXml(value: string): string {
   return value
@@ -16,32 +18,33 @@ function toRfc2822(date: string): string {
   return Number.isNaN(parsed.getTime()) ? new Date().toUTCString() : parsed.toUTCString();
 }
 
-function getAuthor(article: any): { name: string; email?: string } {
-  if (article.author) {
-    return {
-      name: article.author.name,
-      email: article.author.email,
-    };
+function getAuthor(article: FeedArticle): { name: string; email?: string } {
+  if ("author" in article && article.author) {
+    return article.author.email
+      ? { name: article.author.name, email: article.author.email }
+      : { name: article.author.name };
   }
   return { name: siteConfig.name, email: siteConfig.email };
 }
 
-function getExcerpt(article: any): string {
+function getExcerpt(article: FeedArticle): string {
   if (article.excerpt) {
     return article.excerpt;
   }
   // For blog posts, use the first paragraph or metaDescription
-  if (article.metaDescription) {
+  if ("metaDescription" in article && article.metaDescription) {
     return article.metaDescription;
   }
-  return article.content ? article.content.split(" ").slice(0, 50).join(" ") + "..." : "";
+  return typeof article.content === "string"
+    ? article.content.split(" ").slice(0, 50).join(" ") + "..."
+    : "";
 }
 
-function getPubDate(article: any): string {
-  if (article.datePublished) {
+function getPubDate(article: FeedArticle): string {
+  if ("datePublished" in article && article.datePublished) {
     return article.datePublished;
   }
-  if (article.publishedAt) {
+  if ("publishedAt" in article && article.publishedAt) {
     return article.publishedAt;
   }
   return new Date().toISOString();
@@ -67,7 +70,7 @@ export function generateRssFeedXml(): string {
       <author>${escapeXml(email || siteConfig.email)} (${escapeXml(name)})</author>
       <pubDate>${escapeXml(toRfc2822(pubDate))}</pubDate>
     </item>`;
-  })
+  });
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">

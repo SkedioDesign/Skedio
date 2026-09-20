@@ -1,3 +1,4 @@
+import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import { createStartHandler, defaultStreamHandler } from "@tanstack/react-start/server";
 import type { Register } from "@tanstack/react-router";
 import type { RequestHandler } from "@tanstack/react-start/server";
@@ -9,8 +10,25 @@ import { generateRssFeedXml } from "./lib/rss-generator";
 import { getUmamiOverview, getUmamiTopPages, getUmamiTopReferrers } from "./lib/umami";
 import { digestRangeLabel, sendDigestEmail } from "./lib/weekly-digest";
 import { siteConfig } from "./lib/site-config";
+import { runWithNonce } from "./lib/nonce-context";
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
+function buildContentSecurityPolicy(nonce: string): string {
+  return [
+    "default-src 'self'",
+    `script-src 'self' 'nonce-${nonce}' https://cloud.umami.is`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob:",
+    "font-src 'self' data:",
+    "connect-src 'self' https://formsubmit.co https://gateway.umami.is",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "frame-ancestors 'none'",
+    "form-action 'self' https://formsubmit.co",
+    "upgrade-insecure-requests",
+  ].join("; ");
+}
 
 async function handleWeeklyDigest(request: Request): Promise<Response> {
   // Only Vercel's cron scheduler (or a caller holding the same secret) may
@@ -18,7 +36,16 @@ async function handleWeeklyDigest(request: Request): Promise<Response> {
   // `Authorization: Bearer <value>`.
   const cronSecret = process.env["CRON_SECRET"];
   const authHeader = request.headers.get("authorization");
-  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret) {
+    console.warn("[weekly-digest] Rejected unauthorized cron invocation.");
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  const expected = createHash("sha256").update(`Bearer ${cronSecret}`).digest();
+  const supplied = createHash("sha256")
+    .update(authHeader ?? "")
+    .digest();
+  if (!timingSafeEqual(expected, supplied)) {
     console.warn("[weekly-digest] Rejected unauthorized cron invocation.");
     return new Response("Unauthorized", { status: 401 });
   }
@@ -91,7 +118,17 @@ const fetch: RequestHandler<Register> = async (request) => {
       return await handleWeeklyDigest(request);
     }
 
-    const response = await handle(request);
+    const nonce = randomBytes(16).toString("base64");
+    const response = await runWithNonce(nonce, async () => {
+      const rendered = await handle(request);
+      const headers = new Headers(rendered.headers);
+      headers.set("content-security-policy", buildContentSecurityPolicy(nonce));
+      return new Response(rendered.body, {
+        status: rendered.status,
+        statusText: rendered.statusText,
+        headers,
+      });
+    });
     if (response.status < 500) return response;
     const captured = consumeLastCapturedError();
     if (captured === undefined) return response;

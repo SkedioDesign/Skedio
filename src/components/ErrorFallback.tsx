@@ -4,8 +4,7 @@ import { ArrowUpRight, RotateCcw } from "lucide-react";
 import { seo } from "@/lib/seo";
 import { captureClientError } from "@/lib/sentry-client";
 import { SiteHeader } from "@/components/SiteHeader";
-
-import "@/lib/error-capture";
+import { logError } from "@/lib/error-capture";
 
 const errorMeta = seo({
   title: "Something went wrong — Skédio",
@@ -20,9 +19,9 @@ const robotsMeta = errorMeta.find(
 
 export function ErrorFallback({ error, info, reset }: ErrorComponentProps) {
   useEffect(() => {
-    console.error(error);
+    logError(error);
     if (info?.componentStack) {
-      console.error(info.componentStack);
+      logError(info.componentStack);
     }
     captureClientError(error, {
       tag: "error-boundary",

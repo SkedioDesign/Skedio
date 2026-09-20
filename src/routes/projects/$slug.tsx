@@ -27,7 +27,7 @@ export const Route = createFileRoute("/projects/$slug")({
     if (!project || !project.published) throw notFound();
     const caseStudy = getCaseStudy(params.slug);
     if (!caseStudy) throw notFound();
-    return { project, slug: params.slug };
+    return { project, slug: params.slug, caseStudy };
   },
   head: ({ loaderData }) => {
     const project = loaderData?.project;
@@ -94,12 +94,14 @@ function CaseStudyNotFound() {
 function CsImage({
   image,
   assets,
+  webp = false,
   className,
   loading = "lazy",
   fetchPriority,
 }: {
   image: ImageRef;
   assets: string;
+  webp?: boolean;
   className?: string;
   loading?: "lazy" | "eager";
   fetchPriority?: "high" | "low" | "auto";
@@ -107,14 +109,17 @@ function CsImage({
   const dims =
     image.width != null && image.height != null ? { width: image.width, height: image.height } : {};
   return (
-    <img
-      src={`${assets}/${image.name}.jpg`}
-      alt={image.alt}
-      {...dims}
-      className={className}
-      loading={loading}
-      fetchPriority={fetchPriority}
-    />
+    <picture>
+      {webp && <source srcSet={`${assets}/${image.name}.webp`} type="image/webp" />}
+      <img
+        src={`${assets}/${image.name}.jpg`}
+        alt={image.alt}
+        {...dims}
+        className={className}
+        loading={loading}
+        fetchPriority={fetchPriority}
+      />
+    </picture>
   );
 }
 
@@ -291,6 +296,7 @@ function CoverSection({
           <CsImage
             image={section.coverImage}
             assets={doc.assets}
+            webp={doc.hasWebp === true}
             loading="eager"
             fetchPriority="high"
           />
@@ -345,7 +351,7 @@ function OverviewSection({
       </div>
 
       <Reveal className="cs-overview__visual" delay={2}>
-        <CsImage image={section.visual} assets={doc.assets} />
+        <CsImage image={section.visual} assets={doc.assets} webp={doc.hasWebp === true} />
       </Reveal>
     </Section>
   );
@@ -386,7 +392,7 @@ function ChallengesSection({
             className={`cs-phone-card ${card.offset ? `cs-phone-card--offset-${card.offset}` : ""}`}
             delay={i % 3}
           >
-            <CsImage image={card.image} assets={doc.assets} />
+            <CsImage image={card.image} assets={doc.assets} webp={doc.hasWebp === true} />
           </Reveal>
         ))}
       </div>
@@ -424,7 +430,7 @@ function ProcessSection({
       </div>
 
       <Reveal className="cs-process__visual" delay={2}>
-        <CsImage image={section.visual} assets={doc.assets} />
+        <CsImage image={section.visual} assets={doc.assets} webp={doc.hasWebp === true} />
       </Reveal>
     </Section>
   );
@@ -476,7 +482,7 @@ function PersonasSection({
             <div className="cs-persona__stage">
               {persona.phones.map((phone, i) => (
                 <Reveal key={i} className="cs-persona__phone-frame" delay={i}>
-                  <CsImage image={phone} assets={doc.assets} />
+                  <CsImage image={phone} assets={doc.assets} webp={doc.hasWebp === true} />
                 </Reveal>
               ))}
             </div>
@@ -507,7 +513,7 @@ function FinalSection({
       </div>
 
       <Reveal className="cs-final__showcase" delay={2}>
-        <CsImage image={section.showcase} assets={doc.assets} />
+        <CsImage image={section.showcase} assets={doc.assets} webp={doc.hasWebp === true} />
       </Reveal>
 
       <div className="cs-journey">
@@ -594,7 +600,7 @@ function EditorialSectionRenderer({
 
       {section.visual && (
         <Reveal className="cs-editorial__visual" delay={2}>
-          <CsImage image={section.visual} assets={doc.assets} />
+          <CsImage image={section.visual} assets={doc.assets} webp={doc.hasWebp === true} />
         </Reveal>
       )}
 
@@ -602,7 +608,7 @@ function EditorialSectionRenderer({
         <div className="cs-editorial__visuals">
           {section.visuals.map((v, i) => (
             <Reveal key={i} className="cs-editorial__visual" delay={i % 3}>
-              <CsImage image={v} assets={doc.assets} />
+              <CsImage image={v} assets={doc.assets} webp={doc.hasWebp === true} />
             </Reveal>
           ))}
         </div>
@@ -630,7 +636,7 @@ function EndingSection({
           ))}
         </div>
         <Reveal className="cs-end__visual">
-          <CsImage image={section.visual} assets={doc.assets} />
+          <CsImage image={section.visual} assets={doc.assets} webp={doc.hasWebp === true} />
         </Reveal>
         <p className="cs-end__foot">{section.foot}</p>
       </div>
@@ -660,8 +666,8 @@ function SectionRenderer({ doc, section }: { doc: CaseStudyDocument; section: Ca
 }
 
 function CaseStudy() {
-  const { project, slug } = Route.useLoaderData();
-  const doc = getCaseStudy(slug)!;
+  const { project, slug, caseStudy } = Route.useLoaderData();
+  const doc = caseStudy;
 
   const [activeChapter, setActiveChapter] = useState("01");
   const [isScrolled, setIsScrolled] = useState(false);

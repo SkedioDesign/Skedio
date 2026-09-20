@@ -57,7 +57,9 @@ function FeaturedStory({ post }: { post: BlogPost }) {
       </p>
 
       <div className="mt-8 flex items-center justify-between gap-6 border-t border-foreground/15 pt-5 text-sm">
-        <span className="tracking-[-0.01em] text-muted-foreground">{fmtDate(post.publishedAt)}</span>
+        <span className="tracking-[-0.01em] text-muted-foreground">
+          {fmtDate(post.publishedAt)}
+        </span>
         <span className="inline-flex items-center gap-2 font-semibold text-primary transition-colors duration-200 group-hover:text-primary-hover">
           Read Article
           <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
@@ -104,9 +106,9 @@ export function BlogPreview() {
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
             <p className="eyebrow">Blog</p>
-<h2 className="mt-4 font-display text-[clamp(2.375rem,4.5vw,3.5rem)] font-extrabold tracking-tight">
-  Read our latest thoughts
-</h2>
+            <h2 className="mt-4 font-display text-[clamp(2.375rem,4.5vw,3.5rem)] font-extrabold tracking-tight">
+              Read our latest thoughts
+            </h2>
           </div>
           {blogPosts.length > 3 && (
             <Link
@@ -127,13 +129,9 @@ export function BlogPreview() {
           <FeaturedStory post={blogPosts[0]!} />
 
           {blogPosts.length > 1 && (
-<aside className="divide-y divide-foreground/10 pt-16 lg:pl-12">
-  {blogPosts.slice(1).map((post, i) => (
-                <ListEntry
-                  key={post.slug}
-                  post={post}
-                  index={String(i + 2).padStart(2, "0")}
-                />
+            <aside className="divide-y divide-foreground/10 pt-16 lg:pl-12">
+              {blogPosts.slice(1).map((post, i) => (
+                <ListEntry key={post.slug} post={post} index={String(i + 2).padStart(2, "0")} />
               ))}
             </aside>
           )}
