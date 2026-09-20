@@ -243,6 +243,8 @@ function Index() {
                         <img
                           src={item.img}
                           alt={item.label}
+                          loading="lazy"
+                          decoding="async"
                           className="h-full w-full object-contain grayscale transition-all duration-300 hover:grayscale-0"
                         />
                       ) : (
@@ -290,6 +292,8 @@ function Index() {
                     <img
                       src={item.img}
                       alt={item.label}
+                      loading="lazy"
+                      decoding="async"
                       className="h-18 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300"
                     />
                   ) : (

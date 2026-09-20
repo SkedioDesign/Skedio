@@ -85,6 +85,8 @@ function CardFace({ post }: { post: BlogPost }) {
         <img
           src={post.previewImage}
           alt=""
+          loading="lazy"
+          decoding="async"
           draggable={false}
           className="h-full w-full select-none object-cover"
         />

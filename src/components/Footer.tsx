@@ -115,7 +115,9 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-10 sm:grid-cols-4">
           {navSections.map((col) => (
             <div key={col.title}>
-              <h4 className="type-label whitespace-nowrap uppercase tracking-[0.08em]">{col.title}</h4>
+              <h4 className="type-label whitespace-nowrap uppercase tracking-[0.08em]">
+                {col.title}
+              </h4>
               <ul className="mt-5 space-y-3 text-sm text-white/60">
                 {col.links.map((x) => (
                   <li key={x.label}>
@@ -216,6 +218,8 @@ export function Footer() {
           alt="Skédio"
           width={818}
           height={297}
+          loading="lazy"
+          decoding="async"
           className="mx-auto -mb-6 w-full max-w-[min(92vw,900px)] brightness-0 invert opacity-[0.06]"
         />
       </div>

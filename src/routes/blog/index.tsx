@@ -151,6 +151,8 @@ function FeaturedStory({ post }: { post: BlogPost }) {
         <img
           src={post.previewImage}
           alt=""
+          loading="lazy"
+          decoding="async"
           className="aspect-[3/2] w-full object-cover will-change-transform transition-transform duration-700 ease-out group-hover:scale-[1.02]"
         />
       </div>
@@ -179,6 +181,8 @@ function ListEntry({ post, index }: { post: BlogPost; index: string }) {
         <img
           src={post.previewImage}
           alt=""
+          loading="lazy"
+          decoding="async"
           className="aspect-square w-24 object-cover will-change-transform transition-transform duration-700 ease-out group-hover:scale-[1.04] sm:w-28"
         />
       </div>

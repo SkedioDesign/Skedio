@@ -249,7 +249,7 @@ export function WhatWeDo() {
                   <img
                     src={s.image}
                     alt={s.title}
-                    loading={i === 0 ? "eager" : "lazy"}
+                    loading="lazy"
                     decoding="async"
                     className="h-full w-full object-cover"
                   />

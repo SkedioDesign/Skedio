@@ -128,6 +128,8 @@ function InsightPost() {
               <img
                 src={article.author.avatar}
                 alt={article.author.name}
+                loading="lazy"
+                decoding="async"
                 className="size-7 rounded-full object-cover"
               />
             ) : (
