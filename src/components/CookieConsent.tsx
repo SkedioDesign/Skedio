@@ -2,13 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Cookie } from "lucide-react";
 
-import {
-  COOKIE_SETTINGS_EVENT,
-  disableAnalytics,
-  initAnalytics,
-  readConsent,
-  writeConsent,
-} from "@/lib/analytics";
+import { COOKIE_SETTINGS_EVENT, initAnalytics, readConsent, writeConsent } from "@/lib/analytics";
 
 export function CookieConsent() {
   const [visible, setVisible] = useState(false);
@@ -38,12 +32,6 @@ export function CookieConsent() {
     setVisible(false);
   };
 
-  const handleDecline = () => {
-    writeConsent("declined");
-    disableAnalytics();
-    setVisible(false);
-  };
-
   return (
     <div
       role="region"
@@ -68,13 +56,6 @@ export function CookieConsent() {
         </div>
 
         <div className="flex shrink-0 items-center gap-3">
-          <button
-            type="button"
-            onClick={handleDecline}
-            className="inline-flex items-center justify-center rounded-full border border-border bg-transparent px-6 py-3 text-sm font-bold uppercase tracking-wider text-foreground/80 transition-all duration-200 hover:bg-surface-alt hover:text-ink-foreground active:scale-95 cursor-pointer"
-          >
-            Decline
-          </button>
           <button
             type="button"
             onClick={handleAccept}
