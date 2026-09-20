@@ -17,6 +17,7 @@ import tailwindcss from "@tailwindcss/vite";
  */
 const stripConsoleOnClient = (): Plugin => ({
   name: "skedio:strip-client-console",
+  apply: "build",
   applyToEnvironment(environment) {
     return environment.config.consumer === "client";
   },
