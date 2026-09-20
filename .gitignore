@@ -38,3 +38,6 @@ __MACOSX
 *.njsproj
 *.sln
 *.sw?
+
+# Environment variables
+.env
