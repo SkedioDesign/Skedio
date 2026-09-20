@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowDown, ArrowDownRight, ArrowLeft } from "lucide-react";
+import { ArrowDown, ArrowDownRight, ArrowLeft, ChevronDown } from "lucide-react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -306,18 +306,58 @@ function CoverSection({
   );
 }
 
-function ChapterNav({ chapters }: { chapters: CaseStudyDocument["chapters"] }) {
+function TagMarquee({ items }: { items: string[] }) {
+  const [paused, setPaused] = useState(false);
   return (
-    <div className="cs-chapter-nav">
+    <div
+      className={`cs-editorial__tags-track ${paused ? "is-paused" : ""}`}
+      onClick={() => setPaused((v) => !v)}
+      role="button"
+      aria-label="Toggle tag marquee animation"
+    >
+      {[...items, ...items].map((tag, i) => (
+        <span key={`${tag}-${i}`} className="cs-editorial__tag" aria-hidden={i >= items.length}>
+          {tag}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function ChapterNav({ chapters }: { chapters: CaseStudyDocument["chapters"] }) {
+  const [expanded, setExpanded] = useState(false);
+  const visible = expanded ? chapters : chapters.slice(0, 3);
+  const hiddenCount = chapters.length - 3;
+
+  const goTo = (id: string) => {
+    setExpanded(false);
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  return (
+    <nav className={`cs-chapter-nav ${expanded ? "cs-chapter-nav--open" : ""}`}>
       <ol className="cs-chapter-nav__list">
-        {chapters.map((c) => (
-          <li key={c.num} className="cs-chapter-nav__item">
-            <span className="cs-chapter-nav__num">{c.num}</span>
-            <span className="cs-chapter-nav__label">{c.label}</span>
+        {visible.map((c) => (
+          <li key={c.num}>
+            <button type="button" className="cs-chapter-nav__item" onClick={() => goTo(c.id)}>
+              <span className="cs-chapter-nav__num">{c.num}</span>
+              <span className="cs-chapter-nav__label">{c.label}</span>
+            </button>
           </li>
         ))}
       </ol>
-    </div>
+      {hiddenCount > 0 && (
+        <button
+          type="button"
+          className="cs-chapter-nav__toggle"
+          aria-expanded={expanded}
+          onClick={() => setExpanded((v) => !v)}
+        >
+          <span>{expanded ? "Close" : `+${hiddenCount} More`}</span>
+          <ChevronDown size={14} />
+        </button>
+      )}
+    </nav>
   );
 }
 
@@ -563,15 +603,15 @@ function EditorialSectionRenderer({
             </Reveal>
           ))}
 
-          {section.tags && section.tags.length > 0 && (
-            <Reveal className="cs-editorial__tags" delay={(section.lede?.length ?? 1) % 3}>
-              {section.tags.map((tag) => (
-                <span key={tag} className="cs-editorial__tag">
-                  {tag}
-                </span>
-              ))}
-            </Reveal>
-          )}
+          {(() => {
+            const tags = section.tags;
+            if (!tags || tags.length === 0) return null;
+            return (
+              <Reveal className="cs-editorial__tags" delay={(section.lede?.length ?? 1) % 3}>
+                <TagMarquee items={tags} />
+              </Reveal>
+            );
+          })()}
 
           {section.points && section.points.length > 0 && (
             <Reveal className="cs-editorial__points">

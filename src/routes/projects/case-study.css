@@ -271,7 +271,7 @@
 .cs-cover__meta-grid {
   display: grid;
   grid-template-columns: 1fr 1.4fr;
-  gap: 40px;
+  gap: clamp(40px, 5vw, 72px);
   align-items: start;
   border-top: 1px solid var(--cs-gray-border);
   padding-top: 36px;
@@ -280,14 +280,19 @@
 
 .cs-cover__facts {
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px 32px;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .cs-cover__fact-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+}
+
+.cs-cover__fact-item + .cs-cover__fact-item {
+  padding-top: 18px;
+  border-top: 1px solid var(--cs-gray-border);
 }
 
 .cs-cover__fact-label {
@@ -856,6 +861,7 @@
 .cs-editorial {
   background: var(--cs-white);
   color: var(--cs-black);
+  padding: clamp(56px, 7vw, 100px) 0;
 }
 
 .cs-editorial--dark {
@@ -877,6 +883,10 @@
   gap: clamp(36px, 6vw, 80px);
   align-items: start;
   margin-bottom: clamp(60px, 8vw, 96px);
+}
+
+.cs-editorial__layout > * {
+  min-width: 0;
 }
 
 .cs-editorial__headline {
@@ -909,9 +919,40 @@
 }
 
 .cs-editorial__tags {
+  overflow: hidden;
+  padding: 4px 0;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+.cs-editorial__tags-track {
   display: flex;
-  flex-wrap: wrap;
   gap: 10px;
+  width: max-content;
+  animation: cs-tags-marquee 24s linear infinite;
+}
+
+.cs-editorial__tags:hover .cs-editorial__tags-track,
+.cs-editorial__tags:focus-within .cs-editorial__tags-track,
+.cs-editorial__tags-track.is-paused {
+  animation-play-state: paused;
+}
+
+@keyframes cs-tags-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-editorial__tags-track {
+    animation: none;
+    flex-wrap: wrap;
+    width: auto;
+  }
 }
 
 .cs-editorial__tag {
@@ -1098,7 +1139,7 @@
   .cs-final__col,
   .cs-editorial__layout {
     grid-template-columns: 1fr;
-    gap: 32px;
+    gap: 48px;
   }
 
   .cs-timeline__row {
@@ -1134,16 +1175,8 @@
     padding-bottom: 0;
   }
 
-  .cs-cover__facts {
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    gap: 10px;
-    width: 100%;
-  }
-
   .cs-cover__fact-item {
-    flex: 1 1 auto;
-    min-width: 0;
+    gap: 4px;
   }
 
   .cs-cover__fact-label {
@@ -1163,7 +1196,10 @@
 
   .cs-chapter-nav {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     justify-content: center;
+    gap: 8px;
     padding: 0 clamp(20px, 5vw, 48px);
     margin: 0 0 clamp(24px, 4vw, 40px);
   }
@@ -1176,26 +1212,69 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: clamp(16px, 3vw, 28px);
+    gap: 8px;
     list-style: none;
     margin: 0;
     padding: 0;
   }
 
   .cs-chapter-nav__item {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 12px;
+    padding: 8px 14px;
+    border: 1px solid var(--cs-gray-border);
+    border-radius: 999px;
+    background: var(--cs-white);
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--cs-gray-muted);
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .cs-chapter-nav__item:hover {
+    border-color: var(--cs-black);
+    color: var(--cs-black);
   }
 
   .cs-chapter-nav__num {
     color: var(--cs-black);
     font-weight: 800;
+  }
+
+  .cs-chapter-nav__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: 1px solid var(--cs-gray-border);
+    border-radius: 999px;
+    background: var(--cs-white);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cs-gray-muted);
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+  }
+
+  .cs-chapter-nav__toggle:hover {
+    border-color: var(--cs-black);
+    color: var(--cs-black);
+  }
+
+  .cs-chapter-nav__toggle svg {
+    transition: transform 0.2s ease;
+  }
+
+  .cs-chapter-nav--open .cs-chapter-nav__toggle svg {
+    transform: rotate(180deg);
   }
 
   .cs-overview__index {

@@ -68,7 +68,7 @@ export const projects: ProjectSummary[] = [
     metaTitle: "EDIOS — Video Production Studio Brand Identity | Skédio",
     metaDescription: "Brand identity and art direction for EDIOS, a video production studio.",
     ogImage: "/EDIOS/1.jpg",
-    themeColor: "#f97316",
+    themeColor: "#b61318",
     year: "2026",
     platform: "Brand Identity System",
     discipline: "Branding & Identity",
