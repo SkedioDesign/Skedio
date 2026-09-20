@@ -6,7 +6,7 @@ export const siteConfig = {
   description:
     "Skédio is a creative studio crafting bold brands, beautiful experiences and digital products that help businesses grow.",
   email: "skediodesignspace@gmail.com",
-  phone: "+91 98765 43210",
+  phone: "+91 97709 57780",
   socials: {
     linkedin: "https://www.linkedin.com/company/skedio",
     instagram: "https://www.instagram.com/skedio.studio",
