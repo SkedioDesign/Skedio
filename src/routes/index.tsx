@@ -237,7 +237,7 @@ function Index() {
                   {partnerLogos.map((item, i) => (
                     <div
                       key={`${item.id}-${i}`}
-                      className="flex h-10 w-36 shrink-0 items-center justify-center"
+                      className="flex h-16 w-52 shrink-0 items-center justify-center"
                     >
                       {item.img ? (
                         <img
@@ -246,7 +246,7 @@ function Index() {
                           className="h-full w-full object-contain grayscale transition-all duration-300 hover:grayscale-0"
                         />
                       ) : (
-                        <span className="whitespace-nowrap text-center font-display text-[0.8125rem] font-bold tracking-tight text-foreground/50 transition-colors duration-300 hover:text-foreground">
+                        <span className="whitespace-nowrap text-center font-display text-xl font-bold tracking-tight text-foreground/50 transition-colors duration-300 hover:text-foreground">
                           {item.label}
                         </span>
                       )}
