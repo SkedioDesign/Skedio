@@ -77,7 +77,7 @@ export function Clients() {
           <div className="relative mb-10 lg:mb-0 lg:pr-10">
             <span
               aria-hidden="true"
-              className="absolute -right-9 top-1/2 hidden h-52 w-px -translate-y-1/2 bg-black/10 lg:block dark:bg-white/10"
+              className="absolute -right-9 top-1/2 hidden h-52 w-px -translate-y-1/2 bg-black/10 lg:block"
             />
             <h2 className="font-display text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
               Clients
@@ -89,7 +89,7 @@ export function Clients() {
         </ScrollReveal>
 
         <ScrollReveal direction="right" className="lg:col-span-3">
-          <div className="relative rounded-[22px] border border-black/[0.06] bg-surface px-6 py-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)] dark:border-white/10">
+          <div className="relative rounded-[22px] border border-black/[0.06] bg-surface px-6 py-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
             {reducedMotion ? (
               <div className="grid grid-cols-2 gap-x-10 gap-y-12 sm:grid-cols-3">
                 {clients.map((client) => (
@@ -106,7 +106,7 @@ export function Clients() {
                     direction="rtl"
                     label={`${rowOne.length} client logos, row one`}
                   />
-                  <div className="my-5 border-t border-black/[0.06] dark:border-white/10 lg:my-6">
+                  <div className="my-5 border-t border-black/[0.06] lg:my-6">
                     <MarqueeRow
                       items={rowTwo}
                       direction="ltr"

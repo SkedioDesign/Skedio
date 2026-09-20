@@ -17,9 +17,6 @@ import { siteConfig } from "../lib/site-config";
 import { NotFound } from "../components/NotFound";
 import { ErrorFallback } from "../components/ErrorFallback";
 import { CookieConsent } from "../components/CookieConsent";
-import { ThemeProvider } from "../context/theme-context";
-import { FOUC_SCRIPT } from "../lib/theme";
-import { getCurrentNonce } from "../lib/nonce-context";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -36,8 +33,7 @@ export const Route = createRootRoute({
       // See docs/seo-verification.md for the alternative HTML-file method.
       // ──────────────────────────────────────────────────────────────────────
       { name: "google-site-verification", content: "REPLACE_WITH_CODE" },
-      <meta name="msvalidate.01" content="REPLACE_WITH_CODE" />,
-      { name: "theme-color", content: "#8537F4" },
+      { name: "msvalidate.01", content: "REPLACE_WITH_CODE" },
     ],
     links: [
       { rel: "icon", type: "image/png", href: "/skedio-logomark.png" },
@@ -72,12 +68,10 @@ function RootComponent() {
     <LenisProvider>
       <RootDocument>
         <ContactModalProvider>
-          <ThemeProvider>
-            <Outlet />
-            <ContactModal />
-            {!pathname.startsWith("/projects") && <Footer />}
-            <CookieConsent />
-          </ThemeProvider>
+          <Outlet />
+          <ContactModal />
+          {!pathname.startsWith("/projects") && <Footer />}
+          <CookieConsent />
         </ContactModalProvider>
       </RootDocument>
     </LenisProvider>
@@ -85,19 +79,10 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
-  const nonce = getCurrentNonce();
-
   return (
     <html lang="en">
       <head>
         <HeadContent />
-        {/* Applies the saved/system theme before hydration to avoid a flash.
-            Nonce keeps it compliant with the strict CSP from server.ts. */}
-        <script
-          suppressHydrationWarning
-          nonce={nonce}
-          dangerouslySetInnerHTML={{ __html: FOUC_SCRIPT }}
-        />
         <StructuredData data={[getOrganizationSchema(), getWebSiteSchema()]} />
       </head>
       <body>
