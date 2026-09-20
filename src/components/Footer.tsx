@@ -44,6 +44,7 @@ const navSections: FooterNavSection[] = [
   {
     title: "Resources",
     links: [
+      { label: "Insights Journal", href: "/insights" },
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Terms & Conditions", href: "/terms" },
     ],
