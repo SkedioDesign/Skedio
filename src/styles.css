@@ -307,6 +307,27 @@
     color: var(--primary);
   }
 
+  /* Testimonials heading — heavy editorial caps, tight tracking */
+  .sk-testimonials-title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.875rem, 5.6vw, 2.375rem); /* 30 → 38 */
+    line-height: 1.1;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  @media (min-width: 768px) {
+    .sk-testimonials-title {
+      font-size: clamp(2.5rem, 5.4vw, 3rem); /* 40 → 48 */
+    }
+  }
+  @media (min-width: 1024px) {
+    .sk-testimonials-title {
+      font-size: clamp(3rem, 4.2vw, 4rem); /* 48 → 64 */
+    }
+  }
+
   /* Eyebrow label — small caps voice used sparingly above section headings */
   .eyebrow {
     font-size: 0.8125rem;

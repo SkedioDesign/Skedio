@@ -14,6 +14,7 @@ import { WhatWeDo } from "@/components/WhatWeDo";
 import { SelectedWork } from "@/components/SelectedWork";
 import { BlogPreview } from "@/components/BlogPreview";
 import { Clients } from "@/components/Clients";
+import { Testimonials } from "@/components/Testimonials";
 import { FaqItem } from "@/components/FaqAccordion";
 import { getServiceSchema, getFAQSchema } from "@/lib/schema";
 import { servicesData } from "@/data/services";
@@ -321,6 +322,9 @@ function Index() {
 
         {/* Clients */}
         <Clients />
+
+        {/* Testimonials */}
+        <Testimonials />
 
         {/* FAQs Section (High-Leverage AEO Surface) */}
         <section

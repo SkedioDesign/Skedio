@@ -1,0 +1,56 @@
+[
+  {
+    "name": "Julia",
+    "role": "IT Specialist",
+    "age": "31 y.o.",
+    "experience": "18 months of training",
+    "quote": "My trainer helped me reconnect with my body and mind through a deeply personal and thoughtful approach.",
+    "focus": "Mental balance",
+    "image": "/images/julia.svg"
+  },
+  {
+    "name": "Andrij",
+    "role": "Entrepreneur",
+    "age": "35 y.o.",
+    "experience": "Member since 2023",
+    "quote": "Where discipline meets clarity. Training here feels structured, intentional, and deeply personal.",
+    "focus": "Performance & longevity",
+    "image": "/images/andrij.svg"
+  },
+  {
+    "name": "Marta",
+    "role": "Architect",
+    "age": "29 y.o.",
+    "experience": "14 months of training",
+    "quote": "I walked in unsure of my strength and left knowing exactly what my body can do when it's guided well.",
+    "focus": "Body recomposition",
+    "image": "/images/marta.svg"
+  },
+  {
+    "name": "Filip",
+    "role": "Software Developer",
+    "age": "27 y.o.",
+    "experience": "10 months of training",
+    "quote": "Every session is a reset — mental clarity first, strength as the quiet result of showing up consistently.",
+    "focus": "Strength & consistency",
+    "image": "/images/filip.svg"
+  },
+  {
+    "name": "Oksana",
+    "role": "Teacher",
+    "age": "33 y.o.",
+    "experience": "Member since 2022",
+    "quote": "No gimmicks, no shortcuts. Just patient, honest work that shows up in how I feel every single day.",
+    "focus": "Mental balance",
+    "image": "/images/oksana.svg"
+  },
+  {
+    "name": "Roman",
+    "role": "Physician",
+    "age": "38 y.o.",
+    "experience": "2 years of training",
+    "quote": "Precise programming, honest pacing. My performance and recovery improved faster than I thought possible.",
+    "focus": "Performance & longevity",
+    "image": "/images/roman.svg"
+  }
+]
