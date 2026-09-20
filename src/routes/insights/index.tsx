@@ -79,7 +79,7 @@ function InsightsList() {
                   ))}
                 </div>
 
-                <h2 className="mt-4 text-xl font-bold leading-snug group-hover:text-primary transition-colors">
+                <h2 className="mt-4 text-xl font-bold leading-snug tracking-tight group-hover:text-primary transition-colors">
                   {article.title}
                 </h2>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">

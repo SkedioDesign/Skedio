@@ -128,7 +128,7 @@ function About() {
         {/* Headline — primary visual statement, immediately below the label */}
         <ScrollReveal className="mt-5">
           <h1
-            className="font-heading font-light leading-[1.05] tracking-[-0.03em]"
+            className="font-heading font-light leading-[1.05] tracking-tight"
             style={{ fontSize: "clamp(2.25rem, 5.5vw, 4rem)" }}
           >
             We Design Brands
@@ -185,7 +185,7 @@ function About() {
 
           {/* Content */}
           <ScrollReveal direction="right" className="flex flex-col justify-center">
-            <h2 className="font-heading text-3xl font-light tracking-[-0.03em] md:text-4xl lg:text-5xl">
+            <h2 className="font-heading text-3xl font-light tracking-tight md:text-4xl lg:text-5xl">
               {founder.name}
             </h2>
             <p className="mt-2 text-xs font-semibold uppercase tracking-[0.14em] text-primary">
@@ -222,7 +222,7 @@ function About() {
           <ScrollReveal>
             <p className="eyebrow">Our Team</p>
             <h2
-              className="font-heading mt-5 font-light tracking-[-0.03em]"
+              className="font-heading mt-5 font-light tracking-tight"
               style={{ fontSize: "clamp(2rem, 4.5vw, 3.25rem)", lineHeight: 1.05 }}
             >
               People Behind the Work.
@@ -266,7 +266,7 @@ function About() {
 
                 {/* Identity — equal typography weight */}
                 <div className="mt-5">
-                  <h3 className="text-base font-semibold tracking-[-0.01em]">{member.name}</h3>
+                  <h3 className="text-base font-semibold tracking-tight">{member.name}</h3>
                   <p className="mt-0.5 text-[0.75rem] font-semibold uppercase tracking-[0.1em] text-primary">
                     {member.role}
                   </p>
@@ -305,7 +305,7 @@ function About() {
             <ScrollReveal>
               <p className="eyebrow">Built With Purpose</p>
               <h2
-                className="font-heading mt-5 font-light tracking-[-0.03em]"
+                className="font-heading mt-5 font-light tracking-tight"
                 style={{ fontSize: "clamp(2rem, 4.5vw, 3.5rem)", lineHeight: 1.05 }}
               >
                 More Than a Studio. <br className="hidden sm:block" />

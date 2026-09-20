@@ -50,7 +50,7 @@ function FeaturedStory({ post }: { post: BlogPost }) {
         />
       </div>
 
-      <h2 className="mt-7 font-serif text-[clamp(1.625rem,3vw,2.5rem)] font-extrabold leading-[1.08] tracking-[-0.02em] text-balance decoration-primary decoration-2 underline-offset-[0.32em] underline decoration-transparent transition-[text-decoration-color] duration-300 group-hover:decoration-primary">
+      <h2 className="mt-7 font-serif text-[clamp(1.625rem,3vw,2.5rem)] font-extrabold leading-[1.08] tracking-tight text-balance decoration-primary decoration-2 underline-offset-[0.32em] underline decoration-transparent transition-[text-decoration-color] duration-300 group-hover:decoration-primary">
         {post.title}
       </h2>
 
@@ -85,7 +85,7 @@ function ListEntry({ post, index }: { post: BlogPost; index: string }) {
         <CategoryLabel category={post.category} />
       </div>
 
-      <h3 className="mt-3 text-[1.0625rem] font-semibold leading-snug tracking-[-0.01em] text-balance decoration-primary decoration-[1.5px] underline-offset-4 underline decoration-transparent transition-[text-decoration-color] duration-300 group-hover:decoration-primary sm:text-[1.125rem]">
+      <h3 className="mt-3 text-[1.0625rem] font-semibold leading-snug tracking-tight text-balance decoration-primary decoration-[1.5px] underline-offset-4 underline decoration-transparent transition-[text-decoration-color] duration-300 group-hover:decoration-primary sm:text-[1.125rem]">
         {post.title}
       </h3>
 

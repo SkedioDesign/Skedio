@@ -48,7 +48,7 @@ function PrivacyPolicy() {
 
         <div className="mt-12 space-y-10 text-base leading-relaxed text-foreground/85 sm:text-lg">
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">1. Overview</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">1. Overview</h2>
             <p>
               Skédio ("we," "our," or "us") respects your privacy and is committed to protecting any
               personal data collected through our website (
@@ -60,7 +60,9 @@ function PrivacyPolicy() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">2. Information We Collect</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              2. Information We Collect
+            </h2>
             <p>We may collect information you voluntarily provide, including:</p>
             <ul className="list-disc pl-6 space-y-2">
               <li>
@@ -81,7 +83,9 @@ function PrivacyPolicy() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">3. How We Use Information</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              3. How We Use Information
+            </h2>
             <p>We use collected information strictly to:</p>
             <ul className="list-disc pl-6 space-y-2">
               <li>Respond to inquiries and prepare project proposals.</li>
@@ -103,7 +107,9 @@ function PrivacyPolicy() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">4. Cookies and Tracking</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              4. Cookies and Tracking
+            </h2>
             <p>
               We use necessary cookies that are essential for the site to function. We do not use
               any tracking or advertising cookies, and we do not collect analytics data without your
@@ -155,7 +161,9 @@ function PrivacyPolicy() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">5. Third-Party Processors</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              5. Third-Party Processors
+            </h2>
             <p>
               We share information only with trusted service providers who help us operate the site.
               Each processor is contractually bound to use your data only for the purposes we
@@ -180,7 +188,7 @@ function PrivacyPolicy() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">6. Data Retention</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">6. Data Retention</h2>
             <p>
               We retain contact information and project communications only for as long as needed to
               respond to your inquiry or perform our services, and then for a reasonable period
@@ -191,7 +199,7 @@ function PrivacyPolicy() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">7. Data Security</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">7. Data Security</h2>
             <p>
               We implement industry-standard technical and organizational measures to safeguard your
               data against unauthorized access, loss, or alteration. Transmissions to third-party
@@ -200,7 +208,7 @@ function PrivacyPolicy() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">8. Your Rights</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">8. Your Rights</h2>
             <p>Depending on your jurisdiction, you may have the right to:</p>
             <ul className="list-disc pl-6 space-y-2">
               <li>
@@ -235,7 +243,9 @@ function PrivacyPolicy() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">9. Children's Privacy</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              9. Children's Privacy
+            </h2>
             <p>
               Our website and services are intended for business and professional audiences and are
               not directed to children under 13. We do not knowingly collect personal information
@@ -245,7 +255,9 @@ function PrivacyPolicy() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">10. International Transfers</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              10. International Transfers
+            </h2>
             <p>
               Some of our service providers (e.g. Vercel, Umami, FormSubmit) may process data on
               servers located outside your country of residence. Where such transfers occur, we rely
@@ -255,7 +267,9 @@ function PrivacyPolicy() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">11. Changes to This Policy</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              11. Changes to This Policy
+            </h2>
             <p>
               We may update this Privacy Policy from time to time to reflect changes in our
               practices or legal requirements. The "Last updated" date above will be revised, and
@@ -265,7 +279,7 @@ function PrivacyPolicy() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">12. Contact Us</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">12. Contact Us</h2>
             <p>
               If you have any questions about this Privacy Policy or your data, contact us at{" "}
               <a href={`mailto:${siteConfig.email}`} className="text-primary font-medium underline">

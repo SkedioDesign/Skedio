@@ -332,7 +332,7 @@ function Index() {
           <ScrollReveal>
             <div className="text-center">
               <p className="eyebrow">Studio FAQs</p>
-              <h2 className="type-h2 mt-4">Questions you might have</h2>
+              <h2 className="type-h2 mt-4 font-extrabold">Questions you might have</h2>
               <p className="mt-3 text-muted-foreground">
                 Clear answers on pricing, timelines, deliverables, and how we work with founders.
               </p>

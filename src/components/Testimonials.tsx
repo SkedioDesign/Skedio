@@ -67,7 +67,7 @@ function TestimonialCard({ t, index }: { t: Testimonial; index: number }) {
       <div className="flex items-center gap-2.5">
         <Avatar src={t.image} alt={`${t.name} — member portrait`} />
         <div className="min-w-0">
-          <h3 className="truncate font-display text-[0.8125rem] font-bold leading-tight text-foreground">
+          <h3 className="truncate font-display text-[0.8125rem] font-bold leading-tight tracking-tight text-foreground">
             {t.name}
           </h3>
           <p className="mt-0.5 truncate text-[0.625rem] leading-tight text-muted-foreground">

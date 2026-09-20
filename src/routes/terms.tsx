@@ -47,7 +47,9 @@ function TermsAndConditions() {
 
         <div className="mt-12 space-y-10 text-base leading-relaxed text-foreground/85 sm:text-lg">
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">1. Agreement to Terms</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              1. Agreement to Terms
+            </h2>
             <p>
               By accessing or using the website operated by Skédio ("Studio," "we," "us"), you agree
               to be bound by these Terms &amp; Conditions. If you do not agree, please discontinue
@@ -56,7 +58,9 @@ function TermsAndConditions() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">2. Intellectual Property</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              2. Intellectual Property
+            </h2>
             <p>
               All content on this website — including text, case studies, graphics, logos, images,
               and code — is the property of Skédio or its respective client licensors and is
@@ -65,7 +69,9 @@ function TermsAndConditions() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">3. Client Engagements</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              3. Client Engagements
+            </h2>
             <p>
               All professional services (product design, visual identity, UI/UX design, software
               development) are governed by specific Master Services Agreements (MSA) and Statements
@@ -74,7 +80,7 @@ function TermsAndConditions() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
               4. Payments, Refunds &amp; Cancellations
             </h2>
             <p>
@@ -88,7 +94,9 @@ function TermsAndConditions() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">5. Limitation of Liability</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              5. Limitation of Liability
+            </h2>
             <p>
               The materials on this website are provided on an "as-is" basis. Skédio makes no
               warranties, expressed or implied, and hereby disclaims all other warranties including
@@ -100,7 +108,7 @@ function TermsAndConditions() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">6. External Links</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">6. External Links</h2>
             <p>
               The website may contain links to third-party websites or services (such as LinkedIn,
               Instagram, and Behance). We are not responsible for the content, privacy practices, or
@@ -110,7 +118,7 @@ function TermsAndConditions() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">7. Privacy</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">7. Privacy</h2>
             <p>
               Your use of the website is also governed by our{" "}
               <Link to="/privacy" className="text-primary font-medium underline">
@@ -121,7 +129,7 @@ function TermsAndConditions() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">8. Governing Law</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">8. Governing Law</h2>
             <p>
               These Terms shall be governed by and construed in accordance with the laws of India,
               without regard to its conflict of law provisions. Any disputes arising under these
@@ -130,7 +138,9 @@ function TermsAndConditions() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">9. Changes to These Terms</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              9. Changes to These Terms
+            </h2>
             <p>
               We may revise these Terms at any time by updating this page. The "Last updated" date
               above will be revised accordingly. By continuing to use the website after changes are
@@ -139,7 +149,9 @@ function TermsAndConditions() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">10. Severability &amp; Waiver</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              10. Severability &amp; Waiver
+            </h2>
             <p>
               If any provision of these Terms is held to be invalid or unenforceable, the remaining
               provisions shall continue in full force and effect. Our failure to enforce any right
@@ -149,7 +161,7 @@ function TermsAndConditions() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">11. Inquiries</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">11. Inquiries</h2>
             <p>
               Questions regarding these Terms should be directed to{" "}
               <a href={`mailto:${siteConfig.email}`} className="text-primary font-medium underline">

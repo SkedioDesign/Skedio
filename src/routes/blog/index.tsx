@@ -68,7 +68,7 @@ function BlogList() {
           <div className="grid items-end gap-10 lg:grid-cols-12 lg:gap-12">
             <div className="lg:col-span-8 xl:col-span-7">
               <p className="eyebrow">Skédio Journal</p>
-              <h1 className="mt-6 font-serif font-bold leading-[0.95] tracking-[-0.02em] text-[clamp(3.25rem,9vw,6rem)]">
+              <h1 className="mt-6 font-serif font-bold leading-[0.95] tracking-tight text-[clamp(3.25rem,9vw,6rem)]">
                 Blog
               </h1>
               <p className="mt-6 max-w-xl leading-relaxed tracking-[-0.01em] text-muted-foreground md:mt-7">
@@ -139,7 +139,7 @@ function FeaturedStory({ post }: { post: BlogPost }) {
         </span>
       </div>
 
-      <h2 className="mt-7 font-serif text-[clamp(1.8rem,3.1vw,2.65rem)] font-bold leading-[1.08] tracking-[-0.02em] text-balance decoration-primary decoration-2 underline-offset-[6px] underline decoration-transparent transition-[text-decoration-color] duration-300 group-hover:decoration-primary">
+      <h2 className="mt-7 font-serif text-[clamp(1.8rem,3.1vw,2.65rem)] font-bold leading-[1.08] tracking-tight text-balance decoration-primary decoration-2 underline-offset-[6px] underline decoration-transparent transition-[text-decoration-color] duration-300 group-hover:decoration-primary">
         {post.title}
       </h2>
 
@@ -196,7 +196,7 @@ function ListEntry({ post, index }: { post: BlogPost; index: string }) {
           </span>
           <span className="h-px flex-1 bg-foreground/10" />
         </div>
-        <h3 className="mt-3 font-serif text-[1.05rem] font-semibold leading-snug tracking-[-0.01em] text-balance decoration-primary decoration-[1.5px] underline-offset-4 underline decoration-transparent transition-[text-decoration-color] duration-300 group-hover:decoration-primary sm:text-lg">
+        <h3 className="mt-3 font-serif text-[1.05rem] font-semibold leading-snug tracking-tight text-balance decoration-primary decoration-[1.5px] underline-offset-4 underline decoration-transparent transition-[text-decoration-color] duration-300 group-hover:decoration-primary sm:text-lg">
           {post.title}
         </h3>
         <p className="mt-2.5 text-xs tracking-[-0.01em] text-muted-foreground">

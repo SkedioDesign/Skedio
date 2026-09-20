@@ -166,7 +166,7 @@ function BlogPost() {
                   params={{ slug: other.slug }}
                   className="group rounded-xl border border-border bg-card p-6 transition-all hover:-translate-y-1 hover:border-primary/50"
                 >
-                  <h3 className="font-bold group-hover:text-primary transition-colors line-clamp-2">
+                  <h3 className="font-bold tracking-tight group-hover:text-primary transition-colors line-clamp-2">
                     {other.title}
                   </h3>
                   <p className="mt-2 text-sm text-muted-foreground line-clamp-2">

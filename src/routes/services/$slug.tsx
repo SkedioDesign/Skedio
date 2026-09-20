@@ -218,7 +218,7 @@ function ServiceDetail() {
                 <span className="font-display text-4xl font-extrabold text-primary/30">
                   {p.step}
                 </span>
-                <h3 className="mt-4 text-lg font-bold">{p.title}</h3>
+                <h3 className="mt-4 text-lg font-bold tracking-tight">{p.title}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   {p.description}
                 </p>
@@ -262,7 +262,7 @@ function ServiceDetail() {
               params={{ slug: other.slug }}
               className="group rounded-xl border border-border bg-card p-6 transition-all hover:-translate-y-1 hover:border-primary/50"
             >
-              <h3 className="font-bold group-hover:text-primary transition-colors flex items-center justify-between">
+              <h3 className="font-bold tracking-tight group-hover:text-primary transition-colors flex items-center justify-between">
                 {other.shortTitle}
                 <ArrowUpRight className="size-4 opacity-0 group-hover:opacity-100 transition-opacity" />
               </h3>
