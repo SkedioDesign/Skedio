@@ -231,7 +231,7 @@ function Index() {
             <div className="rounded-2xl border border-border bg-surface/60 p-8 lg:p-10">
               <p className="eyebrow text-center">Partner with</p>
               <div className="sk-marquee mt-6 overflow-hidden">
-                <div className="sk-marquee-track flex w-max items-center gap-x-10">
+                <div className="sk-marquee-track flex w-max items-center gap-x-6">
                   {partnerLogos.map((item, i) => (
                     <div
                       key={`${item.id}-${i}`}
