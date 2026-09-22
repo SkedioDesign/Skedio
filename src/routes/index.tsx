@@ -43,10 +43,8 @@ export const Route = createFileRoute("/")({
 
 const partnerLogos = [
   { type: "text" as const, id: "sc", label: "Social Chums", img: "/Social Chums.png" },
-  { type: "text" as const, id: "nt", label: "Nuvance Technology" },
   { type: "text" as const, id: "ed", label: "Edios", img: "/Edios.png" },
   { type: "text" as const, id: "sc2", label: "Social Chums", img: "/Social Chums.png" },
-  { type: "text" as const, id: "nt2", label: "Nuvance Technology" },
   { type: "text" as const, id: "ed2", label: "Edios", img: "/Edios.png" },
 ];
 
