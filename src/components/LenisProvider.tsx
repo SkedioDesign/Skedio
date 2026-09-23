@@ -35,6 +35,8 @@ function ScrollSync() {
 export function LenisProvider({ children }: { children: ReactNode }) {
   const lenisRef = useRef<LenisRef>(null);
 
+  const smoothTouch = typeof window !== "undefined" && !window.matchMedia("(pointer: coarse)").matches;
+
   useGSAP(() => {
     const update = (time: number) => {
       lenisRef.current?.lenis?.raf(time * 1000);
@@ -59,7 +61,7 @@ export function LenisProvider({ children }: { children: ReactNode }) {
         wheelMultiplier: 1,
         touchMultiplier: 1,
         smoothWheel: true,
-        syncTouch: true,
+        syncTouch: smoothTouch,
       }}
     >
       {children}
