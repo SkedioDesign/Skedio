@@ -10,6 +10,7 @@ import {
   type ProjectTagColor,
   type SelectedWorkItem,
 } from "@/data/projects";
+import { WebpImage } from "@/components/WebpImage";
 
 type WorkFilter = ProjectCategory | "all";
 
@@ -78,7 +79,7 @@ function ProjectCard({
         params={{ slug: project.slug }}
         className="group relative block h-full w-full overflow-hidden rounded-2xl bg-ink shadow-xl transition-transform duration-200 ease-out hover:scale-[1.02] hover:shadow-2xl"
       >
-        <img
+        <WebpImage
           src={project.image}
           alt={`${project.title} — ${project.subtitle}`}
           loading="lazy"
@@ -311,7 +312,7 @@ export function SelectedWork() {
               ["--tw-animation-duration" as string]: `${EXIT_MS}ms`,
             }}
           >
-            <img
+            <WebpImage
               src={g.project.image}
               alt=""
               loading="lazy"

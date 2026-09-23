@@ -3,13 +3,14 @@ import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import { useContactModal } from "@/context/use-contact-modal";
 import { cn } from "@/lib/utils";
+import { WebpImage } from "@/components/WebpImage";
 
 export type HeaderLink =
   { label: string; to: string; hash?: string; current?: false } | { label: string; current: true };
 
 function Wordmark({ className = "" }: { className?: string }) {
   return (
-    <img
+    <WebpImage
       src="/skedio-primary.png"
       alt="Skédio"
       width={818}

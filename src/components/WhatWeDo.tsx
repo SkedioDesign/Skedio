@@ -4,6 +4,7 @@ import { ArrowUpRight, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { servicesData } from "@/data/services";
+import { WebpImage } from "@/components/WebpImage";
 
 const svcImages: Record<string, string> = {
   "product-design": "/ProductDesign.png",
@@ -178,7 +179,7 @@ function MobileAccordion({
               <div className="overflow-hidden">
                 <div className="px-6 pb-6">
                   <div className="relative aspect-[16/10] overflow-hidden rounded-xl">
-                    <img
+                    <WebpImage
                       src={s.image}
                       alt={s.title}
                       loading="lazy"
@@ -246,7 +247,7 @@ export function WhatWeDo() {
                     i === (active ?? 0) ? "opacity-100" : "opacity-0",
                   )}
                 >
-                  <img
+                  <WebpImage
                     src={s.image}
                     alt={s.title}
                     loading="lazy"

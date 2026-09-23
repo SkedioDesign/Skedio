@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { blogPosts, type BlogPost } from "@/data/blog";
+import { WebpImage } from "@/components/WebpImage";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -41,7 +42,7 @@ function FeaturedStory({ post }: { post: BlogPost }) {
       </div>
 
       <div className="mt-5 overflow-hidden">
-        <img
+        <WebpImage
           src={post.previewImage}
           alt=""
           loading="lazy"

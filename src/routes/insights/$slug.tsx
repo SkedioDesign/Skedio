@@ -7,6 +7,7 @@ import { StructuredData } from "@/components/StructuredData";
 import { getArticleSchema, getBreadcrumbSchema, type BreadcrumbItem } from "@/lib/schema";
 import { useContactModal } from "@/context/use-contact-modal";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { WebpImage } from "@/components/WebpImage";
 
 export const Route = createFileRoute("/insights/$slug")({
   loader: async ({ params }) => {
@@ -125,7 +126,7 @@ function InsightPost() {
         <div className="mt-8 flex flex-wrap items-center gap-6 border-y border-border py-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-2.5">
             {article.author.avatar ? (
-              <img
+              <WebpImage
                 src={article.author.avatar}
                 alt={article.author.name}
                 loading="lazy"

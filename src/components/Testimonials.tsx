@@ -3,6 +3,7 @@ import { gsap } from "gsap";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import testimonialData from "@/data/testimonial.json";
+import { WebpImage } from "@/components/WebpImage";
 
 export interface Testimonial {
   name: string;
@@ -44,7 +45,7 @@ function Avatar({ src, alt }: { src: string; alt: string }) {
   const [failed, setFailed] = useState(false);
 
   return (
-    <img
+    <WebpImage
       src={failed ? FALLBACK_AVATAR : src}
       alt={alt}
       loading="lazy"

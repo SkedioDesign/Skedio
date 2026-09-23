@@ -9,6 +9,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { getBreadcrumbSchema, type BreadcrumbItem } from "@/lib/schema";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { SocialLinks, type TeamSocials } from "@/components/SocialLinks";
+import { WebpImage } from "@/components/WebpImage";
 import teamSocialsData from "@/data/team-socials.json";
 
 type TeamMember = {
@@ -174,7 +175,7 @@ function About() {
               className="group overflow-hidden rounded-2xl border border-border bg-surface"
               style={{ aspectRatio: "4/5" }}
             >
-              <img
+              <WebpImage
                 src={founder.img}
                 alt={founder.name}
                 loading="lazy"
@@ -253,7 +254,7 @@ function About() {
                   style={{ aspectRatio: "4/5" }}
                 >
                   {member.img ? (
-                    <img
+                    <WebpImage
                       src={member.img}
                       alt={member.name}
                       loading="lazy"

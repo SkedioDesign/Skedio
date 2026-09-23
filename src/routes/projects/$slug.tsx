@@ -16,6 +16,7 @@ import { seo, canonicalLink } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { getCreativeWorkSchema, getBreadcrumbSchema, type BreadcrumbItem } from "@/lib/schema";
+import { WebpImage } from "@/components/WebpImage";
 
 import "./case-study.css";
 
@@ -94,14 +95,12 @@ function CaseStudyNotFound() {
 function CsImage({
   image,
   assets,
-  webp = false,
   className,
   loading = "lazy",
   fetchPriority,
 }: {
   image: ImageRef;
   assets: string;
-  webp?: boolean;
   className?: string;
   loading?: "lazy" | "eager";
   fetchPriority?: "high" | "low" | "auto";
@@ -109,17 +108,14 @@ function CsImage({
   const dims =
     image.width != null && image.height != null ? { width: image.width, height: image.height } : {};
   return (
-    <picture>
-      {webp && <source srcSet={`${assets}/${image.name}.webp`} type="image/webp" />}
-      <img
-        src={`${assets}/${image.name}.jpg`}
-        alt={image.alt}
-        {...dims}
-        className={className}
-        loading={loading}
-        fetchPriority={fetchPriority}
-      />
-    </picture>
+    <WebpImage
+      src={`${assets}/${image.name}.jpg`}
+      alt={image.alt}
+      {...dims}
+      className={className}
+      loading={loading}
+      fetchPriority={fetchPriority}
+    />
   );
 }
 
@@ -296,7 +292,7 @@ function CoverSection({
           <CsImage
             image={section.coverImage}
             assets={doc.assets}
-            webp={doc.hasWebp === true}
+
             loading="eager"
             fetchPriority="high"
           />
@@ -391,7 +387,7 @@ function OverviewSection({
       </div>
 
       <Reveal className="cs-overview__visual" delay={2}>
-        <CsImage image={section.visual} assets={doc.assets} webp={doc.hasWebp === true} />
+        <CsImage image={section.visual} assets={doc.assets} />
       </Reveal>
     </Section>
   );
@@ -432,7 +428,7 @@ function ChallengesSection({
             className={`cs-phone-card ${card.offset ? `cs-phone-card--offset-${card.offset}` : ""}`}
             delay={i % 3}
           >
-            <CsImage image={card.image} assets={doc.assets} webp={doc.hasWebp === true} />
+            <CsImage image={card.image} assets={doc.assets} />
           </Reveal>
         ))}
       </div>
@@ -470,7 +466,7 @@ function ProcessSection({
       </div>
 
       <Reveal className="cs-process__visual" delay={2}>
-        <CsImage image={section.visual} assets={doc.assets} webp={doc.hasWebp === true} />
+        <CsImage image={section.visual} assets={doc.assets} />
       </Reveal>
     </Section>
   );
@@ -522,7 +518,7 @@ function PersonasSection({
             <div className="cs-persona__stage">
               {persona.phones.map((phone, i) => (
                 <Reveal key={i} className="cs-persona__phone-frame" delay={i}>
-                  <CsImage image={phone} assets={doc.assets} webp={doc.hasWebp === true} />
+                  <CsImage image={phone} assets={doc.assets} />
                 </Reveal>
               ))}
             </div>
@@ -553,7 +549,7 @@ function FinalSection({
       </div>
 
       <Reveal className="cs-final__showcase" delay={2}>
-        <CsImage image={section.showcase} assets={doc.assets} webp={doc.hasWebp === true} />
+        <CsImage image={section.showcase} assets={doc.assets} />
       </Reveal>
 
       <div className="cs-journey">
@@ -640,7 +636,7 @@ function EditorialSectionRenderer({
 
       {section.visual && (
         <Reveal className="cs-editorial__visual" delay={2}>
-          <CsImage image={section.visual} assets={doc.assets} webp={doc.hasWebp === true} />
+          <CsImage image={section.visual} assets={doc.assets} />
         </Reveal>
       )}
 
@@ -648,7 +644,7 @@ function EditorialSectionRenderer({
         <div className="cs-editorial__visuals">
           {section.visuals.map((v, i) => (
             <Reveal key={i} className="cs-editorial__visual" delay={i % 3}>
-              <CsImage image={v} assets={doc.assets} webp={doc.hasWebp === true} />
+              <CsImage image={v} assets={doc.assets} />
             </Reveal>
           ))}
         </div>
@@ -676,7 +672,7 @@ function EndingSection({
           ))}
         </div>
         <Reveal className="cs-end__visual">
-          <CsImage image={section.visual} assets={doc.assets} webp={doc.hasWebp === true} />
+          <CsImage image={section.visual} assets={doc.assets} />
         </Reveal>
         <p className="cs-end__foot">{section.foot}</p>
       </div>

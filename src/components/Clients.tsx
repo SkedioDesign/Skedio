@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { clients, type Client } from "@/data/clients";
+import { WebpImage } from "@/components/WebpImage";
 
 const ROW_HEIGHT = 44;
 
@@ -22,7 +23,7 @@ function LogoImage({ client, decorative = false }: { client: Client; decorative?
   const width = Math.max(1, Math.round((ROW_HEIGHT * client.width) / client.height));
 
   return (
-    <img
+    <WebpImage
       src={client.logo}
       alt={decorative ? "" : `${client.name} logo`}
       loading="lazy"

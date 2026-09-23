@@ -5,6 +5,7 @@ import { blogPosts, type BlogPost } from "@/data/blog";
 import { seo, canonicalLink } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
 import { getBreadcrumbSchema } from "@/lib/schema";
+import { WebpImage } from "@/components/WebpImage";
 
 export const Route = createFileRoute("/blog/")({
   head: () => ({
@@ -148,7 +149,7 @@ function FeaturedStory({ post }: { post: BlogPost }) {
       </p>
 
       <div className="mt-9 overflow-hidden">
-        <img
+        <WebpImage
           src={post.previewImage}
           alt=""
           loading="lazy"
@@ -178,7 +179,7 @@ function ListEntry({ post, index }: { post: BlogPost; index: string }) {
       className="group flex gap-5 py-7 first:pt-0 sm:gap-6"
     >
       <div className="shrink-0 overflow-hidden">
-        <img
+        <WebpImage
           src={post.previewImage}
           alt=""
           loading="lazy"

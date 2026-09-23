@@ -6,6 +6,10 @@
  * original filename/format so existing references keep working. Huge images
  * are also downscaled to at most `MAX_DIMENSION` px on the longest side.
  *
+ * Also emits a `.webp` twin next to every JPEG/PNG (only when the WebP payload
+ * is actually smaller), so the site's <WebpImage> renderer can serve WebP to
+ * browsers automatically — the original format never loads on the site.
+ *
  * Only processed when it actually saves bytes, so it never grows assets.
  */
 import { promises as fs } from "node:fs";
@@ -56,12 +60,35 @@ function encoderFor(file, dims) {
   return base;
 }
 
-async function optimizeFile(file) {
+/**
+ * Emits a `<name>.webp` twin for a JPEG/PNG so WebpImage can serve WebP
+ * automatically. Only written when the WebP version is actually smaller than
+ * the original, so tiny/flat-color assets (logos, icons) are never bloated.
+ */
+async function writeWebpTwin(file, dims) {
+  const lower = file.toLowerCase();
+  if (!(lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".png"))) return;
+
   const stat = await fs.stat(file);
-  if (stat.size < MIN_BYTES) {
-    skipped += 1;
-    return;
-  }
+  const out = await sharp(file, { failOn: "none" })
+    .resize({
+      width: dims.width,
+      height: dims.height,
+      withoutEnlargement: true,
+    })
+    .webp({ quality: 76, effort: 4 })
+    .toBuffer();
+  if (out.length >= stat.size) return;
+
+  const twin = file.replace(/\.(jpe?g|png)$/i, ".webp");
+  await fs.writeFile(twin, out);
+  const pct = ((stat.size - out.length) / stat.size) * 100;
+  console.log(
+    `  ${(stat.size / 1024).toFixed(0).padStart(6)}K -> ${(out.length / 1024).toFixed(0).padStart(6)}K  (-${pct.toFixed(0).padStart(2)}%)  ${path.relative(STATIC_DIR, twin)} (webp)`,
+  );
+}
+
+async function optimizeFile(file) {
   const meta = await sharp(file).metadata();
   if (!meta.format || ["svg", "gif"].includes(meta.format)) {
     skipped += 1;
@@ -73,6 +100,14 @@ async function optimizeFile(file) {
   if (longest > MAX_DIMENSION) {
     if ((meta.width ?? 0) >= (meta.height ?? 0)) dims.width = MAX_DIMENSION;
     else dims.height = MAX_DIMENSION;
+  }
+
+  await writeWebpTwin(file, dims);
+
+  const stat = await fs.stat(file);
+  if (stat.size < MIN_BYTES) {
+    skipped += 1;
+    return;
   }
 
   const out = await encoderFor(file, dims).toBuffer();

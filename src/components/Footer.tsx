@@ -4,10 +4,11 @@ import { Link } from "@tanstack/react-router";
 import { useContactModal } from "@/context/use-contact-modal";
 import { useContactForm } from "@/hooks/use-contact-form";
 import { siteConfig } from "@/lib/site-config";
+import { WebpImage } from "@/components/WebpImage";
 
 function Wordmark({ className = "" }: { className?: string }) {
   return (
-    <img
+    <WebpImage
       src="/skedio-primary.png"
       alt="Skédio"
       width={818}
@@ -213,7 +214,7 @@ export function Footer() {
       </div>
 
       <div className="px-2 leading-none">
-        <img
+        <WebpImage
           src="/skedio-primary.png"
           alt="Skédio"
           width={818}

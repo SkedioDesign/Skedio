@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowUpRight, MoveHorizontal, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { blogPosts, type BlogCategoryColor, type BlogPost } from "@/data/blog";
+import { WebpImage } from "@/components/WebpImage";
 
 const badgeColors: Record<BlogCategoryColor, string> = {
   purple: "bg-primary",
@@ -82,7 +83,7 @@ function CardFace({ post }: { post: BlogPost }) {
   return (
     <>
       <div className="relative aspect-[16/10] shrink-0 overflow-hidden">
-        <img
+        <WebpImage
           src={post.previewImage}
           alt=""
           loading="lazy"

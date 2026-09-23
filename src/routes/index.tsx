@@ -10,6 +10,7 @@ import { seo, canonicalLink } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 import { StructuredData } from "@/components/StructuredData";
 import { SiteHeader } from "@/components/SiteHeader";
+import { WebpImage } from "@/components/WebpImage";
 import { WhatWeDo } from "@/components/WhatWeDo";
 import { SelectedWork } from "@/components/SelectedWork";
 import { BlogPreview } from "@/components/BlogPreview";
@@ -231,14 +232,14 @@ function Index() {
             <div className="rounded-2xl border border-border bg-surface/60 p-8 lg:p-10">
               <p className="eyebrow text-center">Partner with</p>
               <div className="sk-marquee mt-6 overflow-hidden">
-                <div className="sk-marquee-track flex w-max items-center gap-x-6">
+                <div className="sk-marquee-track flex w-max items-center">
                   {partnerLogos.map((item, i) => (
                     <div
                       key={`${item.id}-${i}`}
                       className="flex h-16 w-52 shrink-0 items-center justify-center"
                     >
                       {item.img ? (
-                        <img
+                        <WebpImage
                           src={item.img}
                           alt={item.label}
                           loading="lazy"
@@ -287,7 +288,7 @@ function Index() {
                   className="flex h-auto shrink-0 items-center justify-center px-2 py-2"
                 >
                   {item.img ? (
-                    <img
+                    <WebpImage
                       src={item.img}
                       alt={item.label}
                       loading="lazy"
