@@ -6,11 +6,13 @@
  * original filename/format so existing references keep working. Huge images
  * are also downscaled to at most `MAX_DIMENSION` px on the longest side.
  *
- * Also emits a `.webp` twin next to every JPEG/PNG (only when the WebP payload
- * is actually smaller), so the site's <WebpImage> renderer can serve WebP to
- * browsers automatically — the original format never loads on the site.
+ * Also emits a `.webp` twin next to every JPEG/PNG so the site's <WebpImage>
+ * renderer can serve WebP to browsers automatically — the original format never
+ * loads on the site.
  *
- * Only processed when it actually saves bytes, so it never grows assets.
+ * Twins are always written (even when the WebP payload is not smaller): the
+ * rendered <source> is fixed at the twin URL, so if the file were skipped the
+ * browser would show a broken image instead of falling back to the original.
  */
 import { promises as fs } from "node:fs";
 import path from "node:path";
@@ -62,8 +64,9 @@ function encoderFor(file, dims) {
 
 /**
  * Emits a `<name>.webp` twin for a JPEG/PNG so WebpImage can serve WebP
- * automatically. Only written when the WebP version is actually smaller than
- * the original, so tiny/flat-color assets (logos, icons) are never bloated.
+ * automatically. The twin is always written — WebpImage's rendered `<source>`
+ * points at it unconditionally, so skipping it would leave a broken image in
+ * the browser rather than falling back to the original.
  */
 async function writeWebpTwin(file, dims) {
   const lower = file.toLowerCase();
@@ -78,13 +81,14 @@ async function writeWebpTwin(file, dims) {
     })
     .webp({ quality: 76, effort: 4 })
     .toBuffer();
-  if (out.length >= stat.size) return;
 
   const twin = file.replace(/\.(jpe?g|png)$/i, ".webp");
   await fs.writeFile(twin, out);
-  const pct = ((stat.size - out.length) / stat.size) * 100;
+  const delta = stat.size - out.length;
+  const sign = delta >= 0 ? "-" : "+";
+  const pct = (Math.abs(delta) / stat.size) * 100;
   console.log(
-    `  ${(stat.size / 1024).toFixed(0).padStart(6)}K -> ${(out.length / 1024).toFixed(0).padStart(6)}K  (-${pct.toFixed(0).padStart(2)}%)  ${path.relative(STATIC_DIR, twin)} (webp)`,
+    `  ${(stat.size / 1024).toFixed(0).padStart(6)}K -> ${(out.length / 1024).toFixed(0).padStart(6)}K  (${sign}${pct.toFixed(0).padStart(2)}%)  ${path.relative(STATIC_DIR, twin)} (webp)`,
   );
 }
 

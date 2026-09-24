@@ -1,5 +1,7 @@
 import { defineConfig, type Plugin } from "vite";
 import { transformWithEsbuild } from "vite";
+import { promises as fs } from "node:fs";
+import path from "node:path";
 import { sentryTanstackStart } from "@sentry/tanstackstart-react/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { nitro } from "nitro/vite";
@@ -31,6 +33,82 @@ const stripConsoleOnClient = (): Plugin => ({
   },
 });
 
+/**
+ * Dev-only on-demand WebP converter.
+ *
+ * <WebpImage> renders a `<source type="image/webp">` pointing at a `.webp`
+ * twin of every raster image. Those twins are emitted at build time by
+ * scripts/optimize-images.mjs, but `vite dev` serves `public/` and `src/assets`
+ * as-is, so the twins do not exist and every image would 404 (browsers show a
+ * broken image once a <picture> source is selected — they do not fall back).
+ *
+ * This middleware synthesizes the twin on first request by converting the
+ * sibling `.jpg`/`.jpeg`/`.png` with sharp (same settings as the build script)
+ * and caches the result for the session. Requests that resolve to a real `.webp`
+ * file on disk are passed through untouched so Vite serves them normally.
+ */
+const devWebpMiddleware = (): Plugin => {
+  const cache = new Map<string, Buffer>();
+  return {
+    name: "skedio:dev-webp",
+    apply: "serve",
+    configureServer(server) {
+      const root = server.config.root;
+      const publicDir = server.config.publicDir;
+      const bases = [root, ...(publicDir ? [publicDir] : [])];
+      const exists = async (p: string) => {
+        try {
+          await fs.access(p);
+          return true;
+        } catch {
+          return false;
+        }
+      };
+      server.middlewares.use((req, res, next) => {
+        void (async () => {
+          const rawPath = (req.url ?? "").split("?")[0] ?? "";
+          if (!rawPath.endsWith(".webp")) return next();
+          let pathname = rawPath;
+          try {
+            pathname = decodeURIComponent(rawPath);
+          } catch {
+            // Malformed escape sequence — let Vite produce the normal response.
+          }
+
+          try {
+            for (const base of bases) {
+              if (await exists(path.join(base, pathname))) return next();
+            }
+            for (const ext of [".jpg", ".jpeg", ".png"]) {
+              const sibling = pathname.replace(/\.webp$/i, ext);
+              for (const base of bases) {
+                const source = path.join(base, sibling);
+                if (!(await exists(source))) continue;
+                let out = cache.get(source);
+                if (!out) {
+                  const sharp = (await import("sharp")).default;
+                  out = await sharp(source, { failOn: "none" })
+                    .webp({ quality: 76, effort: 4 })
+                    .toBuffer();
+                  cache.set(source, out);
+                }
+                res.statusCode = 200;
+                res.setHeader("content-type", "image/webp");
+                res.setHeader("cache-control", "no-cache");
+                res.end(out);
+                return;
+              }
+            }
+            next();
+          } catch (err) {
+            next(err as Error);
+          }
+        })();
+      });
+    },
+  };
+};
+
 export default defineConfig({
   css: { transformer: "lightningcss" },
   resolve: { tsconfigPaths: true },
@@ -61,6 +139,7 @@ export default defineConfig({
     nitro({ preset: "vercel" }),
     viteReact(),
     tailwindcss(),
+    devWebpMiddleware(),
     stripConsoleOnClient(),
     // Uploads source maps to Sentry on build. Only active when
     // SENTRY_AUTH_TOKEN is set (see .env.example), so local/CI builds without a
