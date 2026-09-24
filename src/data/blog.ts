@@ -21,21 +21,6 @@ export interface BlogPost {
 
 export const blogPosts: BlogPost[] = [
   {
-    slug: "a-logo-is-not-a-brand",
-    title: "A Logo Is Not A Brand",
-    previewImage: imgBrand,
-    content:
-      "# 01. A Logo Is Not a Brand\n\nA logo is often the first thing people ask for when starting a business.\n\n\"Can you design us a logo?\"\n\nIt sounds simple. But a logo is only one small part of what makes a brand recognizable.\n\nBefore drawing a single shape, a brand needs answers to much more important questions:\n\n**Who are you? Who are you speaking to? What do you stand for? How should people feel when they interact with you? And why should they choose you over someone else?**\n\nA logo should come *after* these questions—not before them.\n\nA strong identity is built from a combination of strategy, typography, color, imagery, tone of voice, layout, and consistency. The logo then becomes a visual signature for that entire system.\n\nThink about brands you recognize without even seeing their name. You may identify them through a color, a typeface, a packaging style, an illustration, or even the way their advertisements are composed.\n\nThat's the power of a **brand system**.\n\nAt Skédio, we believe branding isn't about making something that simply looks good. It's about creating an identity that feels intentional, recognizable, and relevant to the people it's designed for.\n\n**Because a logo can identify a business.**\n\n**But a strong brand makes people remember it.**",
-    images: [],
-    category: "Branding",
-    categoryColor: "purple",
-    excerpt: "Understanding the difference between a logo and a complete brand system.",
-    publishedAt: "2024-01-15",
-    metaTitle: "A Logo Is Not A Brand | Skédio Studio",
-    metaDescription: "Understanding the difference between a logo and a complete brand system.",
-    ogImage: "/og-default.png",
-  },
-  {
     slug: "good-ui-isnt-about-making-things-beautiful",
     title: "Good UI Isn't About Making Things Beautiful",
     previewImage: imgUiUx,
@@ -50,6 +35,21 @@ export const blogPosts: BlogPost[] = [
     metaTitle: "Good UI Isn't About Making Things Beautiful | Skédio Blog",
     metaDescription:
       "Great UI isn't about how an interface looks — it's about making the user's next decision obvious.",
+    ogImage: "/og-default.png",
+  },
+  {
+    slug: "a-logo-is-not-a-brand",
+    title: "A Logo Is Not A Brand",
+    previewImage: imgBrand,
+    content:
+      "# 01. A Logo Is Not a Brand\n\nA logo is often the first thing people ask for when starting a business.\n\n\"Can you design us a logo?\"\n\nIt sounds simple. But a logo is only one small part of what makes a brand recognizable.\n\nBefore drawing a single shape, a brand needs answers to much more important questions:\n\n**Who are you? Who are you speaking to? What do you stand for? How should people feel when they interact with you? And why should they choose you over someone else?**\n\nA logo should come *after* these questions—not before them.\n\nA strong identity is built from a combination of strategy, typography, color, imagery, tone of voice, layout, and consistency. The logo then becomes a visual signature for that entire system.\n\nThink about brands you recognize without even seeing their name. You may identify them through a color, a typeface, a packaging style, an illustration, or even the way their advertisements are composed.\n\nThat's the power of a **brand system**.\n\nAt Skédio, we believe branding isn't about making something that simply looks good. It's about creating an identity that feels intentional, recognizable, and relevant to the people it's designed for.\n\n**Because a logo can identify a business.**\n\n**But a strong brand makes people remember it.**",
+    images: [],
+    category: "Branding",
+    categoryColor: "purple",
+    excerpt: "Understanding the difference between a logo and a complete brand system.",
+    publishedAt: "2024-01-15",
+    metaTitle: "A Logo Is Not A Brand | Skédio Studio",
+    metaDescription: "Understanding the difference between a logo and a complete brand system.",
     ogImage: "/og-default.png",
   },
   {
