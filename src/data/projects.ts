@@ -82,6 +82,31 @@ export const projects: ProjectSummary[] = [
     size: "normal",
     published: true,
   },
+  {
+    slug: "tiffinly",
+    name: "Tiffinly",
+    line: "Multi-role Food Subscription & Delivery Platform",
+    tag: "Product Design, UX, Multi-role",
+    cover: "/tiffinly/1.jpg",
+    metaTitle: "Tiffinly — Multi-role Food Subscription & Delivery Platform | Skédio",
+    metaDescription:
+      "Explore how Skédio designed Tiffinly — a multi-role food subscription and delivery platform connecting customers, tiffin providers, and delivery partners through a single ecosystem.",
+    ogImage: "/tiffinly/1.jpg",
+    themeColor: "#EA7B26",
+    year: "2026",
+    platform: "Mobile Apps (Customer · Provider · Delivery)",
+    discipline: "Product Design & Strategy",
+    scope: "Multi-role UI/UX, Flow Architecture, Design System",
+    publishedDate: "2026-09-24",
+    client: "Tiffinly",
+    summary:
+      "A multi-role food subscription platform connecting customers, tiffin providers, and delivery partners through three unified mobile experiences.",
+    services: ["Product Design", "UI/UX Design", "Design System"],
+    category: "UI/UX",
+    tagColor: "teal",
+    size: "wide",
+    published: true,
+  },
 ];
 
 /* Bento grid shape used by the SelectedWork section — derived from projects. */

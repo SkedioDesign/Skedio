@@ -635,6 +635,273 @@ export const caseStudies: CaseStudyDocument[] = [
       },
     ],
   },
+  {
+    slug: "tiffinly",
+    assets: "/tiffinly",
+    hasWebp: true,
+    brand: "TIFFINLY",
+    chapters: [
+      { id: "overview", num: "01", label: "Overview" },
+      { id: "challenge", num: "02", label: "Challenge" },
+      { id: "process", num: "03", label: "Process" },
+      { id: "customer", num: "04", label: "Customer App" },
+      { id: "provider", num: "05", label: "Provider App" },
+      { id: "delivery", num: "06", label: "Delivery App" },
+      { id: "system", num: "07", label: "Design System" },
+      { id: "outcome", num: "08", label: "Outcome" },
+    ],
+    sections: [
+      {
+        type: "cover",
+        wordmark: [{ text: "TIFFIN**LY**" }],
+        facts: [
+          { label: "Platform", value: "3 Mobile Apps" },
+          { label: "Discipline", value: "Product Design" },
+          { label: "Scope", value: "Multi-role UI/UX" },
+          { label: "Year", value: "2026" },
+        ],
+        subtitle: ["One Ecosystem.", "Three Roles."],
+        coverImage: {
+          name: "1",
+          alt: "Tiffinly — multi-role food subscription and delivery platform",
+          width: 4500,
+          height: 3000,
+        },
+      },
+      {
+        type: "overview",
+        id: "overview",
+        num: "01",
+        kicker: "01) PROJECT OVERVIEW",
+        index: [
+          { num: "01", label: "Overview" },
+          { num: "02", label: "Challenge" },
+          { num: "03", label: "Approach" },
+          { num: "04", label: "The Apps" },
+          { num: "05", label: "Outcome" },
+        ],
+        headline: "A Food Subscription Experience\nBuilt For **Every Role.**",
+        lede: "Tiffinly is a multi-role food subscription and delivery platform that connects customers with tiffin and meal providers — and both with delivery partners — through a single digital ecosystem. Three connected mobile experiences simplify subscription, ordering, provider management, and delivery workflows.",
+        visual: {
+          name: "2",
+          alt: "Tiffinly connected mobile experience across three user roles",
+          width: 4500,
+          height: 3000,
+        },
+      },
+      {
+        type: "challenge",
+        id: "challenge",
+        num: "02",
+        kicker: "02) CHALLENGES",
+        headline: "Three Different Users,\n**One Unified Experience.**",
+        lede: "Tiffinly's core challenge was to design one product ecosystem for three very different users — customers, tiffin providers, and delivery partners — without making any of the interfaces feel complicated. Each role demanded its own information hierarchy: discovery, choice, and delivery visibility for customers; operational control over menus, orders, and earnings for providers; and instant access to tasks, locations, and status updates for delivery partners.",
+        problemWords: [
+          { base: "THREE", strong: "ROLES" },
+          { base: "COMPLEX", strong: "FLOWS" },
+          { base: "ONE", strong: "SYSTEM" },
+        ],
+        phoneCards: [
+          {
+            image: {
+              name: "5",
+              alt: "Tiffinly user flow and wireframe exploration",
+              width: 4500,
+              height: 3000,
+            },
+            offset: "up",
+          },
+          {
+            image: {
+              name: "9",
+              alt: "Tiffinly information architecture and interface frames",
+              width: 3000,
+              height: 2000,
+            },
+          },
+          {
+            image: {
+              name: "10",
+              alt: "Tiffinly delivery workflow and interface states",
+              width: 3000,
+              height: 2000,
+            },
+            offset: "down",
+          },
+        ],
+      },
+      {
+        type: "process",
+        id: "process",
+        num: "03",
+        kicker: "03) DESIGN PROCESS",
+        headline: "A Complete Product Experience,\n**Not A Collection Of Screens.**",
+        lede: "The project was approached as a complete product experience rather than a collection of individual screens. The workflow began with understanding the three user journeys, mapping each role's key actions, and translating those flows into mobile-first interfaces — before progressively refining them into a shared, high-fidelity UI system.",
+        steps: [
+          { num: "01", title: "DISCOVER", desc: "Understanding the three user journeys" },
+          { num: "02", title: "DEFINE", desc: "Mapping key actions & flows" },
+          { num: "03", title: "EXPLORE", desc: "Information architecture & wireframes" },
+          { num: "04", title: "REFINE", desc: "Reusable components & states" },
+          { num: "05", title: "DELIVER", desc: "High-fidelity mobile UI" },
+        ],
+        visual: {
+          name: "6",
+          alt: "Tiffinly design process, user flows and interface system",
+          width: 3000,
+          height: 2000,
+        },
+      },
+      {
+        type: "editorial",
+        id: "customer",
+        num: "04",
+        kicker: "04 — THE CUSTOMER APP",
+        headline: "From Discovery To\n**The Doorstep.**",
+        lede: [
+          "The customer app takes users from onboarding and profile setup to provider discovery, subscription plan selection, checkout and payment — then keeps them informed with clear order tracking and order details.",
+          "Structured layouts, card-based grouping, and clear status indicators keep the experience fast to scan and effortless to act on, from choosing a provider to following a delivery in real time.",
+        ],
+        tags: [
+          "Onboarding & Auth",
+          "Provider Discovery",
+          "Subscription Plans",
+          "Checkout & Payment",
+          "Order Tracking",
+          "Order Details",
+          "Profile & Settings",
+        ],
+        visual: {
+          name: "3",
+          alt: "Tiffinly customer app — discover, subscribe, pay and track",
+          width: 4500,
+          height: 3000,
+        },
+      },
+      {
+        type: "editorial",
+        id: "provider",
+        num: "05",
+        kicker: "05 — THE PROVIDER APP",
+        theme: "dark",
+        headline: "Operational Control,\n**From Menu To Earnings.**",
+        lede: [
+          "The provider app helps tiffin providers run their business and daily operations from a single dashboard.",
+        ],
+        points: [
+          {
+            label: "Set Up & Verify",
+            items: [
+              "Authentication & verification",
+              "Business and owner details",
+              "Service area setup",
+              "KYC & bank details",
+            ],
+          },
+          {
+            label: "Run Daily Operations",
+            items: [
+              "Provider dashboard & delivery timings",
+              "Menu management",
+              "Order management",
+              "Delivery assignment",
+            ],
+          },
+          {
+            label: "Track Performance",
+            items: ["Earnings & performance insights"],
+          },
+        ],
+        footnote:
+          "Everything a provider needs to manage offerings, deliveries, and earnings lives in one clear, operational interface.",
+        visual: {
+          name: "4",
+          alt: "Tiffinly provider app — dashboard, menu and operations",
+          width: 4500,
+          height: 3000,
+        },
+      },
+      {
+        type: "editorial",
+        id: "delivery",
+        num: "06",
+        kicker: "06 — THE DELIVERY PARTNER APP",
+        headline: "Task-Focused Delivery,\n**End To End.**",
+        lede: [
+          "The delivery partner app is built around speed and clarity — giving partners instant access to their next task, pickup and drop-off locations, and navigation.",
+          "Live delivery status updates, a simple completion flow, and a clear earnings and support view keep the whole workflow efficient from acceptance to delivery.",
+        ],
+        tags: [
+          "Onboarding & Verification",
+          "Delivery Dashboard",
+          "Pickup & Drop-off",
+          "Navigation",
+          "Status Updates",
+          "Delivery Completion",
+          "Earnings & Support",
+        ],
+        visual: {
+          name: "7",
+          alt: "Tiffinly delivery partner app — task-based delivery and navigation",
+          width: 4500,
+          height: 3000,
+        },
+      },
+      {
+        type: "editorial",
+        id: "system",
+        num: "07",
+        kicker: "07 — DESIGN SYSTEM",
+        theme: "dark",
+        headline: "One Visual System,\n**Three Connected Apps.**",
+        lede: [
+          "To keep three different apps feeling like one product, Tiffinly was built on a shared UI system that stays consistent across every role.",
+        ],
+        points: [
+          {
+            label: "Structured Layouts",
+            items: ["Consistent grids and spacing across the entire ecosystem"],
+          },
+          {
+            label: "Reusable Components",
+            items: ["Shared cards, inputs, and navigation patterns"],
+          },
+          {
+            label: "Clear Status Indicators",
+            items: ["Order, delivery, and payment states visible at a glance"],
+          },
+          {
+            label: "Strong Visual Hierarchy",
+            items: ["Complex information made easy to scan and act upon"],
+          },
+        ],
+        footnote:
+          "A customer, provider, or delivery partner always recognizes the same product language — no matter which app they open.",
+      },
+      {
+        type: "editorial",
+        id: "outcome",
+        num: "08",
+        kicker: "08 — THE OUTCOME",
+        headline: "A Complete Multi-Role\n**Mobile Ecosystem.**",
+        lede: [
+          "The result is a complete multi-role mobile UI ecosystem that covers the major workflows of Tiffinly — from onboarding and subscription selection to provider operations and final delivery.",
+          "Tiffinly demonstrates Skédio's approach to designing structured digital products where multiple user roles, business operations, and customer experiences need to work together seamlessly.",
+        ],
+      },
+      {
+        type: "ending",
+        word: "TIFFINLY",
+        tag: [{ text: "ONE. " }, { text: "ECOSYSTEM. ", accent: true }, { text: "THREE ROLES." }],
+        visual: {
+          name: "1",
+          alt: "Tiffinly final brand statement artwork",
+          width: 4500,
+          height: 3000,
+        },
+        foot: "End of case study — Skédio",
+      },
+    ],
+  },
 ];
 
 export function getCaseStudy(slug: string): CaseStudyDocument | undefined {

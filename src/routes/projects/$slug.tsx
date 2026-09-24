@@ -254,7 +254,7 @@ function CoverSection({
         <h1 className="cs-cover__word cs-display">
           {section.wordmark.map((w, i) => (
             <span key={i} className={`row ${w.accent ? "row--accent" : ""}`}>
-              {w.text}
+              <Rich text={w.text} />
             </span>
           ))}
         </h1>
