@@ -45,9 +45,11 @@ export const Route = createFileRoute("/")({
 const partnerLogos = [
   { type: "text" as const, id: "sc", label: "Social Chums", img: "/Social Chums.png" },
   { type: "text" as const, id: "ed", label: "Edios", img: "/Edios.png" },
-  { type: "text" as const, id: "sc2", label: "Social Chums", img: "/Social Chums.png" },
-  { type: "text" as const, id: "ed2", label: "Edios", img: "/Edios.png" },
+  { type: "text" as const, id: "chisel", label: "Chisel UI" },
 ];
+
+// Two identical copies so the track's -50% translate loops seamlessly.
+const marqueeLogos = [...partnerLogos, ...partnerLogos];
 
 function PillLink({
   href,
@@ -233,10 +235,10 @@ function Index() {
               <p className="eyebrow text-center">Partner with</p>
               <div className="sk-marquee mt-6 overflow-hidden">
                 <div className="sk-marquee-track flex w-max items-center">
-                  {partnerLogos.map((item, i) => (
+                  {marqueeLogos.map((item, i) => (
                     <div
                       key={`${item.id}-${i}`}
-                      className="flex h-16 w-52 shrink-0 items-center justify-center"
+                      className="flex h-40 w-52 shrink-0 items-center justify-center"
                     >
                       {item.img ? (
                         <WebpImage
@@ -247,7 +249,7 @@ function Index() {
                           className="h-full w-full object-contain grayscale transition-all duration-300 hover:grayscale-0"
                         />
                       ) : (
-                        <span className="whitespace-nowrap text-center font-display text-xl font-bold tracking-tight text-foreground/50 transition-colors duration-300 hover:text-foreground">
+                        <span className="whitespace-nowrap text-center font-display text-4xl font-bold tracking-tight text-foreground/50 transition-colors duration-300 hover:text-foreground">
                           {item.label}
                         </span>
                       )}
@@ -281,11 +283,11 @@ function Index() {
         {/* Responsive: bare logo marquee below the copy (no card, no label) */}
         <div className="mt-10 lg:hidden">
           <div className="sk-marquee overflow-hidden">
-            <div className="sk-marquee-track flex w-max items-center gap-x-10">
-              {partnerLogos.map((item, i) => (
+            <div className="sk-marquee-track flex w-max items-center">
+              {marqueeLogos.map((item, i) => (
                 <div
                   key={`${item.id}-${i}`}
-                  className="flex h-auto shrink-0 items-center justify-center px-2 py-2"
+                  className="flex h-auto shrink-0 items-center justify-center px-8 py-2"
                 >
                   {item.img ? (
                     <WebpImage
@@ -293,10 +295,10 @@ function Index() {
                       alt={item.label}
                       loading="lazy"
                       decoding="async"
-                      className="h-18 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300"
+                      className="h-32 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300"
                     />
                   ) : (
-                    <span className="whitespace-nowrap font-display text-2xl font-bold tracking-tight text-foreground/50 transition-colors duration-300 hover:text-foreground">
+                    <span className="whitespace-nowrap font-display text-3xl font-bold tracking-tight text-foreground/50 transition-colors duration-300 hover:text-foreground">
                       {item.label}
                     </span>
                   )}

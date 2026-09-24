@@ -14,6 +14,12 @@ const RASTER_WEBP_SRC = /\.(jpe?g|png)$/i;
  * The twin URL is percent-encoded because srcset treats a raw space (or other
  * forbidden char) as a candidate descriptor separator — e.g. a filename such
  * as "Social Chums.png" would otherwise be split and dropped entirely.
+ *
+ * The <picture> wrapper is made layout-transparent (display: contents) so the
+ * <img> sizes against its real parent exactly as it would without the wrapper.
+ * Otherwise, `height: 100%` on the img can't resolve against the inline,
+ * auto-height <picture>, and images sized by percentage height (e.g. h-full)
+ * collapse to a width-proportional intrinsic size.
  */
 export function WebpImage({ src, alt = "", ...props }: WebpImageProps) {
   const webpSrc =
@@ -22,7 +28,7 @@ export function WebpImage({ src, alt = "", ...props }: WebpImageProps) {
   if (!webpSrc) return <img src={src} alt={alt} {...props} />;
 
   return (
-    <picture>
+    <picture style={{ display: "contents" }}>
       <source srcSet={webpSrc} type="image/webp" />
       <img src={src} alt={alt} {...props} />
     </picture>
