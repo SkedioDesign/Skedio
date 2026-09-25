@@ -206,6 +206,15 @@ export function BlogCardDeck({ posts = blogPosts.slice(0, 3) }: { posts?: BlogPo
   const posRef = useRef({ dx: 0, dy: 0 });
   const kbdRef = useRef(false);
   const stageRef = useRef<HTMLDivElement>(null);
+  // Coalesce pointermove → React state through one rAF so drag renders at
+  // most once per frame instead of once per input event.
+  const dragRafRef = useRef(0);
+
+  useEffect(() => {
+    return () => {
+      if (dragRafRef.current) cancelAnimationFrame(dragRafRef.current);
+    };
+  }, []);
 
   const total = posts.length;
   const dealt = flips >= total;
@@ -275,7 +284,13 @@ export function BlogCardDeck({ posts = blogPosts.slice(0, 3) }: { posts?: BlogPo
     if (!d.moved) return;
     d.dir = dx < 0 ? -1 : 1;
     posRef.current = { dx, dy };
-    setDrag({ dx, dy });
+    // Throttle React state to one update per frame; transform itself stays
+    // compositor-only (translate3d/rotate/scale) so no layout is forced.
+    if (dragRafRef.current) return;
+    dragRafRef.current = requestAnimationFrame(() => {
+      dragRafRef.current = 0;
+      setDrag({ ...posRef.current });
+    });
   }, []);
 
   const onPointerUp = useCallback(
@@ -283,6 +298,10 @@ export function BlogCardDeck({ posts = blogPosts.slice(0, 3) }: { posts?: BlogPo
       const d = dragRef.current;
       if (!d.dragging) return;
       d.dragging = false;
+      if (dragRafRef.current) {
+        cancelAnimationFrame(dragRafRef.current);
+        dragRafRef.current = 0;
+      }
 
       const { dx, dy } = posRef.current;
       const fast = Math.hypot(e.movementX, e.movementY) > 0.55;
@@ -305,6 +324,10 @@ export function BlogCardDeck({ posts = blogPosts.slice(0, 3) }: { posts?: BlogPo
 
   const onPointerCancel = useCallback(() => {
     dragRef.current.dragging = false;
+    if (dragRafRef.current) {
+      cancelAnimationFrame(dragRafRef.current);
+      dragRafRef.current = 0;
+    }
     posRef.current = { dx: 0, dy: 0 };
     setDrag(null);
   }, []);

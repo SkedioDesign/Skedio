@@ -1,7 +1,7 @@
 import { createRouter } from "@tanstack/react-router";
-import * as Sentry from "@sentry/tanstackstart-react";
 import { routeTree } from "./routeTree.gen";
 import { getCurrentNonce } from "./lib/nonce-context";
+import { setClientRouterForSentry } from "./lib/sentry-router";
 
 export function getRouter() {
   const nonce = getCurrentNonce();
@@ -15,7 +15,11 @@ export function getRouter() {
   });
 
   if (!router.isServer) {
-    Sentry.addIntegration(Sentry.tanstackRouterBrowserTracingIntegration(router));
+    // Sentry.init() is deferred until main-thread idle (see
+    // src/instrument.client.ts), so the router tracing integration cannot be
+    // added here (no client exists yet). Stash the instance; the deferred
+    // init picks it up. Navigation tracing is preserved, just started late.
+    setClientRouterForSentry(router);
   }
 
   return router;

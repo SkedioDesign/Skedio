@@ -13,6 +13,29 @@ const svcImages: Record<string, string> = {
   "product-development": "/ProductDevelopment.png",
 };
 
+/**
+ * Responsive candidates for the service-card preview.
+ *
+ * The desktop preview renders at ~664px CSS inside the 1200px container
+ * (aspect-16/9, object-cover); mobile accordion images are full-width
+ * (aspect-16/10, object-cover). 480w covers mobile 1x–2x, 768w covers
+ * desktop 1x, and the full-size .webp twin (1200w) covers high-DPR desktop.
+ * The PNG `src` stays as the non-WebP fallback; modern browsers use the
+ * WebP srcset and never download the full PNG.
+ */
+const SVC_SIZES = "(max-width: 768px) 100vw, 664px";
+
+const svcWebpSrcSets: Record<string, string> = {
+  "product-design":
+    "/ProductDesign-480.webp 480w, /ProductDesign-768.webp 768w, /ProductDesign.webp 1200w",
+  "brand-identity":
+    "/BrandIdentity-480.webp 480w, /BrandIdentity-768.webp 768w, /BrandIdentity.webp 1200w",
+  "ui-ux-design":
+    "/VisualIdentity-480.webp 480w, /VisualIdentity-768.webp 768w, /VisualIdentity.webp 1200w",
+  "product-development":
+    "/ProductDevelopment-480.webp 480w, /ProductDevelopment-768.webp 768w, /ProductDevelopment.webp 1200w",
+};
+
 const accentColors: Record<string, string> = {
   "product-design": "#8537f4",
   "brand-identity": "#7c3aed",
@@ -181,6 +204,8 @@ function MobileAccordion({
                   <div className="relative aspect-[16/10] overflow-hidden rounded-xl">
                     <WebpImage
                       src={s.image}
+                      webpSrcSet={svcWebpSrcSets[s.slug]}
+                      sizes={SVC_SIZES}
                       alt={s.title}
                       loading="lazy"
                       decoding="async"
@@ -249,6 +274,8 @@ export function WhatWeDo() {
                 >
                   <WebpImage
                     src={s.image}
+                    webpSrcSet={svcWebpSrcSets[s.slug]}
+                    sizes={SVC_SIZES}
                     alt={s.title}
                     loading="lazy"
                     decoding="async"

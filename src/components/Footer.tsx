@@ -116,9 +116,9 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-10 sm:grid-cols-4">
           {navSections.map((col) => (
             <div key={col.title}>
-              <h4 className="type-label whitespace-nowrap uppercase tracking-[0.08em]">
+              <p className="type-label whitespace-nowrap uppercase tracking-[0.08em]">
                 {col.title}
-              </h4>
+              </p>
               <ul className="mt-5 space-y-3 text-sm text-white/60">
                 {col.links.map((x) => (
                   <li key={x.label}>
@@ -153,7 +153,7 @@ export function Footer() {
         </div>
 
         <div>
-          <h4 className="type-h6">Let's create something great</h4>
+          <p className="type-h6">Let's create something great</p>
           <p className="type-sm mt-5 text-white/60">{siteConfig.email}</p>
           <p className="type-sm text-white/60">{siteConfig.phone}</p>
           {status === "sent" ? (
@@ -190,7 +190,7 @@ export function Footer() {
                 value={footerEmail}
                 onChange={(e) => setFooterEmail(e.target.value)}
                 disabled={isSubmitting}
-                className="type-sm min-w-0 flex-1 bg-transparent text-white outline-none placeholder:text-white/45"
+                className="type-sm min-w-0 flex-1 bg-transparent text-white outline-none placeholder:text-white/60"
               />
               <button
                 type="submit"
@@ -203,7 +203,7 @@ export function Footer() {
             </form>
           )}
           {errorMessage && <p className="mt-3 text-xs font-medium text-red-400">{errorMessage}</p>}
-          <p className="type-xs mt-3 text-[11px] leading-relaxed text-white/45">
+          <p className="type-xs mt-3 text-[11px] leading-relaxed text-white/60">
             By subscribing, you agree to receive occasional studio updates and consent to our{" "}
             <Link to="/privacy" className="underline transition-colors hover:text-white/80">
               Privacy Policy

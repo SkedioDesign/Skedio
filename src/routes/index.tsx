@@ -23,9 +23,20 @@ import { generalFaqs } from "@/data/faq";
 
 import heroDesktopAvif from "@/assets/hero.avif";
 import heroDesktopWebp from "@/assets/hero.webp";
+import hero1280Avif from "@/assets/hero-1280.avif";
+import hero1280Webp from "@/assets/hero-1280.webp";
+import hero1024Avif from "@/assets/hero-1024.avif";
+import hero1024Webp from "@/assets/hero-1024.webp";
+import hero768Avif from "@/assets/hero-768.avif";
+import hero768Webp from "@/assets/hero-768.webp";
 import heroMobileAvif from "@/assets/hero-mobile.avif";
 import heroMobileWebp from "@/assets/hero-mobile.webp";
+import heroMobile480Avif from "@/assets/hero-mobile-480.avif";
+import heroMobile480Webp from "@/assets/hero-mobile-480.webp";
 import heroFallback from "@/assets/hero.jpg";
+import heroFallback768 from "@/assets/hero-768.jpg";
+import heroFallback1024 from "@/assets/hero-1024.jpg";
+import heroFallback1280 from "@/assets/hero-1280.jpg";
 
 gsap.registerPlugin(SplitText);
 
@@ -37,14 +48,59 @@ export const Route = createFileRoute("/")({
         "Skédio is a creative studio crafting bold brands, beautiful digital experiences, and high-performance digital products that help businesses grow.",
       url: "/",
     }),
-    links: canonicalLink("/"),
+    links: [
+      ...canonicalLink("/"),
+      // Preload the LCP hero image early so discovery doesn't wait for the
+      // <picture> to parse. Only the single most-likely candidate per
+      // breakpoint is preloaded (1280w desktop ≈ 1244px rendered, 720w
+      // mobile covers 2x DPR) — never the whole srcset. `type` + `media`
+      // ensure the browser only fetches the variant it will render.
+      {
+        rel: "preload",
+        as: "image",
+        href: hero1280Avif,
+        type: "image/avif",
+        media: "(min-width: 1024px)",
+        fetchpriority: "high",
+      },
+      {
+        rel: "preload",
+        as: "image",
+        href: heroMobileAvif,
+        type: "image/avif",
+        media: "(max-width: 1023px)",
+        fetchpriority: "high",
+      },
+    ],
   }),
   component: Index,
 });
 
+/**
+ * Partner marquee logos serve tiny variants: the desktop card renders at
+ * h-40 (160px) and mobile at h-32 (128px), so 160w covers 1x and 320w
+ * covers 2x DPR/Retina. The 1080px originals (~31KB WebP) are never
+ * downloaded — 160w is ~4KB WebP (~2KB PNG) and 320w is ~9KB (~4KB PNG).
+ */
+const PARTNER_LOGO_SIZES = "160px";
+
 const partnerLogos = [
-  { type: "text" as const, id: "sc", label: "Social Chums", img: "/Social Chums.png" },
-  { type: "text" as const, id: "ed", label: "Edios", img: "/Edios.png" },
+  {
+    type: "text" as const,
+    id: "sc",
+    label: "Social Chums",
+    img: "/Social%20Chums-320.png",
+    imgSrcSet: "/Social%20Chums-160.png 160w, /Social%20Chums-320.png 320w",
+    webpSrcSet: "/Social%20Chums-160.webp 160w, /Social%20Chums-320.webp 320w",
+  },
+  {
+    type: "text" as const,
+    id: "ed",
+    label: "Edios",
+    img: "/Edios-320.png",
+    imgSrcSet: "/Edios-160.png 160w, /Edios-320.png 320w",
+    webpSrcSet: "/Edios-160.webp 160w, /Edios-320.webp 320w",
+  },
   { type: "text" as const, id: "chisel", label: "Chisel UI" },
 ];
 
@@ -106,22 +162,32 @@ function Index() {
       const title = root.querySelector<HTMLElement>(".sk-hero-title");
       const accent = title?.querySelector<HTMLElement>(".sk-hero-accent") ?? null;
 
+      // NOTE (LCP): [data-hero-visual] is intentionally EXCLUDED here. The hero
+      // <img> is the LCP element and must paint on the very first frame — it
+      // must never be opacity-gated behind GSAP/hydration. Only non-LCP hero
+      // chrome (pills, CTAs, proof, partner card) participates in the opacity
+      // entrance timeline. The visual gets a transform-only nudge (no opacity,
+      // no pre-hidden CSS state) so its first paint still counts for LCP.
       const reveals = Array.from(
         root.querySelectorAll<HTMLElement>(
-          "[data-hero-pill], [data-hero-cta], [data-hero-proof], [data-hero-visual], [data-hero-partner]",
+          "[data-hero-pill], [data-hero-cta], [data-hero-proof], [data-hero-partner]",
         ),
       );
+
+      const visual = root.querySelector<HTMLElement>("[data-hero-visual]");
 
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         gsap.set(title, { opacity: 1 });
         gsap.set(reveals, { opacity: 1, clearProps: "transform" });
+        if (visual) gsap.set(visual, { clearProps: "transform" });
         return;
       }
 
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      let split: ReturnType<typeof SplitText.create> | null = null;
 
       if (title) {
-        const split = SplitText.create(title, { type: "words" });
+        split = SplitText.create(title, { type: "words" });
         tl.set(title, { opacity: 1 }, 0).fromTo(
           split.words,
           { y: 38, opacity: 0 },
@@ -152,11 +218,37 @@ function Index() {
           "-=0.28",
         )
         .fromTo(
-          root.querySelectorAll<HTMLElement>("[data-hero-visual], [data-hero-partner]"),
+          root.querySelectorAll<HTMLElement>("[data-hero-partner]"),
           { y: 24, opacity: 0, scale: 0.985 },
           { y: 0, opacity: 1, scale: 1, duration: 0.8, stagger: 0.1 },
           ">-0.2",
         );
+
+      // Transform-only nudge for the LCP visual: no opacity involved, and
+      // immediateRender: false so nothing is hidden before the tween starts.
+      // First paint (opacity 1, final layout) happens before JS runs.
+      if (visual) {
+        tl.fromTo(
+          visual,
+          { y: 24, scale: 0.985 },
+          {
+            y: 0,
+            scale: 1,
+            duration: 0.8,
+            clearProps: "transform",
+            immediateRender: false,
+          },
+          "<0.1",
+        );
+      }
+
+      // useGSAP auto-reverts transform/opacity tweens via gsap.context, but
+      // SplitText injects word wrappers into the DOM — revert them so no
+      // detached nodes or stale measurements linger after unmount/HMR.
+      return () => {
+        tl.kill();
+        split?.revert();
+      };
     },
     { scope: pageRef },
   );
@@ -173,7 +265,7 @@ function Index() {
   const faqSchema = getFAQSchema(generalFaqs);
 
   return (
-    <div id="main-content" ref={pageRef} className="min-h-screen bg-background text-foreground">
+    <main id="main-content" ref={pageRef} className="min-h-screen bg-background text-foreground">
       <StructuredData data={[...serviceSchemas, faqSchema]} />
 
       {/* Nav */}
@@ -240,10 +332,15 @@ function Index() {
                       key={`${item.id}-${i}`}
                       className="flex h-40 w-52 shrink-0 items-center justify-center"
                     >
-                      {item.img ? (
+                      {"img" in item && item.img ? (
                         <WebpImage
                           src={item.img}
+                          srcSet={item.imgSrcSet}
+                          webpSrcSet={item.webpSrcSet}
+                          sizes={PARTNER_LOGO_SIZES}
                           alt={item.label}
+                          width={320}
+                          height={320}
                           loading="lazy"
                           decoding="async"
                           className="h-full w-full object-contain grayscale transition-all duration-300 hover:grayscale-0"
@@ -261,18 +358,46 @@ function Index() {
           </div>
         </div>
 
-        {/* Hero visual — single <picture>, format + size chosen via media query */}
-        <div data-hero-visual className="sk-hero-start mt-10 lg:mt-24">
+        {/* Hero visual (LCP) — deliberately NOT .sk-hero-start: it must be
+            opacity:1 on first paint and never wait for GSAP. Entrance motion
+            is transform-only (see useGSAP) with immediateRender:false.
+            Responsive width candidates: the visual is full-bleed inside a
+            max-w-1440 container (px-6 mobile / md:px-12 desktop), so mobile
+            sizes track 100vw minus padding and desktop tracks the container
+            width. 1280w covers the ~1244px rendered desktop width at 1x;
+            1440w remains for high-DPR desktop. Never lazy-load (LCP). */}
+        <div data-hero-visual className="mt-10 lg:mt-24">
           <picture>
-            <source media="(min-width: 1024px)" srcSet={heroDesktopAvif} type="image/avif" />
-            <source media="(min-width: 1024px)" srcSet={heroDesktopWebp} type="image/webp" />
-            <source srcSet={heroMobileAvif} type="image/avif" />
-            <source srcSet={heroMobileWebp} type="image/webp" />
+            <source
+              media="(min-width: 1024px)"
+              srcSet={`${hero768Avif} 768w, ${hero1024Avif} 1024w, ${hero1280Avif} 1280w, ${heroDesktopAvif} 1440w`}
+              sizes="(max-width: 1440px) calc(100vw - 96px), 1344px"
+              type="image/avif"
+            />
+            <source
+              media="(min-width: 1024px)"
+              srcSet={`${hero768Webp} 768w, ${hero1024Webp} 1024w, ${hero1280Webp} 1280w, ${heroDesktopWebp} 1440w`}
+              sizes="(max-width: 1440px) calc(100vw - 96px), 1344px"
+              type="image/webp"
+            />
+            <source
+              srcSet={`${heroMobile480Avif} 480w, ${heroMobileAvif} 720w`}
+              sizes="calc(100vw - 48px)"
+              type="image/avif"
+            />
+            <source
+              srcSet={`${heroMobile480Webp} 480w, ${heroMobileWebp} 720w`}
+              sizes="calc(100vw - 48px)"
+              type="image/webp"
+            />
             <img
               src={heroFallback}
+              srcSet={`${heroFallback768} 768w, ${heroFallback1024} 1024w, ${heroFallback1280} 1280w, ${heroFallback} 1440w`}
+              sizes="(min-width: 1024px) calc(100vw - 96px), calc(100vw - 48px)"
               alt="Skédio design studio hero showcase — bold brand identity and product design"
               fetchPriority="high"
               loading="eager"
+              decoding="async"
               width={1440}
               height={810}
               className="aspect-[16/9] w-full rounded-2xl object-cover"
@@ -289,10 +414,15 @@ function Index() {
                   key={`${item.id}-${i}`}
                   className="flex h-auto shrink-0 items-center justify-center px-8 py-2"
                 >
-                  {item.img ? (
+                  {"img" in item && item.img ? (
                     <WebpImage
                       src={item.img}
+                      srcSet={item.imgSrcSet}
+                      webpSrcSet={item.webpSrcSet}
+                      sizes={PARTNER_LOGO_SIZES}
                       alt={item.label}
+                      width={320}
+                      height={320}
                       loading="lazy"
                       decoding="async"
                       className="h-32 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300"
@@ -365,6 +495,6 @@ function Index() {
           )}
         </section>
       </div>
-    </div>
+    </main>
   );
 }

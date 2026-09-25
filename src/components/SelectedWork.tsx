@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -44,6 +44,61 @@ const sizeClasses: Record<ProjectCellSize, string> = {
 
 const isCompactSize = (size: ProjectCellSize) => size === "normal";
 
+/**
+ * Responsive candidates per bento image. Widths track each card's real CSS
+ * width so the browser never downloads the full-size original on mobile:
+ *
+ * - HaoCabs cover (hero cell, portrait 941px source, object-cover): 480w for
+ *   mobile, 720w for desktop 1x (~566px CSS), full 941w twin for 2x DPR.
+ *   The source aspect differs from the container — the crop stays
+ *   object-cover; only the delivered resolution changes.
+ * - Tiffinly (wide cell, 1600px source, object-cover): 480w mobile, 800w
+ *   desktop 1x (~566px CSS), 1200w for 2x DPR. Both WebP and JPEG fallback
+ *   candidates are provided.
+ * - EDIOS (normal cell, 1920px source): 480w covers desktop 1x (~285px CSS
+ *   at 2x DPR the browser picks 800w); full twin remains for larger DPR.
+ */
+const WIDE_SIZES = "(max-width: 768px) 100vw, 566px";
+const COMPACT_SIZES = "(max-width: 768px) 50vw, 285px";
+
+interface ResponsiveCandidates {
+  src: string;
+  srcSet?: string;
+  webpSrcSet: string;
+  sizes: string;
+}
+
+const responsiveByImage: Record<string, ResponsiveCandidates> = {
+  "/HaoCabs/cover.png": {
+    src: "/HaoCabs/cover.png",
+    webpSrcSet:
+      "/HaoCabs/cover-480.webp 480w, /HaoCabs/cover-720.webp 720w, /HaoCabs/cover.webp 941w",
+    sizes: WIDE_SIZES,
+  },
+  "/tiffinly/1.jpg": {
+    src: "/tiffinly/1-800.jpg",
+    srcSet: "/tiffinly/1-480.jpg 480w, /tiffinly/1-800.jpg 800w, /tiffinly/1-1200.jpg 1200w",
+    webpSrcSet: "/tiffinly/1-480.webp 480w, /tiffinly/1-800.webp 800w, /tiffinly/1-1200.webp 1200w",
+    sizes: WIDE_SIZES,
+  },
+  "/EDIOS/1.jpg": {
+    src: "/EDIOS/1-800.jpg",
+    srcSet: "/EDIOS/1-480.jpg 480w, /EDIOS/1-800.jpg 800w, /EDIOS/1.webp 1920w",
+    webpSrcSet: "/EDIOS/1-480.webp 480w, /EDIOS/1-800.webp 800w, /EDIOS/1.webp 1920w",
+    sizes: COMPACT_SIZES,
+  },
+};
+
+function responsiveFor(image: string, fallbackSizes: string): ResponsiveCandidates {
+  return (
+    responsiveByImage[image] ?? {
+      src: image,
+      webpSrcSet: "",
+      sizes: fallbackSizes,
+    }
+  );
+}
+
 const MORPH_MS = 480;
 const EXIT_MS = 340;
 
@@ -67,6 +122,8 @@ function ProjectCard({
     : isBillboard
       ? "justify-between p-8 md:p-12"
       : "justify-between p-5 md:p-7";
+  const responsive = responsiveFor(project.image, isCompact ? COMPACT_SIZES : WIDE_SIZES);
+  const hasResponsive = responsive.webpSrcSet.length > 0;
   return (
     <ScrollReveal
       key={project.slug}
@@ -80,9 +137,13 @@ function ProjectCard({
         className="group relative block h-full w-full overflow-hidden rounded-2xl bg-ink shadow-xl transition-transform duration-200 ease-out hover:scale-[1.02] hover:shadow-2xl"
       >
         <WebpImage
-          src={project.image}
+          src={responsive.src}
+          srcSet={responsive.srcSet}
+          webpSrcSet={hasResponsive ? responsive.webpSrcSet : undefined}
+          sizes={hasResponsive ? responsive.sizes : undefined}
           alt={`${project.title} — ${project.subtitle}`}
           loading="lazy"
+          decoding="async"
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent transition-opacity duration-200 ease-out" />
@@ -153,6 +214,14 @@ export function SelectedWork() {
   const ghostTimer = useRef<number | null>(null);
   const reducedMotion = useRef(false);
 
+  // Clear any pending ghost-exit timer on unmount so we never set state
+  // on an unmounted component after a rapid filter change + navigation.
+  useEffect(() => {
+    return () => {
+      if (ghostTimer.current) window.clearTimeout(ghostTimer.current);
+    };
+  }, []);
+
   const visible =
     filter === "all" ? selectedWork : selectedWork.filter((p) => p.category === filter);
 
@@ -204,30 +273,62 @@ export function SelectedWork() {
     prevRects.current = new Map();
     if (prev.size === 0 || reducedMotion.current) return;
 
+    // READ phase: batch all getBoundingClientRect() calls before any writes.
+    // No style mutations happen between these reads, so the browser can
+    // satisfy them from a single layout pass.
+    const pending: Array<{
+      el: HTMLAnchorElement;
+      dx: number;
+      dy: number;
+      sx: number;
+      sy: number;
+    }> = [];
     linkRefs.current.forEach((el, slug) => {
       const first = prev.get(slug);
       if (!el || !first) return;
       const last = el.getBoundingClientRect();
       const dx = first.left - last.left;
       const dy = first.top - last.top;
-      const sx = first.width / last.width;
-      const sy = first.height / last.height;
+      const sx = last.width > 0 ? first.width / last.width : 1;
+      const sy = last.height > 0 ? first.height / last.height : 1;
+      // Skip no-op moves so we don't force style recalc for static cards.
+      if (
+        Math.abs(dx) < 0.5 &&
+        Math.abs(dy) < 0.5 &&
+        Math.abs(sx - 1) < 0.002 &&
+        Math.abs(sy - 1) < 0.002
+      ) {
+        return;
+      }
+      pending.push({ el, dx, dy, sx, sy });
+    });
+    if (pending.length === 0) return;
 
+    // WRITE phase 1: apply the inverted FLIP state to every moving card.
+    for (const { el, dx, dy, sx, sy } of pending) {
       el.style.transition = "none";
       el.style.transformOrigin = "top left";
       el.style.transform = `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`;
-      void el.offsetWidth;
+    }
+    // SINGLE forced reflow to flush the inverted state for all cards at once.
+    // Previously this was `void el.offsetWidth` inside the loop (N reflows).
+    void outerRef.current?.offsetWidth;
+
+    // WRITE phase 2: release all cards to their natural position together.
+    const cleanups: Array<() => void> = [];
+    for (const { el } of pending) {
       el.style.transition = `transform ${MORPH_MS}ms cubic-bezier(0.16, 1, 0.3, 1)`;
       el.style.transform = "";
-      el.addEventListener(
-        "transitionend",
-        () => {
-          el.style.transition = "";
-          el.style.transformOrigin = "";
-        },
-        { once: true },
-      );
-    });
+      const onEnd = () => {
+        el.style.transition = "";
+        el.style.transformOrigin = "";
+      };
+      el.addEventListener("transitionend", onEnd, { once: true });
+      cleanups.push(() => el.removeEventListener("transitionend", onEnd));
+    }
+    return () => {
+      for (const fn of cleanups) fn();
+    };
   }, [filter]);
 
   return (
@@ -299,28 +400,36 @@ export function SelectedWork() {
           </div>
         )}
 
-        {ghosts.map((g) => (
-          <span
-            key={g.project.slug}
-            aria-hidden="true"
-            className="pointer-events-none absolute overflow-hidden rounded-2xl bg-ink shadow-xl motion-reduce:hidden animate-out fade-out-0 zoom-out-95 fill-mode-forwards"
-            style={{
-              left: g.left,
-              top: g.top,
-              width: g.width,
-              height: g.height,
-              ["--tw-animation-duration" as string]: `${EXIT_MS}ms`,
-            }}
-          >
-            <WebpImage
-              src={g.project.image}
-              alt=""
-              loading="lazy"
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
-          </span>
-        ))}
+        {ghosts.map((g) => {
+          const r = responsiveFor(g.project.image, WIDE_SIZES);
+          const hasR = r.webpSrcSet.length > 0;
+          return (
+            <span
+              key={g.project.slug}
+              aria-hidden="true"
+              className="pointer-events-none absolute overflow-hidden rounded-2xl bg-ink shadow-xl motion-reduce:hidden animate-out fade-out-0 zoom-out-95 fill-mode-forwards"
+              style={{
+                left: g.left,
+                top: g.top,
+                width: g.width,
+                height: g.height,
+                ["--tw-animation-duration" as string]: `${EXIT_MS}ms`,
+              }}
+            >
+              <WebpImage
+                src={r.src}
+                srcSet={r.srcSet}
+                webpSrcSet={hasR ? r.webpSrcSet : undefined}
+                sizes={hasR ? r.sizes : undefined}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
+            </span>
+          );
+        })}
       </div>
     </section>
   );

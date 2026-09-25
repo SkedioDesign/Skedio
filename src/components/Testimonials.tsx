@@ -74,7 +74,7 @@ function TestimonialCard({ t, index }: { t: Testimonial; index: number }) {
           <p className="mt-0.5 truncate text-[0.625rem] leading-tight text-muted-foreground">
             {t.role} · {t.age}
           </p>
-          <p className="mt-px truncate text-[0.5625rem] leading-tight text-muted-foreground/80">
+          <p className="mt-px truncate text-[0.5625rem] leading-tight text-muted-foreground">
             {t.experience}
           </p>
         </div>
@@ -91,7 +91,9 @@ function TestimonialCard({ t, index }: { t: Testimonial; index: number }) {
       </blockquote>
 
       <p className="mt-2 flex items-baseline gap-1.5 text-[0.5625rem] leading-none">
-        <span className="font-semibold uppercase tracking-[0.14em] text-foreground/60">Focus:</span>
+        <span className="font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          Focus:
+        </span>
         <span className="truncate text-muted-foreground">{t.focus}</span>
       </p>
     </article>
@@ -115,6 +117,11 @@ export function Testimonials() {
   const stepRef = useRef(1);
   const setWidthRef = useRef(1);
   const railWidthRef = useRef(128);
+  // Cached flex gap (gap-7 = 28px). getComputedStyle() forces a style recalc,
+  // so we read it once and reuse it across resize bursts.
+  const gapCacheRef = useRef<number | null>(null);
+  const resizeRafRef = useRef(0);
+  const resizeTimerRef = useRef<number | null>(null);
 
   const drag = useRef<{
     id: number;
@@ -155,17 +162,30 @@ export function Testimonials() {
     const rail = railRef.current;
     const firstGroup = track?.firstElementChild;
     const firstCard = firstGroup?.firstElementChild as HTMLElement | null;
-    const group = firstGroup as HTMLElement | null;
 
-    if (track && firstCard && group) {
-      const gap = parseFloat(getComputedStyle(group).columnGap || "0") || 0;
-      const step = firstCard.offsetWidth + gap;
-      if (step > 0) {
+    // READ phase: batch all layout reads before any writes. offsetWidth
+    // reads are served from one layout pass since no DOM writes interleave.
+    const cardW = firstCard ? firstCard.offsetWidth : 0;
+    const railW = rail ? rail.offsetWidth : 0;
+
+    if (track && firstCard && cardW > 0) {
+      let gap = gapCacheRef.current;
+      if (gap == null) {
+        const group = firstGroup as HTMLElement | null;
+        gap = group ? parseFloat(getComputedStyle(group).columnGap || "0") || 0 : 0;
+        // Fallback to the authored gap-7 (28px) if computed style is blank.
+        if (!gap) gap = 28;
+        gapCacheRef.current = gap;
+      }
+      const step = cardW + gap;
+      if (step > 0 && Math.abs(step - stepRef.current) > 0.5) {
         stepRef.current = step;
         setWidthRef.current = step * testimonials.length;
       }
     }
-    if (rail) railWidthRef.current = rail.offsetWidth;
+    if (railW > 0 && Math.abs(railW - railWidthRef.current) > 0.5) {
+      railWidthRef.current = railW;
+    }
 
     if (!startedRef.current) {
       startedRef.current = true;
@@ -177,9 +197,34 @@ export function Testimonials() {
 
   useLayoutEffect(() => {
     measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, [measure]);
+    // rAF-throttled + debounced resize: coalesce high-frequency resize
+    // events into one measure per frame, with a trailing 150ms re-check
+    // for finished viewport changes (e.g. orientation, scrollbar).
+    const onResize = () => {
+      if (resizeRafRef.current) return;
+      resizeRafRef.current = requestAnimationFrame(() => {
+        resizeRafRef.current = 0;
+        measure();
+      });
+      if (resizeTimerRef.current) window.clearTimeout(resizeTimerRef.current);
+      resizeTimerRef.current = window.setTimeout(() => {
+        resizeTimerRef.current = null;
+        // Gap can change with breakpoints — drop the cache on settle so the
+        // next measure re-reads it once, then re-caches.
+        gapCacheRef.current = null;
+        measure();
+        render();
+      }, 150);
+    };
+    window.addEventListener("resize", onResize, { passive: true });
+    return () => {
+      window.removeEventListener("resize", onResize);
+      if (resizeRafRef.current) cancelAnimationFrame(resizeRafRef.current);
+      resizeRafRef.current = 0;
+      if (resizeTimerRef.current) window.clearTimeout(resizeTimerRef.current);
+      resizeTimerRef.current = null;
+    };
+  }, [measure, render]);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");

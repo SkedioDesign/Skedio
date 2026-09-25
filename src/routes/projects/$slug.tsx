@@ -1,8 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowDown, ArrowDownRight, ArrowLeft, ChevronDown } from "lucide-react";
-import { useGSAP } from "@gsap/react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Fragment, type CSSProperties, type ReactNode, useEffect, useRef, useState } from "react";
 
 import { getProjectBySlug } from "@/data/projects";
@@ -18,9 +15,15 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { getCreativeWorkSchema, getBreadcrumbSchema, type BreadcrumbItem } from "@/lib/schema";
 import { WebpImage } from "@/components/WebpImage";
 
-import "./case-study.css";
-
-gsap.registerPlugin(ScrollTrigger);
+// Route-scoped stylesheet: loaded via `?url` + this route's `head()` links
+// instead of a static `import "./case-study.css"`. A static import would put
+// the CSS in the module graph reachable from routeTree.gen.ts (which
+// statically imports every route), so Rolldown hoists it into the shared
+// entry CSS chunk attributed to `__root__` — i.e. render-blocking on EVERY
+// page (homepage included). Via head links it is requested only when this
+// route renders (SSR <head> keeps it render-blocking where required, so no
+// FOUC on direct visits).
+import caseStudyCss from "./case-study.css?url";
 
 export const Route = createFileRoute("/projects/$slug")({
   loader: async ({ params }) => {
@@ -51,7 +54,10 @@ export const Route = createFileRoute("/projects/$slug")({
         themeColor: project.themeColor,
         type: "article",
       }),
-      links: canonicalLink(`/projects/${project.slug}`),
+      links: [
+        ...canonicalLink(`/projects/${project.slug}`),
+        { rel: "stylesheet", href: caseStudyCss },
+      ],
     };
   },
   component: CaseStudy,
@@ -92,6 +98,40 @@ function CaseStudyNotFound() {
 
 /* ------------------------- Image & Text Primitives --------------------- */
 
+/**
+ * Responsive candidates for case-study images that have managed variants on
+ * disk (regenerated every build by scripts/optimize-images.mjs, so the URLs
+ * below always exist — never add an entry here without a matching
+ * RESPONSIVE_VARIANTS record, or the browser would hit a 404 with no
+ * cross-candidate fallback). Images without an entry keep the previous
+ * single-src behavior. `fullW` is the post-build intrinsic width (the build
+ * caps the longest side at 1600px), included so high-DPR/large renderings
+ * never regress in quality.
+ */
+const MANAGED_VARIANTS: Record<
+  string,
+  { widths: number[]; formats: Array<"webp" | "jpg">; sizes: string; fullW: number }
+> = {
+  "/tiffinly/1": {
+    widths: [480, 800, 1200],
+    formats: ["webp", "jpg"],
+    sizes: "(max-width: 768px) calc(100vw - 32px), 1200px",
+    fullW: 1600,
+  },
+  "/EDIOS/1": {
+    widths: [480, 800],
+    formats: ["webp", "jpg"],
+    sizes: "(max-width: 768px) calc(100vw - 32px), 800px",
+    fullW: 1600,
+  },
+  "/HaoCabs/cover": {
+    widths: [480, 720],
+    formats: ["webp"],
+    sizes: "(max-width: 768px) calc(100vw - 32px), 720px",
+    fullW: 941,
+  },
+};
+
 function CsImage({
   image,
   assets,
@@ -107,6 +147,25 @@ function CsImage({
 }) {
   const dims =
     image.width != null && image.height != null ? { width: image.width, height: image.height } : {};
+  const managed = MANAGED_VARIANTS[`${assets}/${image.name}`];
+  const base = `${assets}/${image.name}`;
+  // Extension of the fallback original: managed entries mirror the formats
+  // the build emits (jpg originals have jpg variants; the png cover only
+  // has webp variants, so its <img> keeps the single src as before).
+  const fallbackExt = managed?.formats.includes("jpg") ? "jpg" : null;
+  const webpSrcSet = managed
+    ? [
+        ...managed.widths.map((w) => `${base}-${w}.webp ${w}w`),
+        `${base}.webp ${managed.fullW}w`,
+      ].join(", ")
+    : undefined;
+  const imgSrcSet =
+    managed && fallbackExt
+      ? [
+          ...managed.widths.map((w) => `${base}-${w}.${fallbackExt} ${w}w`),
+          `${base}.${fallbackExt} ${managed.fullW}w`,
+        ].join(", ")
+      : undefined;
   return (
     <WebpImage
       src={`${assets}/${image.name}.jpg`}
@@ -115,6 +174,9 @@ function CsImage({
       className={className}
       loading={loading}
       fetchPriority={fetchPriority}
+      sizes={managed?.sizes}
+      srcSet={imgSrcSet}
+      webpSrcSet={webpSrcSet}
     />
   );
 }
@@ -167,24 +229,36 @@ function RichText({ text }: { text: string }) {
 
 function useInView<T extends HTMLElement>(options?: IntersectionObserverInit) {
   const ref = useRef<T | null>(null);
-  useGSAP(
-    () => {
-      const el = ref.current;
-      if (!el) return;
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduce) {
-        el.classList.add("is-inview");
-        return;
-      }
-      ScrollTrigger.create({
-        trigger: el,
-        start: "top 90%",
-        once: true,
-        onEnter: () => el.classList.add("is-inview"),
-      });
-    },
-    { scope: ref, dependencies: [options] },
-  );
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      el.classList.add("is-inview");
+      return;
+    }
+    // Previously GSAP ScrollTrigger (trigger "top 90%", once). Native
+    // IntersectionObserver does the same class toggle with zero library
+    // weight: rootMargin "-10%" bottom ≈ "top 90%", disconnect = once.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-inview");
+            observer.disconnect();
+          }
+        }
+      },
+      { rootMargin: "0px 0px -10% 0px", threshold: 0, ...optionsRef.current },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+    // Mount-once: route component persists across slug changes and revealed
+    // state carries over, matching the previous behaviour.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return ref;
 }
 
@@ -331,7 +405,10 @@ function ChapterNav({ chapters }: { chapters: CaseStudyDocument["chapters"] }) {
   };
 
   return (
-    <nav className={`cs-chapter-nav ${expanded ? "cs-chapter-nav--open" : ""}`}>
+    <nav
+      aria-label="Case study chapters"
+      className={`cs-chapter-nav ${expanded ? "cs-chapter-nav--open" : ""}`}
+    >
       <ol className="cs-chapter-nav__list">
         {visible.map((c) => (
           <li key={c.num}>
@@ -726,10 +803,33 @@ function CaseStudy() {
   }, [slug]);
 
   useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 50);
-    onScroll();
+    let raf = 0;
+    let last = window.scrollY > 50;
+    const sync = () => {
+      raf = 0;
+      const next = window.scrollY > 50;
+      if (next !== last) {
+        last = next;
+        setIsScrolled(next);
+      }
+    };
+    const onScroll = () => {
+      // Coalesce scroll events to one check per frame and skip setState
+      // when the threshold hasn't crossed, avoiding re-renders on scroll.
+      if (raf) return;
+      raf = requestAnimationFrame(sync);
+    };
+    // Initial sync is async (via rAF) so the effect body itself never calls
+    // setState synchronously; state settles before first scroll update.
+    raf = requestAnimationFrame(() => {
+      raf = 0;
+      setIsScrolled((prev) => (prev === last ? prev : last));
+    });
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, [slug]);
 
   useEffect(() => {

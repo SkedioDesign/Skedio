@@ -113,6 +113,17 @@ export default defineConfig({
   css: { transformer: "lightningcss" },
   resolve: { tsconfigPaths: true },
   build: {
+    // Modern baseline target (matches Vite's default): ES2022-class syntax,
+    // no downlevel transforms/polyfills for Array.from, optional chaining,
+    // etc. Do NOT lower this to support legacy browsers — that would
+    // reintroduce transpiled helpers into every client chunk. The remaining
+    // "legacy" bytes live inside the prebuilt Sentry SDK dist (third-party
+    // code we must not edit) and stay statically bundled because
+    // src/start.ts wires its middleware at startup (dynamic import alone
+    // cannot split it — see INEFFECTIVE_DYNAMIC_IMPORT); Sentry.init plus
+    // its ingest connection and replay startup are instead deferred past
+    // LCP in src/instrument.client.ts.
+    target: "baseline-widely-available",
     rolldownOptions: {
       output: {
         // Split heavy vendor libs into separately cacheable chunks instead of a
@@ -121,6 +132,13 @@ export default defineConfig({
           if (!id.includes("node_modules")) return;
           if (id.includes("@radix-ui")) return "radix-ui";
           if (id.includes("@tanstack")) return "router";
+          // ScrollTrigger drives scroll-linked reveals only (below the fold).
+          // It loads on demand via lib/animation-loader.ts — keep it out of
+          // the initial gsap chunk so its parse/execute cost and unused bytes
+          // move off the critical path. GSAP core + SplitText stay eager for
+          // the above-fold hero entrance. Must precede the generic "gsap"
+          // rule: the ScrollTrigger path also contains "gsap".
+          if (id.includes("gsap/ScrollTrigger")) return "gsap-st";
           if (id.includes("gsap")) return "gsap";
           if (id.includes("lenis")) return "lenis";
           if (id.includes("@sentry")) return "sentry";
