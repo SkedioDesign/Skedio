@@ -27,14 +27,17 @@ export const Route = createRootRoute({
       // ──────────────────────────────────────────────────────────────────────
       // SEARCH CONSOLE VERIFICATION
       // Google: https://search.google.com/search-console → property
-      //   "https://www.skediodesign.in" → HTML tag method. Done.
+      //   "https://www.skediodesign.in" → HTML tag method.
+      // Token below supersedes an earlier one for this same property; only one
+      // google-site-verification tag is effective per page, so they cannot
+      // coexist. A Domain property (covers apex + all subdomains) is the more
+      // robust route via DNS TXT — no code in HTML, survives host changes.
       // Bing: still pending — www.bing.com/webmasters → add site → Meta tag.
-      //   Keep "REPLACE_WITH_CODE" until that real code arrives.
       // See docs/seo-verification.md for the alternative HTML-file method.
       // ──────────────────────────────────────────────────────────────────────
-      { name: "google-site-verification", content: "tL-Ek92Jkh58kpUQbJT5m_qLQ_7i_TjGfgHrZ_JGFWo" },
+      { name: "google-site-verification", content: "eHTiHIwmus8DN3RISw3CUE3QGtYw2ttD-kyOd5WGDnA" },
       // Bing code not issued yet. Left commented out rather than shipping a
-      // literal "REPLACE_WITH_CODE" into production HTML.
+      // placeholder value into production HTML.
       // { name: "msvalidate.01", content: "PASTE_BING_CODE_HERE" },
     ],
     links: [
