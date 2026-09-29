@@ -69,7 +69,7 @@ function BlogPost() {
   const articleSchema = getArticleSchema({
     title: post.title,
     description: post.metaDescription,
-    slug: post.slug,
+    path: `/blog/${post.slug}`,
     datePublished: post.publishedAt,
     authorName: "Skédio Studio",
     image: post.ogImage,

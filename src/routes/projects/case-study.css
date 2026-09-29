@@ -1128,6 +1128,111 @@
   color: var(--cs-dark-muted);
 }
 
+/* Cross-links back to the service pages that produced this work. Sits directly
+   above the closing footer so the project -> service hop is the last thing a
+   reader sees, completing the project -> service -> project loop. */
+.cs-services {
+  background: var(--cs-black);
+  color: var(--cs-white);
+  padding: 0 clamp(20px, 5vw, 48px) clamp(72px, 9vw, 120px);
+  border-top: 1px solid var(--cs-dark-border);
+}
+
+.cs-services__inner {
+  max-width: var(--cs-container);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.cs-services__kicker {
+  font-family: var(--font-heading, "Gilroy", sans-serif);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--cs-dark-muted);
+  margin-bottom: 20px;
+}
+
+.cs-services__title {
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin-bottom: 40px;
+}
+
+.cs-services__list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.cs-services__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: 1px solid var(--cs-dark-border);
+  background: transparent;
+  color: var(--cs-white);
+  font-family: var(--font-heading, "Gilroy", sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition:
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+.cs-services__link:hover {
+  background: var(--cs-accent);
+  border-color: var(--cs-accent);
+  color: var(--cs-black);
+}
+
+.cs-services__link svg {
+  transition: transform 0.25s ease;
+}
+
+.cs-services__link:hover svg {
+  transform: translate(2px, -2px);
+}
+
+.cs-services__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cs-dark-muted);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 2px;
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+
+.cs-services__more:hover {
+  color: var(--cs-white);
+  border-bottom-color: var(--cs-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-services__link,
+  .cs-services__link svg,
+  .cs-services__more {
+    transition: none;
+  }
+
+  .cs-services__link:hover svg {
+    transform: none;
+  }
+}
+
 /* ------------------------- Responsive Media Queries ---------------------- */
 
 @media (max-width: 1024px) {

@@ -1,8 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowDown, ArrowDownRight, ArrowLeft, ChevronDown } from "lucide-react";
+import { ArrowDown, ArrowDownRight, ArrowLeft, ArrowUpRight, ChevronDown } from "lucide-react";
 import { Fragment, type CSSProperties, type ReactNode, useEffect, useRef, useState } from "react";
 
 import { getProjectBySlug } from "@/data/projects";
+import { getServicesBySlugs } from "@/data/services";
 import {
   getCaseStudy,
   type CaseStudyDocument,
@@ -759,6 +760,43 @@ function EndingSection({
 
 /* ============================ MAIN ROUTE PAGE ========================== */
 
+/*
+ * Cross-links from a case study back to the service pages behind it. Renders
+ * nothing when the project declares no service slugs, so unpublished or
+ * purely-branding work degrades to a link to the /projects hub instead.
+ */
+function ServiceCrossLinks({ slugs }: { slugs: string[] }) {
+  const services = getServicesBySlugs(slugs);
+  if (services.length === 0) return null;
+
+  return (
+    <section className="cs-services" aria-labelledby="cs-services-heading">
+      <div className="cs-services__inner">
+        <p className="cs-services__kicker">Services Applied</p>
+        <h2 id="cs-services-heading" className="cs-services__title">
+          The craft behind this work
+        </h2>
+        <div className="cs-services__list">
+          {services.map((service) => (
+            <Link
+              key={service.slug}
+              to="/services/$slug"
+              params={{ slug: service.slug }}
+              className="cs-services__link"
+            >
+              {service.shortTitle}
+              <ArrowUpRight size={15} />
+            </Link>
+          ))}
+        </div>
+        <Link to="/projects" className="cs-services__more">
+          <ArrowLeft size={14} /> Back to all projects
+        </Link>
+      </div>
+    </section>
+  );
+}
+
 function SectionRenderer({ doc, section }: { doc: CaseStudyDocument; section: CaseStudySection }) {
   switch (section.type) {
     case "overview":
@@ -855,7 +893,7 @@ function CaseStudy() {
 
   const breadcrumbItems: BreadcrumbItem[] = [
     { name: "Home", item: "/" },
-    { name: "Projects", item: "/#work" },
+    { name: "Projects", item: "/projects" },
     { name: project.name, item: `/projects/${project.slug}` },
   ];
   const breadcrumbSchema = getBreadcrumbSchema(breadcrumbItems);
@@ -916,6 +954,7 @@ function CaseStudy() {
       {bodySections.map((section) => (
         <SectionRenderer key={`${section.type}-${section.id}`} doc={doc} section={section} />
       ))}
+      <ServiceCrossLinks slugs={project.serviceSlugs} />
       {endingSection && <EndingSection doc={doc} section={endingSection} />}
     </main>
   );

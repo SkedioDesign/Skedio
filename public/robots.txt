@@ -38,4 +38,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://skedio.studio/sitemap.xml
+Sitemap: https://www.skediodesign.in/sitemap.xml

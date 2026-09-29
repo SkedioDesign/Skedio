@@ -61,7 +61,7 @@ export const Route = createFileRoute("/")({
         href: hero1280Avif,
         type: "image/avif",
         media: "(min-width: 1024px)",
-        fetchpriority: "high",
+        fetchPriority: "high",
       },
       {
         rel: "preload",
@@ -69,7 +69,7 @@ export const Route = createFileRoute("/")({
         href: heroMobileAvif,
         type: "image/avif",
         media: "(max-width: 1023px)",
-        fetchpriority: "high",
+        fetchPriority: "high",
       },
     ],
   }),
@@ -271,8 +271,8 @@ function Index() {
       {/* Nav */}
       <SiteHeader
         links={[
-          { label: "Work", to: "/", hash: "work" },
-          { label: "Services", to: "/", hash: "services" },
+          { label: "Work", to: "/projects" },
+          { label: "Services", to: "/services" },
           { label: "Blog", to: "/", hash: "blog" },
           { label: "About", to: "/about" },
         ]}
@@ -317,7 +317,7 @@ function Index() {
               className="sk-hero-start mt-8 flex items-center gap-2 text-sm text-muted-foreground"
             >
               <Zap className="size-4 text-primary" />
-              Get reply within 36 hours
+              {`Get reply within ${siteConfig.responseTime}`}
             </p>
           </div>
 

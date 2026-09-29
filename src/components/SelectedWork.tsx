@@ -11,6 +11,7 @@ import {
   type SelectedWorkItem,
 } from "@/data/projects";
 import { WebpImage } from "@/components/WebpImage";
+import { responsiveFor, WIDE_SIZES, COMPACT_SIZES } from "@/lib/responsive-images";
 
 type WorkFilter = ProjectCategory | "all";
 
@@ -44,61 +45,6 @@ const sizeClasses: Record<ProjectCellSize, string> = {
 
 const isCompactSize = (size: ProjectCellSize) => size === "normal";
 
-/**
- * Responsive candidates per bento image. Widths track each card's real CSS
- * width so the browser never downloads the full-size original on mobile:
- *
- * - HaoCabs cover (hero cell, portrait 941px source, object-cover): 480w for
- *   mobile, 720w for desktop 1x (~566px CSS), full 941w twin for 2x DPR.
- *   The source aspect differs from the container — the crop stays
- *   object-cover; only the delivered resolution changes.
- * - Tiffinly (wide cell, 1600px source, object-cover): 480w mobile, 800w
- *   desktop 1x (~566px CSS), 1200w for 2x DPR. Both WebP and JPEG fallback
- *   candidates are provided.
- * - EDIOS (normal cell, 1920px source): 480w covers desktop 1x (~285px CSS
- *   at 2x DPR the browser picks 800w); full twin remains for larger DPR.
- */
-const WIDE_SIZES = "(max-width: 768px) 100vw, 566px";
-const COMPACT_SIZES = "(max-width: 768px) 50vw, 285px";
-
-interface ResponsiveCandidates {
-  src: string;
-  srcSet?: string;
-  webpSrcSet: string;
-  sizes: string;
-}
-
-const responsiveByImage: Record<string, ResponsiveCandidates> = {
-  "/HaoCabs/cover.png": {
-    src: "/HaoCabs/cover.png",
-    webpSrcSet:
-      "/HaoCabs/cover-480.webp 480w, /HaoCabs/cover-720.webp 720w, /HaoCabs/cover.webp 941w",
-    sizes: WIDE_SIZES,
-  },
-  "/tiffinly/1.jpg": {
-    src: "/tiffinly/1-800.jpg",
-    srcSet: "/tiffinly/1-480.jpg 480w, /tiffinly/1-800.jpg 800w, /tiffinly/1-1200.jpg 1200w",
-    webpSrcSet: "/tiffinly/1-480.webp 480w, /tiffinly/1-800.webp 800w, /tiffinly/1-1200.webp 1200w",
-    sizes: WIDE_SIZES,
-  },
-  "/EDIOS/1.jpg": {
-    src: "/EDIOS/1-800.jpg",
-    srcSet: "/EDIOS/1-480.jpg 480w, /EDIOS/1-800.jpg 800w, /EDIOS/1.webp 1920w",
-    webpSrcSet: "/EDIOS/1-480.webp 480w, /EDIOS/1-800.webp 800w, /EDIOS/1.webp 1920w",
-    sizes: COMPACT_SIZES,
-  },
-};
-
-function responsiveFor(image: string, fallbackSizes: string): ResponsiveCandidates {
-  return (
-    responsiveByImage[image] ?? {
-      src: image,
-      webpSrcSet: "",
-      sizes: fallbackSizes,
-    }
-  );
-}
-
 const MORPH_MS = 480;
 const EXIT_MS = 340;
 
@@ -122,7 +68,8 @@ function ProjectCard({
     : isBillboard
       ? "justify-between p-8 md:p-12"
       : "justify-between p-5 md:p-7";
-  const responsive = responsiveFor(project.image, isCompact ? COMPACT_SIZES : WIDE_SIZES);
+  const responsive = responsiveFor(project.image);
+  const sizes = isCompact ? COMPACT_SIZES : WIDE_SIZES;
   const hasResponsive = responsive.webpSrcSet.length > 0;
   return (
     <ScrollReveal
@@ -140,7 +87,7 @@ function ProjectCard({
           src={responsive.src}
           srcSet={responsive.srcSet}
           webpSrcSet={hasResponsive ? responsive.webpSrcSet : undefined}
-          sizes={hasResponsive ? responsive.sizes : undefined}
+          sizes={hasResponsive ? sizes : undefined}
           alt={`${project.title} — ${project.subtitle}`}
           loading="lazy"
           decoding="async"
@@ -401,7 +348,7 @@ export function SelectedWork() {
         )}
 
         {ghosts.map((g) => {
-          const r = responsiveFor(g.project.image, WIDE_SIZES);
+          const r = responsiveFor(g.project.image);
           const hasR = r.webpSrcSet.length > 0;
           return (
             <span
@@ -420,7 +367,7 @@ export function SelectedWork() {
                 src={r.src}
                 srcSet={r.srcSet}
                 webpSrcSet={hasR ? r.webpSrcSet : undefined}
-                sizes={hasR ? r.sizes : undefined}
+                sizes={hasR ? WIDE_SIZES : undefined}
                 alt=""
                 loading="lazy"
                 decoding="async"

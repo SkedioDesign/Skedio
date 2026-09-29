@@ -4,13 +4,26 @@ import { servicesData } from "../data/services";
 import { blogPosts } from "../data/blog";
 import { insightsArticles } from "../data/insights";
 
+/**
+ * URL convention: NO trailing slash, except the site root which is exactly
+ * siteConfig.url + "/". This is already enforced by the router, which
+ * 307-redirects "/about/" -> "/about" (verified), so it must be mirrored here
+ * or crawlers see two URL forms per page.
+ *
+ * Keep every <loc> byte-identical to the page's own <link rel="canonical">,
+ * which lib/seo.ts builds the same way.
+ */
 export function generateSitemapXml(): string {
   const currentDate = new Date().toISOString().split("T")[0];
 
   const staticRoutes = [
-    { path: "", changefreq: "weekly", priority: "1.0", lastmod: currentDate },
+    { path: "/", changefreq: "weekly", priority: "1.0", lastmod: currentDate },
+    { path: "/services", changefreq: "monthly", priority: "0.9", lastmod: currentDate },
+    { path: "/projects", changefreq: "weekly", priority: "0.9", lastmod: currentDate },
     { path: "/about", changefreq: "monthly", priority: "0.8", lastmod: currentDate },
     { path: "/insights", changefreq: "weekly", priority: "0.8", lastmod: currentDate },
+    { path: "/blog", changefreq: "weekly", priority: "0.8", lastmod: currentDate },
+    { path: "/contact", changefreq: "monthly", priority: "0.9", lastmod: currentDate },
     { path: "/privacy", changefreq: "yearly", priority: "0.3", lastmod: currentDate },
     { path: "/terms", changefreq: "yearly", priority: "0.3", lastmod: currentDate },
   ];

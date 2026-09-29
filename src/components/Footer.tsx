@@ -30,16 +30,27 @@ const navSections: FooterNavSection[] = [
     title: "Company",
     links: [
       { label: "About Us", href: "/about" },
-      { label: "Services", href: "/#services" },
-      { label: "Contact", action: "contact" },
+      { label: "Services", href: "/services" },
+      { label: "Contact", href: "/contact" },
     ],
   },
   {
     title: "Work",
     links: [
-      { label: "Featured Work", href: "/#work" },
+      { label: "Featured Work", href: "/projects" },
       { label: "Clients", href: "/#clients" },
       { label: "Testimonials", href: "/#testimonials" },
+    ],
+  },
+  {
+    // Without these, /insights and its three articles were unreachable from
+    // the homepage by any internal link — the entire insights cluster was
+    // orphaned, linked only from the 404 page. The footer renders on every
+    // page, so this is the one place that fixes reachability site-wide.
+    title: "Read",
+    links: [
+      { label: "Blog", href: "/blog" },
+      { label: "Insights", href: "/insights" },
     ],
   },
   {

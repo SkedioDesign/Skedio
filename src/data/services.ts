@@ -353,3 +353,15 @@ export const servicesData: ServiceItem[] = [
 export function getServiceBySlug(slug: string): ServiceItem | undefined {
   return servicesData.find((s) => s.slug === slug);
 }
+
+/*
+ * Resolve a project's `serviceSlugs` to real service records, preserving the
+ * authored order and silently dropping slugs with no matching page. The
+ * project -> service half of the link graph. Takes slugs rather than reading
+ * `projects.ts` directly to keep this module free of a circular import.
+ */
+export function getServicesBySlugs(slugs: string[]): ServiceItem[] {
+  return slugs
+    .map((slug) => getServiceBySlug(slug))
+    .filter((service): service is ServiceItem => service !== undefined);
+}

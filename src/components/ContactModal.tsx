@@ -2,6 +2,7 @@ import React, { useCallback, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useContactModal } from "@/context/use-contact-modal";
 import { useContactForm } from "@/hooks/use-contact-form";
+import { siteConfig } from "@/lib/site-config";
 import { ArrowUpRight, CheckCircle2, Loader2, Sparkles, X } from "lucide-react";
 
 export function ContactModal() {
@@ -21,7 +22,7 @@ export function ContactModal() {
       _subject: `New Project Inquiry from ${formData.name} (Skedio Studio)`,
       _template: "table",
     }),
-    errorCopy: "Something went wrong. Please try again or email us directly at hello@skedio.studio",
+    errorCopy: `Something went wrong. Please try again or email us directly at ${siteConfig.email}`,
     onSent: () => setFormData({ name: "", email: "", message: "" }),
   });
 
@@ -130,7 +131,7 @@ export function ContactModal() {
                 Start a Conversation
               </h2>
               <p className="type-body text-sm text-muted-foreground">
-                Tell us about your brand or product, and we'll connect with you within 24 hours.
+                {`Tell us about your brand or product, and we'll connect with you within ${siteConfig.responseTime}.`}
               </p>
             </div>
 

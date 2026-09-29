@@ -25,15 +25,17 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: siteConfig.name },
       // ──────────────────────────────────────────────────────────────────────
-      // SEARCH CONSOLE VERIFICATION — PLACEHOLDERS
-      // Replace these placeholder values with real codes before deploying:
-      //   • Google:  search.google.com/search-console → Add property → "HTML tag" method
-      //   • Bing:    www.bing.com/webmasters → verify site → "Meta tag" method
-      // Keep "REPLACE_WITH_CODE" until you have real codes from each dashboard.
+      // SEARCH CONSOLE VERIFICATION
+      // Google: https://search.google.com/search-console → property
+      //   "https://www.skediodesign.in" → HTML tag method. Done.
+      // Bing: still pending — www.bing.com/webmasters → add site → Meta tag.
+      //   Keep "REPLACE_WITH_CODE" until that real code arrives.
       // See docs/seo-verification.md for the alternative HTML-file method.
       // ──────────────────────────────────────────────────────────────────────
-      { name: "google-site-verification", content: "REPLACE_WITH_CODE" },
-      { name: "msvalidate.01", content: "REPLACE_WITH_CODE" },
+      { name: "google-site-verification", content: "tL-Ek92Jkh58kpUQbJT5m_qLQ_7i_TjGfgHrZ_JGFWo" },
+      // Bing code not issued yet. Left commented out rather than shipping a
+      // literal "REPLACE_WITH_CODE" into production HTML.
+      // { name: "msvalidate.01", content: "PASTE_BING_CODE_HERE" },
     ],
     links: [
       { rel: "icon", type: "image/png", href: "/skedio-logomark.png" },
@@ -64,13 +66,17 @@ export const Route = createRootRoute({
 function RootComponent() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
+  // Case-study pages are full-bleed, chrome-free documents. The /projects hub
+  // itself is an ordinary editorial page, so it keeps the site header/footer.
+  const isCaseStudy = pathname.startsWith("/projects") && !/^\/projects\/?$/.test(pathname);
+
   return (
     <LenisProvider>
       <RootDocument>
         <ContactModalProvider>
           <Outlet />
           <ContactModal />
-          {!pathname.startsWith("/projects") && <Footer />}
+          {!isCaseStudy && <Footer />}
           <CookieConsent />
         </ContactModalProvider>
       </RootDocument>

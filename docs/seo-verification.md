@@ -1,6 +1,6 @@
 # SEO Verification (Google Search Console & Bing Webmaster Tools)
 
-Domain to verify: **https://skedio.studio**
+Domain to verify: **https://www.skediodesign.in**
 
 This site supports both common verification methods. Do **not** deploy placeholder
 codes — generate real ones from each platform's dashboard first.
@@ -33,9 +33,9 @@ If a platform issues a file instead of a meta tag, drop it straight into
 `public/` — static files there are served as-is at the site root:
 
 - **Google HTML file** — e.g. `public/google1234567890abcdef.html`
-  (must be reachable at `https://skedio.studio/google1234567890abcdef.html`)
+  (must be reachable at `https://www.skediodesign.in/google1234567890abcdef.html`)
 - **Bing XML file** — e.g. `public/BingSiteAuth.xml`
-  (must be reachable at `https://skedio.studio/BingSiteAuth.xml`)
+  (must be reachable at `https://www.skediodesign.in/BingSiteAuth.xml`)
 
 Your local dev server and the production build both serve `public/` at the
 site root, so no routing or config changes are needed. After adding the file,
@@ -46,4 +46,4 @@ confirm the URL loads in a browser, then click *Verify*.
 - [ ] Generate real `google-site-verification` code and paste into `src/routes/__root.tsx`
 - [ ] Generate real `msvalidate.01` code and paste into `src/routes/__root.tsx`
 - [ ] (Alternative) Place any platform-issued verification HTML/XML file in `public/`
-- [ ] Redeploy `https://skedio.studio`, confirm the meta tag or file is live, then verify
+- [ ] Redeploy `https://www.skediodesign.in`, confirm the meta tag or file is live, then verify

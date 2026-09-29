@@ -27,6 +27,15 @@ export interface ProjectSummary {
   client: string;
   summary: string;
   services: string[];
+  /*
+   * Slugs from `servicesData` this project demonstrates, ordered most-relevant
+   * first. This is the join key for the service <-> project link graph: the
+   * service page renders `getProjectsForService(slug)` and the case study
+   * renders the reciprocal links. Keep it in sync with `services` above, which
+   * holds the human-readable labels (and may mention work with no dedicated
+   * service page, e.g. "Art Direction" or "Design System").
+   */
+  serviceSlugs: string[];
   category: ProjectCategory;
   tagColor: ProjectTagColor;
   size: ProjectCellSize;
@@ -54,6 +63,7 @@ export const projects: ProjectSummary[] = [
     summary:
       "A modern taxi-bidding platform where riders compare driver bids in real time and choose the ride that best fits their budget and schedule.",
     services: ["Visual Design", "Product Design", "Product Development"],
+    serviceSlugs: ["product-design", "ui-ux-design", "product-development"],
     category: "UI/UX",
     tagColor: "purple",
     size: "hero",
@@ -77,6 +87,7 @@ export const projects: ProjectSummary[] = [
     client: "EDIOS",
     summary: "A bold visual identity for EDIOS, a video production studio.",
     services: ["Brand Identity", "Art Direction"],
+    serviceSlugs: ["brand-identity"],
     category: "Branding",
     tagColor: "orange",
     size: "normal",
@@ -102,6 +113,7 @@ export const projects: ProjectSummary[] = [
     summary:
       "A multi-role food subscription platform connecting customers, tiffin providers, and delivery partners through three unified mobile experiences.",
     services: ["Product Design", "UI/UX Design", "Design System"],
+    serviceSlugs: ["product-design", "ui-ux-design"],
     category: "UI/UX",
     tagColor: "teal",
     size: "wide",
@@ -132,4 +144,17 @@ export const selectedWork: SelectedWorkItem[] = projects.map((p) => ({
 
 export function getProjectBySlug(slug: string): ProjectSummary | undefined {
   return projects.find((p) => p.slug === slug);
+}
+
+/*
+ * Published case studies that demonstrate a given service. Drives the
+ * service -> project links that close the internal-link loop, and lets a
+ * service page prove the capability with real work instead of asserting it.
+ * Sorted by publish date (newest first) so newly shipped work surfaces
+ * without reordering the hubs.
+ */
+export function getProjectsForService(serviceSlug: string): ProjectSummary[] {
+  return projects
+    .filter((p) => p.published && p.serviceSlugs.includes(serviceSlug))
+    .sort((a, b) => b.publishedDate.localeCompare(a.publishedDate));
 }

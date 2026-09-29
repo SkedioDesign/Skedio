@@ -8,6 +8,14 @@
       "schedule": "30 3 * * 1"
     }
   ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "skediodesign.in" }],
+      "destination": "https://www.skediodesign.in/:path*",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

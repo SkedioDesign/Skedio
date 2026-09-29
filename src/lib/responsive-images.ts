@@ -1,0 +1,67 @@
+/**
+ * Responsive <img> candidate sets for the portfolio cover images.
+ *
+ * Widths track each image's real CSS width so the browser never downloads the
+ * full-size original on mobile. Entries are keyed by the cover path used in
+ * `src/data/projects.ts`; an image with no entry falls back to a single src.
+ *
+ * These variants are regenerated on every build by scripts/optimize-images.mjs,
+ * so the URLs below always exist — never add an entry without a matching
+ * RESPONSIVE_VARIANTS record, or the browser would 404 with no cross-candidate
+ * fallback.
+ */
+
+export interface ResponsiveCandidates {
+  src: string;
+  srcSet?: string;
+  webpSrcSet: string;
+}
+
+/** Bento/card cells that span the full grid width. */
+export const WIDE_SIZES = "(max-width: 768px) 100vw, 566px";
+/** Cells that share a grid row two-up. */
+export const COMPACT_SIZES = "(max-width: 768px) 50vw, 285px";
+/** Full-bleed editorial rows on the /projects hub. */
+export const HERO_SIZES = "(max-width: 768px) 100vw, 780px";
+
+/**
+ * - HaoCabs cover (hero cell, portrait 941px source, object-cover): 480w for
+ *   mobile, 720w for desktop 1x, full 941w twin for 2x DPR. The source aspect
+ *   differs from the container — the crop stays object-cover; only the
+ *   delivered resolution changes.
+ * - Tiffinly (wide cell, 1600px source, object-cover): 480w mobile, 800w
+ *   desktop 1x, 1200w for 2x DPR. Both WebP and JPEG fallback candidates are
+ *   provided.
+ * - EDIOS (normal cell, 1920px source): 480w covers desktop 1x; the full twin
+ *   remains for larger DPR.
+ *
+ * `sizes` is deliberately NOT stored here: the same image is rendered at very
+ * different slot widths (bento cell vs. full-width /projects row), so the
+ * caller supplies the sizes hint that matches its own layout.
+ */
+const responsiveByImage: Record<string, ResponsiveCandidates> = {
+  "/HaoCabs/cover.png": {
+    src: "/HaoCabs/cover.png",
+    webpSrcSet:
+      "/HaoCabs/cover-480.webp 480w, /HaoCabs/cover-720.webp 720w, /HaoCabs/cover.webp 941w",
+  },
+  "/tiffinly/1.jpg": {
+    src: "/tiffinly/1-800.jpg",
+    srcSet: "/tiffinly/1-480.jpg 480w, /tiffinly/1-800.jpg 800w, /tiffinly/1-1200.jpg 1200w",
+    webpSrcSet: "/tiffinly/1-480.webp 480w, /tiffinly/1-800.webp 800w, /tiffinly/1-1200.webp 1200w",
+  },
+  "/EDIOS/1.jpg": {
+    src: "/EDIOS/1-800.jpg",
+    srcSet: "/EDIOS/1-480.jpg 480w, /EDIOS/1-800.jpg 800w, /EDIOS/1.webp 1920w",
+    webpSrcSet: "/EDIOS/1-480.webp 480w, /EDIOS/1-800.webp 800w, /EDIOS/1.webp 1920w",
+  },
+};
+
+export function responsiveFor(image: string): ResponsiveCandidates {
+  return (
+    responsiveByImage[image] ?? {
+      src: image,
+      webpSrcSet: "",
+    }
+  );
+}

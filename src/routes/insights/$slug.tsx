@@ -68,7 +68,7 @@ function InsightPost() {
   const articleSchema = getArticleSchema({
     title: article.title,
     description: article.excerpt,
-    slug: article.slug,
+    path: `/insights/${article.slug}`,
     datePublished: article.datePublished,
     authorName: article.author.name,
     image: article.coverImage,

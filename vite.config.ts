@@ -154,7 +154,12 @@ export default defineConfig({
     tanstackStart({
       server: { entry: "server" },
     }),
-    nitro({ preset: "vercel" }),
+    // Preset is overridable so `build:node` can emit a self-serving bundle for
+    // local production preview. The "vercel" preset emits a serverless function
+    // (.vercel/output/functions/__server.func/) that does not self-serve, so
+    // `bun run start` can only ever work against a node-server build.
+    // Bracket notation: this project has noPropertyAccessFromIndexSignature.
+    nitro({ preset: process.env["NITRO_PRESET"] ?? "vercel" }),
     viteReact(),
     tailwindcss(),
     devWebpMiddleware(),

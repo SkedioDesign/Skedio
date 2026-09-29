@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowUpRight, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 
 import { getServiceBySlug, servicesData } from "@/data/services";
+import { getProjectsForService } from "@/data/projects";
 import { seo, canonicalLink } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
 import {
@@ -12,9 +13,10 @@ import {
   type BreadcrumbItem,
 } from "@/lib/schema";
 import { useContactModal } from "@/context/use-contact-modal";
-import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { FaqItem } from "@/components/FaqAccordion";
+import { WebpImage } from "@/components/WebpImage";
+import { responsiveFor, COMPACT_SIZES } from "@/lib/responsive-images";
 
 export const Route = createFileRoute("/services/$slug")({
   loader: async ({ params }) => {
@@ -81,7 +83,7 @@ function ServiceDetail() {
 
   const breadcrumbItems: BreadcrumbItem[] = [
     { name: "Home", item: "/" },
-    { name: "Services", item: "/#services" },
+    { name: "Services", item: "/services" },
     { name: service.shortTitle, item: `/services/${service.slug}` },
   ];
   const breadcrumbSchema = getBreadcrumbSchema(breadcrumbItems);
@@ -89,6 +91,7 @@ function ServiceDetail() {
   const faqSchema = getFAQSchema(service.faqs);
 
   const otherServices = servicesData.filter((s) => s.slug !== slug);
+  const relatedProjects = getProjectsForService(service.slug);
 
   return (
     <main id="main-content" className="min-h-screen bg-background text-foreground">
@@ -227,6 +230,67 @@ function ServiceDetail() {
           ))}
         </div>
       </section>
+
+      {/* Related Work — closes the service -> project -> service loop */}
+      {relatedProjects.length > 0 && (
+        <section className="border-t border-border bg-surface/30 py-20 md:py-28">
+          <div className="mx-auto max-w-[1200px] px-6">
+            <div className="flex flex-wrap items-end justify-between gap-6">
+              <div className="max-w-2xl">
+                <p className="eyebrow">Proof of Work</p>
+                <h2 className="type-h2 mt-4">Projects that used this service</h2>
+                <p className="mt-4 text-muted-foreground">
+                  Real engagements where {service.shortTitle} was part of the scope.
+                </p>
+              </div>
+              <Link
+                to="/projects"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+              >
+                All projects
+                <ArrowUpRight className="size-4" />
+              </Link>
+            </div>
+
+            <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {relatedProjects.map((project) => {
+                const responsive = responsiveFor(project.cover);
+                return (
+                  <Link
+                    key={project.slug}
+                    to="/projects/$slug"
+                    params={{ slug: project.slug }}
+                    className="group relative block aspect-[4/3] overflow-hidden rounded-2xl bg-ink"
+                  >
+                    <WebpImage
+                      src={responsive.src}
+                      srcSet={responsive.srcSet}
+                      webpSrcSet={
+                        responsive.webpSrcSet.length > 0 ? responsive.webpSrcSet : undefined
+                      }
+                      sizes={COMPACT_SIZES}
+                      alt={`${project.name} — ${project.line}`}
+                      loading="lazy"
+                      decoding="async"
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 p-6">
+                      <span className="text-xs font-bold uppercase tracking-widest text-white/70">
+                        {project.category}
+                      </span>
+                      <h3 className="mt-2 text-xl font-bold tracking-tight text-white">
+                        {project.name}
+                      </h3>
+                      <p className="mt-1 line-clamp-2 text-sm text-white/75">{project.line}</p>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Service FAQs */}
       <section className="border-t border-border bg-surface/30 py-20 md:py-28">

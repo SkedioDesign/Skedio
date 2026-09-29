@@ -1,3 +1,5 @@
+import { siteConfig } from "@/lib/site-config";
+
 export interface FAQItem {
   question: string;
   answer: string;
@@ -67,8 +69,7 @@ export const generalFaqs: FAQItem[] = [
   },
   {
     question: "How do we get a project started with Skédio?",
-    answer:
-      "Reach out through our inquiry form or email hello@skedio.studio. We reply within one to two business days, set up a discovery call to understand your goals, budget, and timeline, and come back with a proposal covering scope, deliverables, and pricing. Most projects begin within two weeks of that call.",
+    answer: `Reach out through our inquiry form or email ${siteConfig.email}. We reply within ${siteConfig.responseTime}, set up a discovery call to understand your goals, budget, and timeline, and come back with a proposal covering scope, deliverables, and pricing. Most projects begin within two weeks of that call.`,
     category: "Process",
   },
 ];

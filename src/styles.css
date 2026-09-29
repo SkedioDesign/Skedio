@@ -3,12 +3,12 @@
 @import "@fontsource-variable/fraunces/wght-italic.css";
 @import "tailwindcss";
 @import "tw-animate-css";
-// NOTE: Fraunces stays render-blocking on purpose — it is above-the-fold
-// typography on /blog routes (article H1s). Deferring it would swap the H1
-// from the Georgia fallback ~2s after paint (FOUT + CLS risk) for only ~2KB
-// of @font-face rules. Plus Jakarta Sans is intentionally NOT imported: no
-// element uses it (it appears only as a fallback name in font stacks, which
-// resolve without the file).
+/* NOTE: Fraunces stays render-blocking on purpose — it is above-the-fold
+   typography on /blog routes (article H1s). Deferring it would swap the H1
+   from the Georgia fallback ~2s after paint (FOUT + CLS risk) for only ~2KB
+   of @font-face rules. Plus Jakarta Sans is intentionally NOT imported: no
+   element uses it (it appears only as a fallback name in font stacks, which
+   resolve without the file). */
 
 @font-face {
   font-family: "Gilroy";

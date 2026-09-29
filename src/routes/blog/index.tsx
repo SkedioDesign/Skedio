@@ -15,7 +15,15 @@ export const Route = createFileRoute("/blog/")({
         "Read our articles on product design, brand identity, and digital product development.",
       url: "/blog",
     }),
-    links: [...canonicalLink("/blog")],
+    links: [
+      ...canonicalLink("/blog"),
+      {
+        rel: "alternate",
+        type: "application/rss+xml",
+        title: "Skédio Blog RSS",
+        href: "/blog/feed.xml",
+      },
+    ],
   }),
   component: BlogList,
 });

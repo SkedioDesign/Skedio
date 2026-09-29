@@ -150,13 +150,59 @@ export function getFAQSchema(faqs: FAQItem[]) {
   };
 }
 
+export interface ItemListEntry {
+  name: string;
+  url: string;
+}
+
+function absoluteUrl(path: string): string {
+  return path.startsWith("http")
+    ? path
+    : `${siteConfig.url}${path.startsWith("/") ? "" : "/"}${path}`;
+}
+
+export function getItemListSchema(name: string, entries: ItemListEntry[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name,
+    numberOfItems: entries.length,
+    itemListElement: entries.map((entry, idx) => ({
+      "@type": "ListItem",
+      position: idx + 1,
+      name: entry.name,
+      url: absoluteUrl(entry.url),
+    })),
+  };
+}
+
+export function getContactPageSchema(path = "/contact") {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "@id": `${absoluteUrl(path)}#contactpage`,
+    url: absoluteUrl(path),
+    name: `Contact ${siteConfig.name}`,
+    description: `Get in touch with ${siteConfig.name} about brand identity, product design, or digital product development.`,
+    isPartOf: { "@id": `${siteConfig.url}/#website` },
+    mainEntity: { "@id": `${siteConfig.url}/#organization` },
+  };
+}
+
 export interface CreativeWorkInput {
   name: string;
   headline: string;
   description: string;
   image?: string;
   url: string;
-  datePublished?: string;
+  /**
+   * ISO-8601 date (YYYY-MM-DD) the work was first published.
+   * Required, not optional: the Project content model already mandates
+   * `publishedDate`, so making it optional here would only invite a
+   * placeholder. An absent date is emitted as an absent property below
+   * rather than a fabricated one.
+   */
+  datePublished: string;
   client?: string;
 }
 
@@ -179,7 +225,10 @@ export function getCreativeWorkSchema(work: CreativeWorkInput) {
     description: work.description,
     url: fullUrl,
     image: fullImage,
-    datePublished: work.datePublished ?? "2026-01-01",
+    // Omitted when empty rather than defaulted to a placeholder. A wrong
+    // date is worse than no date: it asserts a publication time the work
+    // never had, and this schema type has no dateModified to correct it.
+    ...(work.datePublished ? { datePublished: work.datePublished } : {}),
     author: {
       "@type": "Organization",
       "@id": `${siteConfig.url}/#organization`,
@@ -201,7 +250,16 @@ export function getCreativeWorkSchema(work: CreativeWorkInput) {
 export interface ArticleInput {
   title: string;
   description: string;
-  slug: string;
+  /**
+   * Root-relative path of the page this article is rendered on, e.g.
+   * "/blog/my-post" or "/insights/my-article". Passed explicitly rather than
+   * derived from a slug, because blog and insights posts share the same
+   * builder and a hardcoded section produced self-contradicting URLs:
+   * /blog/<slug> pages emitted url + mainEntityOfPage pointing at
+   * /insights/<slug>, which 404s and disagrees with their own canonical.
+   * Must match the canonical link and breadcrumb trail for the page.
+   */
+  path: string;
   datePublished: string;
   dateModified?: string;
   authorName?: string;
@@ -209,7 +267,7 @@ export interface ArticleInput {
 }
 
 export function getArticleSchema(article: ArticleInput) {
-  const url = `${siteConfig.url}/insights/${article.slug}`;
+  const url = absoluteUrl(article.path);
   const fullImage = article.image
     ? article.image.startsWith("http")
       ? article.image

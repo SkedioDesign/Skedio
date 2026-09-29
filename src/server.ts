@@ -9,7 +9,7 @@ import { consumeLastCapturedError } from "./lib/error-capture";
 import { captureServerError, flushServerErrors } from "./lib/sentry-server";
 import { renderErrorPage } from "./lib/error-page";
 import { generateSitemapXml } from "./lib/sitemap-generator";
-import { generateRssFeedXml } from "./lib/rss-generator";
+import { generateRssFeedXml, type FeedSource } from "./lib/rss-generator";
 import { getUmamiOverview, getUmamiTopPages, getUmamiTopReferrers } from "./lib/umami";
 import { digestRangeLabel, sendDigestEmail } from "./lib/weekly-digest";
 import { siteConfig } from "./lib/site-config";
@@ -107,8 +107,9 @@ const fetchHandler: RequestHandler<Register> = async (request) => {
       });
     }
 
-    if (url.pathname === "/insights/feed.xml") {
-      return new Response(generateRssFeedXml(), {
+    const feed = url.pathname.match(/^\/(blog|insights)\/feed\.xml$/);
+    if (feed) {
+      return new Response(generateRssFeedXml(feed[1] as FeedSource), {
         status: 200,
         headers: {
           "content-type": "application/rss+xml; charset=utf-8",
