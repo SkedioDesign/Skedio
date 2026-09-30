@@ -12,6 +12,12 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { useContactModal } from "@/context/use-contact-modal";
 
+// Route-scoped serif — the service index numerals and engagement-step
+// labels are `font-serif italic` and the service list is in the first
+// scroll. Loaded via `?url` + head links so the 9 routes that never render
+// Fraunces don't declare it (see src/fraunces.css).
+import frauncesCss from "@/fraunces.css?url";
+
 export const Route = createFileRoute("/services/")({
   head: () => ({
     meta: seo({
@@ -20,7 +26,7 @@ export const Route = createFileRoute("/services/")({
         "Skédio is a creative studio offering product design, brand identity, UI/UX design, and full-stack product development services for startups and growing brands.",
       url: "/services",
     }),
-    links: canonicalLink("/services"),
+    links: [...canonicalLink("/services"), { rel: "stylesheet", href: frauncesCss }],
   }),
   component: ServicesHub,
 });

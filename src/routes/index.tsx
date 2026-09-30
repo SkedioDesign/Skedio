@@ -37,8 +37,20 @@ import heroFallback from "@/assets/hero.jpg";
 import heroFallback768 from "@/assets/hero-768.jpg";
 import heroFallback1024 from "@/assets/hero-1024.jpg";
 import heroFallback1280 from "@/assets/hero-1280.jpg";
+// Route-scoped serif — see src/fraunces.css and the head() note below.
+import frauncesCss from "@/fraunces.css?url";
 
 gsap.registerPlugin(SplitText);
+
+/**
+ * Injects the route-scoped serif stylesheet (see src/fraunces.css).
+ * `fetchPriority` is a no-op on browsers that don't support it, which is
+ * fine — the link being async is what keeps it off the blocking path.
+ */
+const loadFrauncesAsync =
+  `(function(){try{var l=document.createElement("link");l.rel="stylesheet";` +
+  `l.href=${JSON.stringify(frauncesCss)};l.fetchPriority="low";` +
+  `document.head.appendChild(l)}catch(e){}})()`;
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -71,6 +83,25 @@ export const Route = createFileRoute("/")({
         media: "(max-width: 1023px)",
         fetchPriority: "high",
       },
+    ],
+    scripts: [
+      // Fraunces is the one family this page genuinely needs that nothing
+      // above the fold uses. Its only two renderers here — BlogPreview's
+      // numerals and title, and Testimonials' quote glyph — live in
+      // `section[id]` subtrees, which src/styles.css gives
+      // `content-visibility: auto`, so they aren't painted at all until
+      // scrolled near; BlogPreview's are additionally opacity-0 behind
+      // ScrollReveal. So the ~82 KB roman + italic can load after first
+      // paint without a visible reflow.
+      //
+      // A <link> in `links` would still be render-blocking and would put
+      // 82 KB in front of the preloaded hero image that is this page's
+      // LCP element. Appending the element from an inline script keeps it
+      // off the blocking path and marks it `fetchPriority="low"` so it
+      // queues behind the hero. The CSP nonce is applied by TanStack
+      // (`ssr.nonce` in src/router.tsx), so this script is allowed by
+      // `script-src 'self' 'nonce-…'`.
+      { children: loadFrauncesAsync },
     ],
   }),
   component: Index,

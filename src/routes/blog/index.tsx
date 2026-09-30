@@ -8,6 +8,14 @@ import { getBreadcrumbSchema, getWebPageSchema } from "@/lib/schema";
 import { WebpImage } from "@/components/WebpImage";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 
+// Route-scoped serif. The masthead <h1> and every card title on this page
+// are `font-serif` and paint on the first frame — there is no ScrollReveal
+// and no `content-visibility` gating here — so Fraunces must be a
+// render-blocking stylesheet here, exactly as it was when it lived in
+// src/styles.css. Loaded via `?url` + head links rather than a static
+// `import`, so the other 9 routes don't pay for it (see src/fraunces.css).
+import frauncesCss from "@/fraunces.css?url";
+
 export const Route = createFileRoute("/blog/")({
   head: () => ({
     meta: seo({
@@ -24,6 +32,7 @@ export const Route = createFileRoute("/blog/")({
         title: "Skédio Blog RSS",
         href: "/blog/feed.xml",
       },
+      { rel: "stylesheet", href: frauncesCss },
     ],
   }),
   component: BlogList,

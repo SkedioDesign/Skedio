@@ -13,6 +13,12 @@ import { useContactModal } from "@/context/use-contact-modal";
 import { WebpImage } from "@/components/WebpImage";
 import { responsiveFor, HERO_SIZES } from "@/lib/responsive-images";
 
+// Route-scoped serif — the case-study index numeral on each row is
+// `font-serif italic` and the first rows sit in the first scroll. Loaded
+// via `?url` + head links so the 9 routes that never render Fraunces
+// don't declare it (see src/fraunces.css).
+import frauncesCss from "@/fraunces.css?url";
+
 export const Route = createFileRoute("/projects/")({
   head: () => ({
     meta: seo({
@@ -21,7 +27,7 @@ export const Route = createFileRoute("/projects/")({
         "Case studies from Skédio: taxi bidding apps, multi-role delivery platforms, and brand identity systems — with the process, scope, and outcomes behind each one.",
       url: "/projects",
     }),
-    links: canonicalLink("/projects"),
+    links: [...canonicalLink("/projects"), { rel: "stylesheet", href: frauncesCss }],
   }),
   component: ProjectsHub,
 });

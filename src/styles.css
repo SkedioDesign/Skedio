@@ -1,14 +1,24 @@
 @import "@fontsource-variable/montserrat";
-@import "@fontsource-variable/fraunces";
-@import "@fontsource-variable/fraunces/wght-italic.css";
 @import "tailwindcss";
 @import "tw-animate-css";
-/* NOTE: Fraunces stays render-blocking on purpose — it is above-the-fold
-   typography on /blog routes (article H1s). Deferring it would swap the H1
-   from the Georgia fallback ~2s after paint (FOUT + CLS risk) for only ~2KB
-   of @font-face rules. Plus Jakarta Sans is intentionally NOT imported: no
-   element uses it (it appears only as a fallback name in font stacks, which
-   resolve without the file). */
+/* FONT SPLIT — read before adding an @import here.
+   This global stylesheet is render-blocking on all 13 routes, so every
+   @font-face in it is downloaded by all 13. Two families qualify to live
+   here because they paint above the fold everywhere: Montserrat (body,
+   nav, buttons — the latin variable file covers weights 100–900 in one
+   request) and Gilroy (every heading, plus the OTF kept as a
+   non-woff2 fallback — browsers pick the woff2 and never fetch the OTF).
+
+   Fraunces does not: it is the site's largest family (~82 KB across the
+   roman + italic latin files) and only 4 routes render it. Its rules moved
+   to src/fraunces.css and are opted into per route — see that file.
+
+   Nothing is preloaded. The LCP element is the hero image, already
+   preloaded per breakpoint in routes/index.tsx; the above-the-fold fonts
+   are ~92 KB, and preloading them would inject that much high-priority
+   traffic ahead of that image for no gain — the @font-face rules sit at
+   the top of this stylesheet, so they are already discovered on the first
+   parse. */
 
 @font-face {
   font-family: "Gilroy";

@@ -1,0 +1,30 @@
+/* ------------------------------------------------------------------
+   Fraunces — the serif of the type system (--font-serif).
+
+   Deliberately NOT part of src/styles.css. Fraunces is the heaviest
+   family on the site: the latin wght axis covers every weight 100–900 in
+   one file, and the site needs two of them (roman + italic) — ~82 KB of
+   woff2 on the critical path, more than Montserrat and Gilroy combined.
+
+   Only 4 of 13 routes render a `font-serif` element at all: /, /blog,
+   /projects and /services. The other nine — /about, /contact, /terms,
+   /privacy, every /blog/$slug and /insights/$slug article, every
+   /services/$slug page and every /projects/$slug case study — were still
+   declaring and downloading 82 KB of type they never paint, because the
+   @font-face rules shipped inside the one render-blocking global
+   stylesheet.
+
+   Routes opt in themselves, via `head().links` (or an async link on /),
+   using the same `?url` pattern as routes/projects/case-study.css. A
+   static `import "./fraunces.css"` would put this file in the module
+   graph reachable from routeTree.gen.ts — which statically imports every
+   route — so Rolldown would hoist it into the shared entry chunk
+   attributed to __root__ and make it render-blocking on every page again.
+
+   Both styles are required and both are declared here: 8 elements pair
+   `font-serif` with `italic` (index numerals, the testimonial quote
+   glyph) and 4 do not (the /blog masthead and its headings).
+   ------------------------------------------------------------------- */
+
+@import "@fontsource-variable/fraunces";
+@import "@fontsource-variable/fraunces/wght-italic.css";
