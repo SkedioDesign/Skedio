@@ -4,12 +4,10 @@ import { Fragment, type CSSProperties, type ReactNode, useEffect, useRef, useSta
 
 import { getProjectBySlug } from "@/data/projects";
 import { getServicesBySlugs } from "@/data/services";
-import {
-  getCaseStudy,
-  type CaseStudyDocument,
-  type CaseStudySection,
-  type ImageRef,
-} from "@/data/case-studies";
+// Types only — erased at compile time. The value (`getCaseStudy`) is loaded
+// inside the loader so this 911-line data module stays out of the client
+// entry chunk; see the loader below.
+import type { CaseStudyDocument, CaseStudySection, ImageRef } from "@/data/case-studies";
 import { seo, canonicalLink } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -35,6 +33,12 @@ export const Route = createFileRoute("/projects/$slug")({
   loader: async ({ params }) => {
     const project = getProjectBySlug(params.slug);
     if (!project || !project.published) throw notFound();
+    // 22 KB of case-study copy, used by this loader and nowhere else. Same
+    // reason as the `marked` import in routes/blog/$slug.tsx: routeTree.gen.ts
+    // statically imports every route module, so a static import would ship
+    // this to every visitor of every route. Kept after the 404 check above so
+    // an unknown slug never pays for the fetch.
+    const { getCaseStudy } = await import("@/data/case-studies");
     const caseStudy = getCaseStudy(params.slug);
     if (!caseStudy) throw notFound();
     return { project, slug: params.slug, caseStudy };

@@ -6,13 +6,21 @@ import { StructuredData } from "@/components/StructuredData";
 import { getArticleSchema, getBreadcrumbSchema, getWebPageSchema } from "@/lib/schema";
 import { useContactModal } from "@/context/use-contact-modal";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { renderMarkdown } from "@/lib/markdown";
 import { ArticleRelatedLinks } from "@/components/ArticleRelatedLinks";
 
 export const Route = createFileRoute("/blog/$slug")({
   loader: async ({ params }) => {
     const post = blogPosts.find((p) => p.slug === params.slug);
     if (!post) throw notFound();
+    // `marked` is ~50 KB of the client entry bundle and this loader is its
+    // only consumer. routeTree.gen.ts statically imports every route module,
+    // so a static import here put the markdown parser into the critical chunk
+    // of all 14 routes — the homepage shipped a parser it never runs.
+    // Importing it here keeps it out of the entry graph entirely. SSR still
+    // awaits it, so article HTML is server-rendered exactly as before and
+    // direct visits keep their SEO payload; only client-side navigations pay
+    // the extra (already-cached-after-first-visit) chunk fetch.
+    const { renderMarkdown } = await import("@/lib/markdown");
     return { post, slug: params.slug, html: renderMarkdown(post.content) };
   },
   head: ({ loaderData }) => {
