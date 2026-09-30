@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { useContactModal } from "@/context/use-contact-modal";
 import { useContactForm } from "@/hooks/use-contact-form";
 import { siteConfig } from "@/lib/site-config";
+import { testimonials } from "@/data/testimonials";
 import { WebpImage } from "@/components/WebpImage";
 
 function Wordmark({ className = "" }: { className?: string }) {
@@ -39,7 +40,9 @@ const navSections: FooterNavSection[] = [
     links: [
       { label: "Featured Work", href: "/projects" },
       { label: "Clients", href: "/#clients" },
-      { label: "Testimonials", href: "/#testimonials" },
+      // The testimonials section renders nothing while its dataset is empty, so
+      // a fixed link here would point at an anchor that does not exist.
+      ...(testimonials.length > 0 ? [{ label: "Testimonials", href: "/#testimonials" }] : []),
     ],
   },
   {

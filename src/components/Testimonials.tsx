@@ -2,23 +2,12 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { gsap } from "gsap";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
-import testimonialData from "@/data/testimonial.json";
+import { testimonials, type Testimonial } from "@/data/testimonials";
 import { WebpImage } from "@/components/WebpImage";
 
-export interface Testimonial {
-  name: string;
-  role: string;
-  age: string;
-  experience: string;
-  quote: string;
-  focus: string;
-  image: string;
-}
-
-const testimonials = testimonialData as Testimonial[];
-
-/* Single configurable speed — px per second. Slow, premium, but continuously alive. */
-const CAROUSEL_SPEED = 110;
+/* Single configurable speed — px per second. Slow enough to read a card while
+   it is on screen rather than to notice that something is moving. */
+const CAROUSEL_SPEED = 45;
 
 /* Copies of the dataset rendered so the track always overlaps both viewport edges */
 const COPIES = 3;
@@ -30,28 +19,59 @@ const LIFTS = [0, -6, 3, -3, 6, 0];
 
 const MARKER_W = 32;
 
-/* Neutral person-glyph fallback (data URI) used if a profile image fails to load */
-const FALLBACK_AVATAR =
-  "data:image/svg+xml," +
-  encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">` +
-      `<rect width="96" height="96" fill="#ececec"/>` +
-      `<g fill="#a3a3a3"><circle cx="48" cy="36" r="12"/>` +
-      `<path d="M48 51c-11 0-20 7.5-20 17.5 0 1.4 1.1 2.5 2.5 2.5h35c1.4 0 2.5-1.1 2.5-2.5 0-10-9-17.5-20-17.5z"/></g>` +
-      `</svg>`,
-  );
+/*
+ * Fixed box at every breakpoint; only the width responds.
+ *
+ * 208px is a measured floor, not a guess. On a 390px phone a card cannot be
+ * wider than the viewport, and the longest quote (393 chars) needs 8 wrapped
+ * lines at 16.5px = 132px. Add the 72px of non-negotiable chrome (p-4, the
+ * avatar/name header, the gap) and 204px is the minimum at a readable size.
+ * The original 150/162px can only hold this text at ~9px, or on cards ~570px
+ * wide, which no phone can show.
+ *
+ * Width carries the slack instead: 408px from sm up buys back the lines that
+ * the shorter height costs. `line-clamp-12` is a backstop only — at this size
+ * nothing reaches it.
+ */
+const CARD_H = 208;
 
-function Avatar({ src, alt }: { src: string; alt: string }) {
+/* Up to two initials pulled from the display name. */
+function initialsOf(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const first = parts[0]?.charAt(0) ?? "";
+  const last = parts.length > 1 ? (parts[parts.length - 1]?.charAt(0) ?? "") : "";
+  return (first + last).toUpperCase();
+}
+
+/* Stands in for a portrait the client has not supplied — a face-less monogram
+   reads as intentional, where an unrelated stock photo reads as a mistake. */
+function Monogram({ name }: { name: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="grid size-8 shrink-0 place-items-center rounded-full bg-surface font-display text-[0.625rem] font-bold tracking-tight text-muted-foreground ring-1 ring-inset ring-border"
+    >
+      {initialsOf(name)}
+    </span>
+  );
+}
+
+/* Portrait when one is authored, monogram otherwise — including when an
+   authored `image` 404s, so a missing asset degrades to the monogram rather
+   than a broken-image icon. */
+function Avatar({ src, name }: { src?: string | undefined; name: string }) {
   const [failed, setFailed] = useState(false);
+
+  if (!src || failed) return <Monogram name={name} />;
 
   return (
     <WebpImage
-      src={failed ? FALLBACK_AVATAR : src}
-      alt={alt}
+      src={src}
+      alt={`${name} portrait`}
       loading="lazy"
       decoding="async"
       onError={() => setFailed(true)}
-      className="size-9 shrink-0 rounded-full object-cover"
+      className="size-8 shrink-0 rounded-full object-cover"
     />
   );
 }
@@ -62,25 +82,22 @@ function TestimonialCard({ t, index }: { t: Testimonial; index: number }) {
 
   return (
     <article
-      className="flex h-[150px] w-[250px] shrink-0 flex-col rounded-2xl border border-ink/10 bg-card p-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)] sm:h-[162px] sm:w-[292px]"
-      style={{ transform: `rotate(${tilt}deg) translateY(${lift}px)` }}
+      className="flex w-[calc(100vw-32px)] max-w-[408px] shrink-0 flex-col rounded-2xl border border-ink/10 bg-card p-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)]"
+      style={{ height: CARD_H, transform: `rotate(${tilt}deg) translateY(${lift}px)` }}
     >
       <div className="flex items-center gap-2.5">
-        <Avatar src={t.image} alt={`${t.name} — member portrait`} />
+        <Avatar src={t.image} name={t.name} />
         <div className="min-w-0">
           <h3 className="truncate font-display text-[0.8125rem] font-bold leading-tight tracking-tight text-foreground">
             {t.name}
           </h3>
           <p className="mt-0.5 truncate text-[0.625rem] leading-tight text-muted-foreground">
-            {t.role} · {t.age}
-          </p>
-          <p className="mt-px truncate text-[0.5625rem] leading-tight text-muted-foreground">
-            {t.experience}
+            {t.company ? `${t.role} · ${t.company}` : t.role}
           </p>
         </div>
       </div>
 
-      <blockquote className="mt-2 line-clamp-3 flex-1 text-[0.625rem] leading-[1.45] text-muted-foreground sm:text-[0.6875rem]">
+      <blockquote className="mt-2 line-clamp-12 flex-1 text-[0.6875rem] leading-[1.5] text-muted-foreground sm:text-[0.75rem]">
         <span
           aria-hidden="true"
           className="mr-0.5 select-none font-serif text-[1em] italic text-primary"
@@ -89,18 +106,11 @@ function TestimonialCard({ t, index }: { t: Testimonial; index: number }) {
         </span>
         {t.quote}
       </blockquote>
-
-      <p className="mt-2 flex items-baseline gap-1.5 text-[0.5625rem] leading-none">
-        <span className="font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-          Focus:
-        </span>
-        <span className="truncate text-muted-foreground">{t.focus}</span>
-      </p>
     </article>
   );
 }
 
-export function Testimonials() {
+function TestimonialCarousel({ items }: { items: Testimonial[] }) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const railRef = useRef<HTMLDivElement>(null);
@@ -180,7 +190,7 @@ export function Testimonials() {
       const step = cardW + gap;
       if (step > 0 && Math.abs(step - stepRef.current) > 0.5) {
         stepRef.current = step;
-        setWidthRef.current = step * testimonials.length;
+        setWidthRef.current = step * items.length;
       }
     }
     if (railW > 0 && Math.abs(railW - railWidthRef.current) > 0.5) {
@@ -193,7 +203,7 @@ export function Testimonials() {
       position.current = setWidthRef.current * 0.55;
       render();
     }
-  }, [render]);
+  }, [render, items.length]);
 
   useLayoutEffect(() => {
     measure();
@@ -326,19 +336,7 @@ export function Testimonials() {
   };
 
   return (
-    <section
-      id="testimonials"
-      className="w-full scroll-mt-24 overflow-hidden bg-background py-12 lg:py-16"
-    >
-      <div className="mx-auto w-full max-w-[1200px] px-6 md:px-12">
-        <ScrollReveal>
-          <h2 className="sk-testimonials-title text-center">
-            <span>Voices of members who value</span>
-            <span className="block">Quality over compromise</span>
-          </h2>
-        </ScrollReveal>
-      </div>
-
+    <div>
       <div className="mt-9 lg:mt-12">
         <div
           ref={viewportRef}
@@ -351,14 +349,14 @@ export function Testimonials() {
         >
           <div
             ref={trackRef}
-            aria-label="Member testimonials"
+            aria-label="Client testimonials"
             role="region"
             className="flex items-start gap-7 will-change-transform"
           >
             {Array.from({ length: COPIES }).map((_, copy) => (
               <div key={copy} aria-hidden={copy > 0} className="flex shrink-0 items-start gap-7">
-                {testimonials.map((t, i) => (
-                  <TestimonialCard key={`${copy}-${t.name}`} t={t} index={i} />
+                {items.map((t, i) => (
+                  <TestimonialCard key={`${copy}-${t.slug}`} t={t} index={i} />
                 ))}
               </div>
             ))}
@@ -401,6 +399,34 @@ export function Testimonials() {
           </div>
         </ScrollReveal>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Homepage testimonials section. Renders nothing at all while the dataset is
+ * empty — a heading stranded above an absent carousel reads as a broken page,
+ * and the marquee's wrap arithmetic divides by a set width it can never
+ * measure. Adding the first record to `src/data/testimonials.ts` restores both.
+ */
+export function Testimonials() {
+  if (testimonials.length === 0) return null;
+
+  return (
+    <section
+      id="testimonials"
+      className="w-full scroll-mt-24 overflow-hidden bg-background py-12 lg:py-16"
+    >
+      <div className="mx-auto w-full max-w-[1200px] px-6 md:px-12">
+        <ScrollReveal>
+          <h2 className="sk-testimonials-title text-center">
+            <span>What the people we build for</span>
+            <span className="block">Say about working with us</span>
+          </h2>
+        </ScrollReveal>
+      </div>
+
+      <TestimonialCarousel items={testimonials} />
     </section>
   );
 }
