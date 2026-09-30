@@ -20,10 +20,25 @@ import { runWithNonce } from "./lib/nonce-context";
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
+/**
+ * The one Content-Security-Policy for the app. Emitted here rather than in
+ * vercel.json because the script nonce is generated per request; Vercel ships
+ * no competing policy, so there is nothing to intersect with.
+ *
+ * `worker-src` is set explicitly because Sentry Session Replay spawns a
+ * compression Web Worker from a Blob URL (the shipped `sentry-*.js` chunk logs
+ * "Using compression worker" next to `new Worker(...)`). Without this directive
+ * a worker falls back to `script-src`, which allows neither `blob:` nor
+ * worker-scoped blob URLs, so Replay's worker was blocked and Lighthouse
+ * reported the violation. Setting `worker-src` grants blob workers only and
+ * leaves `script-src` — and therefore the nonce requirement for every script on
+ * the page — completely untouched.
+ */
 function buildContentSecurityPolicy(nonce: string): string {
   return [
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}' https://cloud.umami.is`,
+    "worker-src 'self' blob:",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' data: blob:",
     "font-src 'self' data: https://fonts.gstatic.com",
