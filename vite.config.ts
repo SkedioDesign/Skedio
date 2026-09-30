@@ -159,7 +159,17 @@ export default defineConfig({
     // (.vercel/output/functions/__server.func/) that does not self-serve, so
     // `bun run start` can only ever work against a node-server build.
     // Bracket notation: this project has noPropertyAccessFromIndexSignature.
-    nitro({ preset: process.env["NITRO_PRESET"] ?? "vercel" }),
+    //
+    // compressPublicAssets pre-compresses the static bundle. Production
+    // (Vercel) brotli-gzipps at the edge whether or not this is set, but the
+    // node-server preview did NOT — it shipped ~130KB of CSS and ~289KB of
+    // router JS raw. Measuring that under a Slow 4G profile overstates LCP by
+    // seconds and hides the real bottleneck, so the preview is now configured
+    // to behave like the edge it is meant to approximate.
+    nitro({
+      preset: process.env["NITRO_PRESET"] ?? "vercel",
+      compressPublicAssets: true,
+    }),
     viteReact(),
     tailwindcss(),
     devWebpMiddleware(),

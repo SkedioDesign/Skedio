@@ -44,6 +44,8 @@ const CONCURRENCY = 3;
  * - HaoCabs hero bento portrait (~566px, 941px source): 480/720 (+941 full)
  * - Partner marquee (160px card, 128px mobile): 160/320 (2x DPR)
  * - EDIOS normal bento (~285px): 480/800 (+1920 full)
+ * - Team portraits (260px max-w card, aspect 4/5): 260/520/780 (1x/2x/3x)
+ * - Client logo marquee (44px-tall row, 49-198px wide, object-cover): 160/320/480
  *
  * WebP variants use quality 76 (same as twins); JPEG fallbacks use the same
  * mozjpeg settings as full-size originals; PNG logo variants use palette
@@ -58,7 +60,29 @@ const RESPONSIVE_VARIANTS = [
   { src: "Edios.png", widths: [160, 320], formats: ["webp", "png"] },
   { src: "tiffinly/1.jpg", widths: [480, 800, 1200], formats: ["webp", "jpg"] },
   { src: "HaoCabs/cover.png", widths: [480, 720], formats: ["webp"] },
+  // Case-study cover art: .cs-cover__art caps at 1500px with ~40px of padding
+  // on either side, so 1420px is the desktop slot and the 1600px original is
+  // only ever needed for a >2x screen.
+  { src: "HaoCabs/1.jpg", widths: [480, 800, 1200], formats: ["webp", "jpg"] },
   { src: "EDIOS/1.jpg", widths: [480, 800], formats: ["webp", "jpg"] },
+  // Team portraits render inside a max-w-[260px] aspect-4/5 card, so 260w
+  // covers 1x DPR, 520w 2x and 780w 3x. The originals are 1023-1600px
+  // portraits (up to 724KB) that no browser ever needed in full.
+  { src: "rishabh.png", widths: [260, 520, 780], formats: ["webp", "png"] },
+  { src: "aakash.jpeg", widths: [260, 520, 780], formats: ["webp", "jpg"] },
+  { src: "aman.jpeg", widths: [260, 520, 780], formats: ["webp", "jpg"] },
+  { src: "harshita.jpeg", widths: [260, 520, 780], formats: ["webp", "jpg"] },
+  { src: "shrishti.jpeg", widths: [260, 520, 780], formats: ["webp", "jpg"] },
+  // Client logos sit in a 44px-tall marquee row and are drawn twice (the
+  // second copy is aria-hidden for the loop). Their aspect ratios span
+  // 1:1 to 4.5:1, so widths reach 198px at 44px height; 160/320/480 covers
+  // 1x/2x/3x. Flat logos compress better as palette PNG than WebP, so both
+  // formats are emitted and the <picture> offers them to the matching browser.
+  ...["1", "2", "3", "4", "5", "6", "7", "9", "10", "11", "12", "13"].map((n) => ({
+    src: `Clients/${n}.png`,
+    widths: [160, 320, 480],
+    formats: ["webp", "png"],
+  })),
 ];
 
 /** Basenames (without extension) that are managed responsive outputs. */

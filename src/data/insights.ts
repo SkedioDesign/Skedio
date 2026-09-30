@@ -17,6 +17,7 @@ export interface InsightArticle {
     paragraphs: string[];
   }>;
   relatedServiceSlug?: string;
+  relatedProjectSlug?: string;
 }
 
 export const insightsArticles: InsightArticle[] = [
@@ -35,6 +36,7 @@ export const insightsArticles: InsightArticle[] = [
     },
     tags: ["Product Design", "AI", "Design Trends"],
     relatedServiceSlug: "product-design",
+    relatedProjectSlug: "tiffinly",
     content: [
       {
         heading: "The Commoditization of the Generic",
@@ -73,6 +75,7 @@ export const insightsArticles: InsightArticle[] = [
     },
     tags: ["UI/UX", "Case Study", "Product Design"],
     relatedServiceSlug: "ui-ux-design",
+    relatedProjectSlug: "haocabs",
     content: [
       {
         heading: "The Dual-Sided Marketplace Dilemma",
@@ -110,6 +113,7 @@ export const insightsArticles: InsightArticle[] = [
     },
     tags: ["Brand Identity", "Typography", "Visual Design"],
     relatedServiceSlug: "brand-identity",
+    relatedProjectSlug: "edios",
     content: [
       {
         heading: "Type as the Foundation of Voice",

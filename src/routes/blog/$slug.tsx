@@ -1,20 +1,19 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, ArrowUpRight, Calendar } from "lucide-react";
-import { marked } from "marked";
-import DOMPurify from "isomorphic-dompurify";
-
 import { blogPosts } from "@/data/blog";
 import { seo, canonicalLink } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
-import { getArticleSchema, getBreadcrumbSchema } from "@/lib/schema";
+import { getArticleSchema, getBreadcrumbSchema, getWebPageSchema } from "@/lib/schema";
 import { useContactModal } from "@/context/use-contact-modal";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { renderMarkdown } from "@/lib/markdown";
+import { ArticleRelatedLinks } from "@/components/ArticleRelatedLinks";
 
 export const Route = createFileRoute("/blog/$slug")({
   loader: async ({ params }) => {
     const post = blogPosts.find((p) => p.slug === params.slug);
     if (!post) throw notFound();
-    return { post, slug: params.slug };
+    return { post, slug: params.slug, html: renderMarkdown(post.content) };
   },
   head: ({ loaderData }) => {
     const post = loaderData?.post;
@@ -35,6 +34,7 @@ export const Route = createFileRoute("/blog/$slug")({
         image: post.ogImage,
         url: `/blog/${post.slug}`,
         type: "article",
+        publishedTime: post.publishedAt,
       }),
       links: canonicalLink(`/blog/${post.slug}`),
     };
@@ -63,7 +63,7 @@ function ArticleNotFound() {
 }
 
 function BlogPost() {
-  const { post, slug } = Route.useLoaderData();
+  const { post, slug, html } = Route.useLoaderData();
   const { openContactModal } = useContactModal();
 
   const articleSchema = getArticleSchema({
@@ -86,7 +86,18 @@ function BlogPost() {
 
   return (
     <main id="main-content" className="min-h-screen bg-background text-foreground">
-      <StructuredData data={[articleSchema, breadcrumbSchema]} />
+      <StructuredData
+        data={[
+          articleSchema,
+          breadcrumbSchema,
+          getWebPageSchema({
+            path: `/blog/${post.slug}`,
+            name: `${post.title} | Skédio Blog`,
+            description: post.metaDescription,
+            datePublished: post.publishedAt,
+          }),
+        ]}
+      />
 
       {/* Header */}
       <div className="border-b border-border/70 bg-background/80 backdrop-blur-md sticky top-0 z-40">
@@ -128,12 +139,7 @@ function BlogPost() {
         </div>
 
         {/* Article Body */}
-        <div
-          className="prose-skedio mt-12"
-          dangerouslySetInnerHTML={{
-            __html: DOMPurify.sanitize(marked.parse(post.content) as string),
-          }}
-        />
+        <div className="prose-skedio mt-12" dangerouslySetInnerHTML={{ __html: html }} />
 
         {/* CTA Banner */}
         <div className="mt-16 rounded-2xl border border-border bg-surface p-8 text-center md:p-12">
@@ -151,6 +157,11 @@ function BlogPost() {
           </button>
         </div>
       </article>
+
+      <ArticleRelatedLinks
+        serviceSlug={post.relatedServiceSlug}
+        projectSlug={post.relatedProjectSlug}
+      />
 
       {/* Read More Section */}
       {moreArticles.length > 0 && (

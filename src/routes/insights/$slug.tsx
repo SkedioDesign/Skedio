@@ -4,10 +4,16 @@ import { ArrowLeft, ArrowUpRight, Calendar, Clock, User } from "lucide-react";
 import { getInsightBySlug, insightsArticles } from "@/data/insights";
 import { seo, canonicalLink } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
-import { getArticleSchema, getBreadcrumbSchema, type BreadcrumbItem } from "@/lib/schema";
+import {
+  getArticleSchema,
+  getBreadcrumbSchema,
+  getWebPageSchema,
+  type BreadcrumbItem,
+} from "@/lib/schema";
 import { useContactModal } from "@/context/use-contact-modal";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { WebpImage } from "@/components/WebpImage";
+import { ArticleRelatedLinks } from "@/components/ArticleRelatedLinks";
 
 export const Route = createFileRoute("/insights/$slug")({
   loader: async ({ params }) => {
@@ -34,6 +40,7 @@ export const Route = createFileRoute("/insights/$slug")({
         image: article.coverImage,
         url: `/insights/${article.slug}`,
         type: "article",
+        publishedTime: article.datePublished,
       }),
       links: canonicalLink(`/insights/${article.slug}`),
     };
@@ -71,6 +78,8 @@ function InsightPost() {
     path: `/insights/${article.slug}`,
     datePublished: article.datePublished,
     authorName: article.author.name,
+    authorRole: article.author.role,
+    authorImage: article.author.avatar,
     image: article.coverImage,
   });
 
@@ -85,7 +94,18 @@ function InsightPost() {
 
   return (
     <main id="main-content" className="min-h-screen bg-background text-foreground">
-      <StructuredData data={[articleSchema, breadcrumbSchema]} />
+      <StructuredData
+        data={[
+          articleSchema,
+          breadcrumbSchema,
+          getWebPageSchema({
+            path: `/insights/${article.slug}`,
+            name: `${article.title} | Skédio Insights`,
+            description: article.excerpt,
+            datePublished: article.datePublished,
+          }),
+        ]}
+      />
 
       {/* Header */}
       <div className="border-b border-border/70 bg-background/80 backdrop-blur-md sticky top-0 z-40">
@@ -187,6 +207,11 @@ function InsightPost() {
           </button>
         </div>
       </article>
+
+      <ArticleRelatedLinks
+        serviceSlug={article.relatedServiceSlug}
+        projectSlug={article.relatedProjectSlug}
+      />
 
       {/* Read More Section */}
       {moreArticles.length > 0 && (

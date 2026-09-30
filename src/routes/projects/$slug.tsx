@@ -13,7 +13,12 @@ import {
 import { seo, canonicalLink } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { getCreativeWorkSchema, getBreadcrumbSchema, type BreadcrumbItem } from "@/lib/schema";
+import {
+  getBreadcrumbSchema,
+  getCreativeWorkSchema,
+  getWebPageSchema,
+  type BreadcrumbItem,
+} from "@/lib/schema";
 import { WebpImage } from "@/components/WebpImage";
 
 // Route-scoped stylesheet: loaded via `?url` + this route's `head()` links
@@ -54,6 +59,7 @@ export const Route = createFileRoute("/projects/$slug")({
         url: `/projects/${project.slug}`,
         themeColor: project.themeColor,
         type: "article",
+        publishedTime: project.publishedDate,
       }),
       links: [
         ...canonicalLink(`/projects/${project.slug}`),
@@ -130,6 +136,14 @@ const MANAGED_VARIANTS: Record<
     formats: ["webp"],
     sizes: "(max-width: 768px) calc(100vw - 32px), 720px",
     fullW: 941,
+  },
+  // The case-study cover art (LCP image). .cs-cover__art caps at 1500px with
+  // clamp(16px, 4vw, 40px) padding on each side, hence the 1420px desktop slot.
+  "/HaoCabs/1": {
+    widths: [480, 800, 1200],
+    formats: ["webp", "jpg"],
+    sizes: "(max-width: 768px) calc(100vw - 32px), 1420px",
+    fullW: 1600,
   },
 };
 
@@ -258,7 +272,6 @@ function useInView<T extends HTMLElement>(options?: IntersectionObserverInit) {
     return () => observer.disconnect();
     // Mount-once: route component persists across slug changes and revealed
     // state carries over, matching the previous behaviour.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return ref;
 }
@@ -789,6 +802,11 @@ function ServiceCrossLinks({ slugs }: { slugs: string[] }) {
             </Link>
           ))}
         </div>
+        <div className="cs-services__cta">
+          <Link to="/contact" className="cs-services__cta-link">
+            Start a Conversation <ArrowUpRight size={15} />
+          </Link>
+        </div>
         <Link to="/projects" className="cs-services__more">
           <ArrowLeft size={14} /> Back to all projects
         </Link>
@@ -921,7 +939,18 @@ function CaseStudy() {
         } as CSSProperties
       }
     >
-      <StructuredData data={[creativeWorkSchema, breadcrumbSchema]} />
+      <StructuredData
+        data={[
+          creativeWorkSchema,
+          breadcrumbSchema,
+          getWebPageSchema({
+            path: `/projects/${project.slug}`,
+            name: project.metaTitle,
+            description: project.metaDescription,
+            datePublished: project.publishedDate,
+          }),
+        ]}
+      />
       {/* Minimal Sticky Navigation */}
       <nav
         className={`cs-nav ${isScrolled ? "cs-nav--scrolled" : ""}`}

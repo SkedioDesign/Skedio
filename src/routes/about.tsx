@@ -3,10 +3,21 @@ import { ArrowRight } from "lucide-react";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { useContactModal } from "@/context/use-contact-modal";
 import { seo, canonicalLink } from "@/lib/seo";
-import { siteConfig } from "@/lib/site-config";
 import { StructuredData } from "@/components/StructuredData";
+import { siteConfig } from "@/lib/site-config";
+import {
+  responsiveFor,
+  TEAM_PHOTO_SIZES,
+  TEAM_PHOTO_WIDTH,
+  TEAM_PHOTO_HEIGHT,
+} from "@/lib/responsive-images";
 import { SiteHeader } from "@/components/SiteHeader";
-import { getBreadcrumbSchema, type BreadcrumbItem } from "@/lib/schema";
+import {
+  getBreadcrumbSchema,
+  getPersonSchema,
+  getWebPageSchema,
+  type BreadcrumbItem,
+} from "@/lib/schema";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { SocialLinks, type TeamSocials } from "@/components/SocialLinks";
 import { WebpImage } from "@/components/WebpImage";
@@ -86,22 +97,32 @@ function About() {
   const breadcrumbs = getBreadcrumbSchema(breadcrumbItems);
 
   const allMembers = [founder, ...team];
-  const personSchemas = allMembers.map((m) => ({
-    "@context": "https://schema.org",
-    "@type": "Person",
-    name: m.name,
-    jobTitle: m.role,
-    image: m.img ? `${siteConfig.url}${m.img}` : undefined,
-    worksFor: {
-      "@type": "Organization",
-      name: siteConfig.name,
-      url: siteConfig.url,
-    },
-  }));
+  const personSchemas = allMembers.map((m) =>
+    getPersonSchema({
+      name: m.name,
+      role: m.role,
+      // Conditional spread rather than `image: m.img`: this project sets
+      // exactOptionalPropertyTypes, which forbids an explicit undefined.
+      ...(m.img ? { image: m.img } : {}),
+      socials: Object.values(socialsFor(m.name)).filter(
+        (v): v is string => typeof v === "string" && v.length > 0,
+      ),
+    }),
+  );
 
   return (
     <main id="main-content" className="min-h-screen bg-background text-foreground">
-      <StructuredData data={[breadcrumbs, ...personSchemas]} />
+      <StructuredData
+        data={[
+          breadcrumbs,
+          ...personSchemas,
+          getWebPageSchema({
+            path: "/about",
+            name: "About Skédio — Meet the Creative Minds & Studio Team",
+            description: siteConfig.description,
+          }),
+        ]}
+      />
 
       {/* ── Nav ─────────────────────────────────────────────────────── */}
       <SiteHeader
@@ -245,54 +266,63 @@ function About() {
           to create editorial rhythm without implying hierarchy.
         */}
         <div className="mx-auto grid max-w-[760px] grid-cols-1 justify-items-center gap-x-12 gap-y-14 sm:grid-cols-2">
-          {team.map((member, idx) => (
-            <ScrollReveal key={member.name} delay={idx} direction="up">
-              <div className="group w-full max-w-[260px]">
-                {/* Portrait — identical compact dimensions for all team members */}
-                <div
-                  className="w-full overflow-hidden rounded-2xl border border-border bg-surface"
-                  style={{ aspectRatio: "4/5" }}
-                >
-                  {member.img ? (
-                    <WebpImage
-                      src={member.img}
-                      alt={member.name}
-                      loading="lazy"
-                      className="size-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-                    />
-                  ) : (
-                    <div className="size-full bg-surface-alt" />
-                  )}
+          {team.map((member, idx) => {
+            const photo = member.img ? responsiveFor(member.img) : null;
+            return (
+              <ScrollReveal key={member.name} delay={idx} direction="up">
+                <div className="group w-full max-w-[260px]">
+                  {/* Portrait — identical compact dimensions for all team members */}
+                  <div
+                    className="w-full overflow-hidden rounded-2xl border border-border bg-surface"
+                    style={{ aspectRatio: "4/5" }}
+                  >
+                    {photo ? (
+                      <WebpImage
+                        src={photo.src}
+                        srcSet={photo.srcSet}
+                        webpSrcSet={photo.webpSrcSet}
+                        sizes={TEAM_PHOTO_SIZES}
+                        width={TEAM_PHOTO_WIDTH}
+                        height={TEAM_PHOTO_HEIGHT}
+                        alt={member.name}
+                        loading="lazy"
+                        decoding="async"
+                        className="size-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                      />
+                    ) : (
+                      <div className="size-full bg-surface-alt" />
+                    )}
+                  </div>
+
+                  {/* Identity — equal typography weight */}
+                  <div className="mt-5">
+                    <h3 className="text-base font-semibold tracking-tight">{member.name}</h3>
+                    <p className="mt-0.5 text-[0.75rem] font-semibold uppercase tracking-[0.1em] text-primary">
+                      {member.role}
+                    </p>
+                  </div>
+
+                  {/* Bio */}
+                  <p className="type-sm mt-3 leading-relaxed text-muted-foreground">{member.bio}</p>
+
+                  {/* Expertise tags */}
+                  <div className="mt-4 flex flex-wrap gap-1.5">
+                    {member.expertise.map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full border border-border px-2.5 py-0.5 text-[0.625rem] font-medium tracking-[0.02em] text-foreground/60"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Socials — only links with a value are rendered */}
+                  <SocialLinks socials={socialsFor(member.name)} className="mt-4" />
                 </div>
-
-                {/* Identity — equal typography weight */}
-                <div className="mt-5">
-                  <h3 className="text-base font-semibold tracking-tight">{member.name}</h3>
-                  <p className="mt-0.5 text-[0.75rem] font-semibold uppercase tracking-[0.1em] text-primary">
-                    {member.role}
-                  </p>
-                </div>
-
-                {/* Bio */}
-                <p className="type-sm mt-3 leading-relaxed text-muted-foreground">{member.bio}</p>
-
-                {/* Expertise tags */}
-                <div className="mt-4 flex flex-wrap gap-1.5">
-                  {member.expertise.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full border border-border px-2.5 py-0.5 text-[0.625rem] font-medium tracking-[0.02em] text-foreground/60"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Socials — only links with a value are rendered */}
-                <SocialLinks socials={socialsFor(member.name)} className="mt-4" />
-              </div>
-            </ScrollReveal>
-          ))}
+              </ScrollReveal>
+            );
+          })}
         </div>
       </section>
 

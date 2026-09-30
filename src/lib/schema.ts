@@ -1,4 +1,5 @@
 import { siteConfig } from "./site-config";
+import { toAbsoluteUrl } from "./seo";
 
 export function getOrganizationSchema() {
   return {
@@ -7,7 +8,7 @@ export function getOrganizationSchema() {
     "@id": `${siteConfig.url}/#organization`,
     name: siteConfig.name,
     legalName: siteConfig.legalName,
-    url: siteConfig.url,
+    url: toAbsoluteUrl("/"),
     logo: `${siteConfig.url}/skedio-logomark.png`,
     image: `${siteConfig.url}/skedio-primary.png`,
     description: siteConfig.description,
@@ -36,7 +37,7 @@ export function getWebSiteSchema() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "@id": `${siteConfig.url}/#website`,
-    url: siteConfig.url,
+    url: toAbsoluteUrl("/"),
     name: siteConfig.name,
     description: siteConfig.description,
     publisher: {
@@ -63,11 +64,9 @@ export function getServiceSchema(service: ServiceSchemaInput) {
   const serviceDescription = service.description || service.definition || "";
   const serviceType = service.serviceType || service.shortTitle || serviceName;
   const servicePath = service.url || (service.slug ? `/services/${service.slug}` : "");
-  const fullUrl = servicePath
-    ? servicePath.startsWith("http")
-      ? servicePath
-      : `${siteConfig.url}${servicePath.startsWith("/") ? "" : "/"}${servicePath}`
-    : siteConfig.url;
+  // No slug and no url means there is no page to point at, so fall back to the
+  // canonical root rather than the bare origin (see toAbsoluteUrl).
+  const fullUrl = toAbsoluteUrl(servicePath || "/");
 
   return {
     "@context": "https://schema.org",
@@ -80,7 +79,7 @@ export function getServiceSchema(service: ServiceSchemaInput) {
       "@type": "Organization",
       "@id": `${siteConfig.url}/#organization`,
       name: siteConfig.name,
-      url: siteConfig.url,
+      url: toAbsoluteUrl("/"),
     },
     areaServed: {
       "@type": "Country",
@@ -105,6 +104,48 @@ export function getServiceSchema(service: ServiceSchemaInput) {
   };
 }
 
+export interface WebPageInput {
+  /** Root-relative path, e.g. "/services/product-design". Must match canonical. */
+  path: string;
+  name: string;
+  description: string;
+  /** ISO date, when the content model has a real one. Never defaulted. */
+  datePublished?: string;
+  dateModified?: string;
+}
+
+export const WEBPAGE_FRAGMENT = "#webpage";
+
+/**
+ * Describes the page itself.
+ *
+ * Every indexable route should emit one. Without it the only WebPage node in
+ * the site's graph was the anonymous one nested inside Article's
+ * `mainEntityOfPage`, so a service or project page had no entity describing the
+ * document — just the Service or CreativeWork hanging off it.
+ *
+ * The `@id` carries the `#webpage` fragment and `getArticleSchema`'s
+ * `mainEntityOfPage` points at that same fragment, so an article page declares
+ * its WebPage exactly once and the reference resolves to it rather than to a
+ * second, unreferenced literal.
+ */
+export function getWebPageSchema(page: WebPageInput) {
+  const url = absoluteUrl(page.path);
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${url}${WEBPAGE_FRAGMENT}`,
+    url,
+    name: page.name,
+    description: page.description,
+    isPartOf: { "@id": `${siteConfig.url}/#website` },
+    about: { "@id": `${siteConfig.url}/#organization` },
+    ...(page.datePublished ? { datePublished: page.datePublished } : {}),
+    ...(page.dateModified ? { dateModified: page.dateModified } : {}),
+    inLanguage: "en-IN",
+  };
+}
+
 export interface BreadcrumbItem {
   name: string;
   item: string;
@@ -115,10 +156,7 @@ export function getBreadcrumbSchema(items: BreadcrumbItem[]) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: items.map((crumb, idx) => {
-      const itemUrl = crumb.item || "/";
-      const fullUrl = itemUrl.startsWith("http")
-        ? itemUrl
-        : `${siteConfig.url}${itemUrl.startsWith("/") ? "" : "/"}${itemUrl}`;
+      const fullUrl = toAbsoluteUrl(crumb.item || "/");
 
       return {
         "@type": "ListItem",
@@ -156,9 +194,7 @@ export interface ItemListEntry {
 }
 
 function absoluteUrl(path: string): string {
-  return path.startsWith("http")
-    ? path
-    : `${siteConfig.url}${path.startsWith("/") ? "" : "/"}${path}`;
+  return toAbsoluteUrl(path);
 }
 
 export function getItemListSchema(name: string, entries: ItemListEntry[]) {
@@ -207,15 +243,8 @@ export interface CreativeWorkInput {
 }
 
 export function getCreativeWorkSchema(work: CreativeWorkInput) {
-  const workUrl = work.url || "";
-  const fullUrl = workUrl.startsWith("http")
-    ? workUrl
-    : `${siteConfig.url}${workUrl.startsWith("/") ? "" : "/"}${workUrl}`;
-  const fullImage = work.image
-    ? work.image.startsWith("http")
-      ? work.image
-      : `${siteConfig.url}${work.image.startsWith("/") ? "" : "/"}${work.image}`
-    : undefined;
+  const fullUrl = toAbsoluteUrl(work.url || "/");
+  const fullImage = work.image ? toAbsoluteUrl(work.image) : undefined;
 
   return {
     "@context": "https://schema.org",
@@ -263,16 +292,20 @@ export interface ArticleInput {
   datePublished: string;
   dateModified?: string;
   authorName?: string;
+  /**
+   * Present in the insights content model; used for schema.org jobTitle and the
+   * author portrait. Declared `| undefined` because the project enables
+   * `exactOptionalPropertyTypes`, so a caller forwarding an absent `avatar`
+   * cannot pass the key explicitly as undefined otherwise.
+   */
+  authorRole?: string | undefined;
+  authorImage?: string | undefined;
   image?: string;
 }
 
 export function getArticleSchema(article: ArticleInput) {
   const url = absoluteUrl(article.path);
-  const fullImage = article.image
-    ? article.image.startsWith("http")
-      ? article.image
-      : `${siteConfig.url}${article.image.startsWith("/") ? "" : "/"}${article.image}`
-    : `${siteConfig.url}/og-default.png`;
+  const fullImage = toAbsoluteUrl(article.image || "/og-default.png");
 
   return {
     "@context": "https://schema.org",
@@ -285,7 +318,9 @@ export function getArticleSchema(article: ArticleInput) {
     image: fullImage,
     author: {
       "@type": "Person",
-      name: article.authorName || "Skédio Team",
+      name: article.authorName || siteConfig.name,
+      ...(article.authorRole ? { jobTitle: article.authorRole } : {}),
+      ...(article.authorImage ? { image: toAbsoluteUrl(article.authorImage) } : {}),
       worksFor: {
         "@type": "Organization",
         "@id": `${siteConfig.url}/#organization`,
@@ -303,7 +338,43 @@ export function getArticleSchema(article: ArticleInput) {
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": url,
+      "@id": `${url}${WEBPAGE_FRAGMENT}`,
+    },
+  };
+}
+
+export interface PersonInput {
+  name: string;
+  role?: string;
+  image?: string;
+  /** Absolute profile URLs, emitted as schema.org sameAs. */
+  socials?: string[];
+}
+
+/**
+ * Lives here rather than inline in routes/about.tsx so that no route can
+ * hand-assemble a schema and reintroduce a second, divergent spelling of a
+ * site URL — which is exactly what the previous inline version did
+ * (`url: siteConfig.url` emitted the bare origin, and the image was built by
+ * raw template concatenation).
+ *
+ * `worksFor` carries the Organization @id so the link resolves against the
+ * Organization node __root.tsx already declares, instead of being a second,
+ * unrelated Organization literal.
+ */
+export function getPersonSchema(person: PersonInput) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: person.name,
+    ...(person.role ? { jobTitle: person.role } : {}),
+    ...(person.image ? { image: toAbsoluteUrl(person.image) } : {}),
+    ...(person.socials?.length ? { sameAs: person.socials } : {}),
+    worksFor: {
+      "@type": "Organization",
+      "@id": `${siteConfig.url}/#organization`,
+      name: siteConfig.name,
+      url: toAbsoluteUrl("/"),
     },
   };
 }

@@ -1,6 +1,9 @@
 import "../instrument.server.mjs";
 
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
+import { existsSync } from "node:fs";
+import { readFile, stat } from "node:fs/promises";
+import { extname, join, normalize, sep } from "node:path";
 import { createStartHandler, defaultStreamHandler } from "@tanstack/react-start/server";
 import type { Register } from "@tanstack/react-router";
 import type { RequestHandler } from "@tanstack/react-start/server";
@@ -94,9 +97,222 @@ async function handleWeeklyDigest(request: Request): Promise<Response> {
 
 const handle = createStartHandler(defaultStreamHandler);
 
+/**
+ * Moved URLs: old path -> current path. Always exactly ONE hop.
+ *
+ * When a page changes address, add it here rather than chaining redirects.
+ * Chains (old -> old2 -> old3 -> new) leak link equity at every hop, cost
+ * crawl budget per hop, and each intermediate URL stays indexed until Google
+ * has followed the whole chain. If a URL moves more than once, replace the
+ * original entry's target with the final destination instead of appending a
+ * second hop.
+ *
+ * 301 is deliberate: the resource has moved permanently. (The trailing-slash
+ * normalizer below uses 308 instead, because that is a method-preserving
+ * canonicalization of the *same* resource, not a move.)
+ *
+ * Empty by design — no URL has moved yet. Anything added here must point at a
+ * route that returns 200; the redirect verifier enforces that, along with the
+ * no-chains rule.
+ */
+const LEGACY_REDIRECTS: Record<string, string> = {
+  // "/old-path": "/current-path",
+};
+
+function legacyRedirect(url: URL): Response | null {
+  const destination = LEGACY_REDIRECTS[url.pathname];
+  if (!destination) return null;
+  // Path+query, never an absolute URL echoing the request Host.
+  return new Response(null, {
+    status: 301,
+    headers: { location: destination + url.search },
+  });
+}
+
+/**
+ * Trailing-slash normalization, issued as a 308 PERMANENT redirect.
+ *
+ * The router's `trailingSlash: "never"` default already sends "/about/" ->
+ * "/about", but it builds that redirect through router-core's `redirect()`
+ * helper, which hardcodes 307 (TEMPORARY) as its fallback status. 307 is the
+ * wrong signal for canonicalization: Google will not consolidate the two URL
+ * forms as reliably, keeps no guarantee the redirect survives, and may keep
+ * spending crawl budget on the redirecting URL. RFC 7538 308 is the correct
+ * code and is method- and body-preserving, so a POST still re-POSTs.
+ *
+ * Doing it here — before the router sees the request — is the only lever,
+ * since the 307 default is inside a library with no option to override it.
+ *
+ * Location is emitted as a path+query rather than an absolute URL so the
+ * response never echoes back the request's Host header, which would let a
+ * forged Host produce an open-redirect. Only a non-root pathname ending in
+ * "/" is touched; every other request falls through to the router untouched,
+ * so normal routing behaviour is unchanged.
+ */
+function trailingSlashRedirect(url: URL): Response | null {
+  const { pathname } = url;
+  if (pathname === "/" || !pathname.endsWith("/")) return null;
+  const trimmed = pathname.replace(/\/+$/, "") || "/";
+  return new Response(null, {
+    status: 308,
+    headers: { location: trimmed + url.search },
+  });
+}
+
+/**
+ * Marks a response as unindexable.
+ *
+ * `Disallow` in robots.txt is the primary gate for /api/ and /_serverFn/, but a
+ * Disallowed URL is one a crawler never fetches — so it can never read a meta
+ * robots tag on that URL either. The header is what actually guarantees
+ * "not indexable" for anything that reaches these paths by another route: a
+ * shared link, a crawler that ignores robots.txt, or a URL that was once
+ * public. `follow` is intentionally NOT set, so no equity leaks from these
+ * responses.
+ */
+function withNoIndex(response: Response): Response {
+  response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  return response;
+}
+
+function pathnameOf(request: Request): string {
+  return new URL(request.url).pathname;
+}
+
+/* -------------------- Post-build static assets --------------------- */
+
+const PUBLIC_DIR = join(process.cwd(), ".output", "public");
+const PUBLIC_DIR_EXISTS = existsSync(PUBLIC_DIR);
+
+const CONTENT_TYPES: Record<string, string> = {
+  ".avif": "image/avif",
+  ".css": "text/css; charset=utf-8",
+  ".gif": "image/gif",
+  ".ico": "image/x-icon",
+  ".jpeg": "image/jpeg",
+  ".jpg": "image/jpeg",
+  ".js": "text/javascript; charset=utf-8",
+  ".json": "application/json",
+  ".map": "application/json",
+  ".mjs": "text/javascript; charset=utf-8",
+  ".mp4": "video/mp4",
+  ".png": "image/png",
+  ".svg": "image/svg+xml",
+  ".txt": "text/plain; charset=utf-8",
+  ".webm": "video/webm",
+  ".webp": "image/webp",
+  ".woff": "font/woff",
+  ".woff2": "font/woff2",
+  ".xml": "application/xml",
+};
+
+/** Never served as a static asset: documents and anything dot-prefixed. */
+function isServableAssetPath(pathname: string): boolean {
+  const ext = extname(pathname).toLowerCase();
+  if (!ext || ext === ".html" || ext === ".htm") return false;
+  if (pathname.split("/").some((seg) => seg.startsWith("."))) return false;
+  return true;
+}
+
+/**
+ * Serves public files that Nitro's static manifest does not know about.
+ *
+ * `scripts/optimize-images.mjs` writes responsive variants and `.webp` twins
+ * into the public dir AFTER Nitro has generated its public-asset manifest, so
+ * the node-server preview answers 404 for every file the script creates. That
+ * is not cosmetic: browsers choose an image from `srcset`, not from `src`, so a
+ * missing candidate renders as a broken image even though the original is
+ * present on disk. Local previews (and the rendering verifier) would therefore
+ * show missing team photos, client logos and case-study art.
+ *
+ * A deployed build is unaffected — Vercel uploads the entire static directory,
+ * so every variant is served from its CDN. This only backfills the gap locally.
+ * On a preset without `.output/public` the directory probe fails and this is a
+ * no-op, so production never reaches the filesystem.
+ */
+async function serveGeneratedAsset(url: URL): Promise<Response | null> {
+  if (!PUBLIC_DIR_EXISTS || !isServableAssetPath(url.pathname)) return null;
+
+  let target: string;
+  try {
+    target = normalize(join(PUBLIC_DIR, decodeURIComponent(url.pathname)));
+  } catch {
+    return null; // malformed percent-encoding
+  }
+  // Containment check: a decoded "../" must not escape the public dir.
+  if (target !== PUBLIC_DIR && !target.startsWith(PUBLIC_DIR + sep)) return null;
+
+  try {
+    const info = await stat(target);
+    if (!info.isFile()) return null;
+    const body = await readFile(target);
+    return new Response(body, {
+      status: 200,
+      headers: {
+        "content-type": CONTENT_TYPES[extname(target).toLowerCase()] ?? "application/octet-stream",
+        "content-length": String(info.size),
+        // Generated files keep a stable name for a given build, so they are
+        // safe to cache briefly; hashed files under /assets match Nitro's own
+        // immutable policy once the manifest has answered first.
+        "cache-control": "public, max-age=3600",
+      },
+    });
+  } catch {
+    return null;
+  }
+}
+
+function jsonError(status: number, message: string): Response {
+  return withNoIndex(
+    new Response(JSON.stringify({ error: message }), {
+      status,
+      headers: { "content-type": "application/json; charset=utf-8" },
+    }),
+  );
+}
+
+/**
+ * Machine-to-machine surfaces that must never be answered with an HTML
+ * document. /api/ is short-circuited before the router runs, but /_serverFn/
+ * has to reach the router first so that real server functions keep working —
+ * so the check is repeated here purely to shape the ERROR response.
+ */
+function isMachinePath(pathname: string): boolean {
+  return (
+    pathname === "/api" ||
+    pathname.startsWith("/api/") ||
+    pathname === "/_serverFn" ||
+    pathname.startsWith("/_serverFn/")
+  );
+}
+
+/**
+ * A 5xx must never be an indexable page. Two reasons this is centralised:
+ * the two throw sites below were building the response by hand, and an unknown
+ * /_serverFn/<id> throws inside TanStack's serverFnHandler — which used to
+ * surface as a full HTML "This page didn't load" page carrying no robots
+ * directive at all.
+ */
+function errorResponse(status: number, pathname: string): Response {
+  if (isMachinePath(pathname)) return jsonError(status, "Internal Server Error");
+  return withNoIndex(
+    new Response(renderErrorPage(), {
+      status,
+      headers: { "content-type": "text/html; charset=utf-8" },
+    }),
+  );
+}
+
 const fetchHandler: RequestHandler<Register> = async (request) => {
   try {
     const url = new URL(request.url);
+    // Moved URLs first, so a relocated page never picks up a second hop.
+    const moved = legacyRedirect(url);
+    if (moved) return moved;
+
+    const normalized = trailingSlashRedirect(url);
+    if (normalized) return normalized;
+
     if (url.pathname === "/sitemap.xml") {
       return new Response(generateSitemapXml(), {
         status: 200,
@@ -109,18 +325,42 @@ const fetchHandler: RequestHandler<Register> = async (request) => {
 
     const feed = url.pathname.match(/^\/(blog|insights)\/feed\.xml$/);
     if (feed) {
-      return new Response(generateRssFeedXml(feed[1] as FeedSource), {
-        status: 200,
-        headers: {
-          "content-type": "application/rss+xml; charset=utf-8",
-          "cache-control": "public, max-age=3600, s-maxage=86400",
-        },
-      });
+      // Feeds are a syndication surface, not a search result. The correct
+      // content-type already stops them being parsed as a page; noindex keeps
+      // them out of the index while still letting crawlers follow the links
+      // they contain. robots.txt and sitemap.xml are deliberately NOT
+      // noindexed — a crawler has to be able to read both.
+      return withNoIndex(
+        new Response(generateRssFeedXml(feed[1] as FeedSource), {
+          status: 200,
+          headers: {
+            "content-type": "application/rss+xml; charset=utf-8",
+            "cache-control": "public, max-age=3600, s-maxage=86400",
+          },
+        }),
+      );
     }
 
     if (url.pathname === "/api/cron/digest") {
-      return await handleWeeklyDigest(request);
+      return withNoIndex(await handleWeeklyDigest(request));
     }
+
+    // The whole /api/ namespace is closed to HTML. Without this, an unknown
+    // path such as /api/anything falls through to the router and gets a full
+    // server-rendered HTML app shell — the API surface would then be capable of
+    // answering with a normal web page. Answering JSON here means a future
+    // endpoint added under /api/ cannot accidentally become an indexable HTML
+    // route even if it is wired up incorrectly.
+    if (url.pathname === "/api" || url.pathname.startsWith("/api/")) {
+      return jsonError(404, "Not Found");
+    }
+
+    // Anything the manifest missed but that exists in the public dir. Placed
+    // after the explicit routes so sitemap.xml, feed.xml and /api/ keep their
+    // own handlers, and before the router so a missing asset never turns into
+    // a rendered HTML page.
+    const generated = await serveGeneratedAsset(url);
+    if (generated) return generated;
 
     const nonce = randomBytes(16).toString("base64");
     const response = await runWithNonce(nonce, async () => {
@@ -138,19 +378,13 @@ const fetchHandler: RequestHandler<Register> = async (request) => {
     if (captured === undefined) return response;
     captureServerError(captured);
     await flushServerErrors();
-    return new Response(renderErrorPage(), {
-      status: response.status,
-      headers: { "content-type": "text/html; charset=utf-8" },
-    });
+    return errorResponse(response.status, url.pathname);
   } catch (error) {
     console.error(error);
     const captured = consumeLastCapturedError() ?? error;
     captureServerError(captured);
     await flushServerErrors();
-    return new Response(renderErrorPage(), {
-      status: 500,
-      headers: { "content-type": "text/html; charset=utf-8" },
-    });
+    return errorResponse(500, pathnameOf(request));
   }
 };
 

@@ -5,7 +5,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { projects, type ProjectSummary } from "@/data/projects";
 import { seo, canonicalLink } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
-import { getBreadcrumbSchema, getItemListSchema } from "@/lib/schema";
+import { getBreadcrumbSchema, getItemListSchema, getWebPageSchema } from "@/lib/schema";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
@@ -43,7 +43,18 @@ function ProjectsHub() {
 
   return (
     <main id="main-content" className="min-h-screen bg-background text-foreground">
-      <StructuredData data={[breadcrumbSchema, itemListSchema]} />
+      <StructuredData
+        data={[
+          breadcrumbSchema,
+          itemListSchema,
+          getWebPageSchema({
+            path: "/projects",
+            name: "Selected Work & Case Studies — Brands and Products by Skédio",
+            description:
+              "Case studies of brands and digital products designed and built by Skédio.",
+          }),
+        ]}
+      />
 
       <SiteHeader
         links={[

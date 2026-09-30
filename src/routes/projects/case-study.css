@@ -4,9 +4,9 @@
    ========================================================================== */
 
 :root {
-  --cs-yellow: #FFC400;
-  --cs-yellow-hover: #E5B000;
-  --cs-yellow-subtle: #FFFBEA;
+  --cs-yellow: #ffc400;
+  --cs-yellow-hover: #e5b000;
+  --cs-yellow-subtle: #fffbea;
   /* Per-project accent, set inline on .cs from projects.ts themeColor.
      Defaults keep the HAO Cabs yellow look when no override is present. */
   --cs-accent: var(--cs-yellow);
@@ -16,8 +16,8 @@
   --cs-dark-surface: #181818;
   --cs-dark-border: rgba(255, 255, 255, 0.12);
   --cs-dark-muted: rgba(255, 255, 255, 0.65);
-  --cs-white: #FFFFFF;
-  --cs-gray-light: #F7F7F5;
+  --cs-white: #ffffff;
+  --cs-gray-light: #f7f7f5;
   --cs-gray-border: rgba(17, 17, 17, 0.08);
   --cs-gray-muted: #555555;
   --cs-container: 1360px;
@@ -93,8 +93,9 @@
 .cs-reveal {
   opacity: 0;
   transform: translateY(28px);
-  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity, transform;
 }
 
@@ -132,7 +133,11 @@
   justify-content: space-between;
   padding: 24px 36px;
   background: transparent;
-  transition: background 0.35s ease, padding 0.35s ease, border-color 0.35s ease, backdrop-filter 0.35s ease;
+  transition:
+    background 0.35s ease,
+    padding 0.35s ease,
+    border-color 0.35s ease,
+    backdrop-filter 0.35s ease;
 }
 
 .cs-nav--scrolled {
@@ -176,7 +181,9 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   color: rgba(17, 17, 17, 0.4);
-  transition: color 0.25s ease, transform 0.25s ease;
+  transition:
+    color 0.25s ease,
+    transform 0.25s ease;
 }
 
 .cs-nav__chapter-btn:hover {
@@ -199,7 +206,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .cs-nav__link:hover {
@@ -335,7 +344,9 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  transition: transform 0.25s ease, color 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    color 0.25s ease;
 }
 
 .cs-cover__scroll:hover {
@@ -474,7 +485,9 @@
   letter-spacing: -0.03em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.25);
-  transition: color 0.4s ease, transform 0.4s ease;
+  transition:
+    color 0.4s ease,
+    transform 0.4s ease;
 }
 
 .cs-problem-word:hover {
@@ -502,7 +515,9 @@
   background: var(--cs-dark-surface);
   border: 1px solid var(--cs-dark-border);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
+  transition:
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.5s ease;
 }
 
 .cs-phone-card:hover {
@@ -558,7 +573,9 @@
   align-items: baseline;
   padding: 32px 0;
   border-bottom: 1px solid var(--cs-gray-border);
-  transition: background 0.3s ease, padding-left 0.3s ease;
+  transition:
+    background 0.3s ease,
+    padding-left 0.3s ease;
 }
 
 .cs-timeline__row:hover {
@@ -814,7 +831,9 @@
   align-items: center;
   padding: 24px 0;
   border-bottom: 1px solid var(--cs-gray-border);
-  transition: background 0.3s ease, padding-left 0.3s ease;
+  transition:
+    background 0.3s ease,
+    padding-left 0.3s ease;
 }
 
 .cs-journey__row:hover {
@@ -966,7 +985,9 @@
   background: var(--cs-gray-light);
   color: var(--cs-black);
   border: 1px solid var(--cs-gray-border);
-  transition: transform 0.3s ease, border-color 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .cs-editorial__tag:hover {
@@ -1213,7 +1234,9 @@
   text-decoration: none;
   border-bottom: 1px solid transparent;
   padding-bottom: 2px;
-  transition: color 0.25s ease, border-color 0.25s ease;
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease;
 }
 
 .cs-services__more:hover {
@@ -1221,14 +1244,58 @@
   border-bottom-color: var(--cs-accent);
 }
 
+/*
+ * Conversion path out of a case study. Without it a project page could only
+ * reach /projects and its service pages, leaving no crawlable route to /contact.
+ */
+.cs-services__cta {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.cs-services__cta-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  font-family: var(--font-heading, "Gilroy", sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--cs-black);
+  background: var(--cs-accent);
+  border: 1px solid var(--cs-accent);
+  border-radius: 999px;
+  text-decoration: none;
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.cs-services__cta-link:hover {
+  background: var(--cs-white);
+  border-color: var(--cs-white);
+}
+
+.cs-services__cta-link svg {
+  transition: transform 0.25s ease;
+}
+
+.cs-services__cta-link:hover svg {
+  transform: translate(2px, -2px);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cs-services__link,
   .cs-services__link svg,
+  .cs-services__cta-link,
+  .cs-services__cta-link svg,
   .cs-services__more {
     transition: none;
   }
 
-  .cs-services__link:hover svg {
+  .cs-services__link:hover svg,
+  .cs-services__cta-link:hover svg {
     transform: none;
   }
 }
@@ -1338,7 +1405,9 @@
     color: var(--cs-gray-muted);
     cursor: pointer;
     font-family: inherit;
-    transition: border-color 0.2s ease, color 0.2s ease;
+    transition:
+      border-color 0.2s ease,
+      color 0.2s ease;
   }
 
   .cs-chapter-nav__item:hover {
@@ -1366,7 +1435,10 @@
     color: var(--cs-gray-muted);
     cursor: pointer;
     font-family: inherit;
-    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    transition:
+      border-color 0.2s ease,
+      color 0.2s ease,
+      background 0.2s ease;
   }
 
   .cs-chapter-nav__toggle:hover {

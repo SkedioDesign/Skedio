@@ -7,7 +7,7 @@ import { siteConfig } from "@/lib/site-config";
 import { StructuredData } from "@/components/StructuredData";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { getBreadcrumbSchema, getContactPageSchema } from "@/lib/schema";
+import { getBreadcrumbSchema, getContactPageSchema, getWebPageSchema } from "@/lib/schema";
 
 const PROJECT_TYPES = [
   "Brand Identity",
@@ -359,7 +359,17 @@ function Contact() {
         </div>
       </main>
 
-      <StructuredData data={getContactPageSchema("/contact")} />
+      <StructuredData
+        data={[
+          getContactPageSchema("/contact"),
+          getWebPageSchema({
+            path: "/contact",
+            name: "Contact Skédio — Start a Brand or Product Project",
+            description:
+              "Tell Skédio about your brand or digital product. A reply within 24 hours.",
+          }),
+        ]}
+      />
       <StructuredData
         data={getBreadcrumbSchema([
           { name: "Home", item: "/" },

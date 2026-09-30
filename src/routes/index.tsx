@@ -17,7 +17,7 @@ import { BlogPreview } from "@/components/BlogPreview";
 import { Clients } from "@/components/Clients";
 import { Testimonials } from "@/components/Testimonials";
 import { FaqItem } from "@/components/FaqAccordion";
-import { getServiceSchema, getFAQSchema } from "@/lib/schema";
+import { getFAQSchema, getServiceSchema, getWebPageSchema } from "@/lib/schema";
 import { servicesData } from "@/data/services";
 import { generalFaqs } from "@/data/faq";
 
@@ -266,7 +266,17 @@ function Index() {
 
   return (
     <main id="main-content" ref={pageRef} className="min-h-screen bg-background text-foreground">
-      <StructuredData data={[...serviceSchemas, faqSchema]} />
+      <StructuredData
+        data={[
+          ...serviceSchemas,
+          faqSchema,
+          getWebPageSchema({
+            path: "/",
+            name: "Skédio — Product Design, Identity & Digital Studio",
+            description: siteConfig.description,
+          }),
+        ]}
+      />
 
       {/* Nav */}
       <SiteHeader
@@ -283,9 +293,17 @@ function Index() {
         <div className="grid grid-cols-1 items-end gap-16 lg:grid-cols-5 lg:gap-10">
           {/* Left column (~60%) */}
           <div className="lg:col-span-3">
+            {/* The space before <br /> is load-bearing — do not let a
+                formatter or reflow move it onto the next line. JSX trims
+                trailing whitespace on any text line that is followed by a
+                newline, so "digital\n<br />" renders as the single
+                misspelled word "digitalproducts" once tags are stripped, which
+                is what Googlebot's H1 extraction, screen readers and social
+                scrapers read. It survives here only because the text node
+                holds no newline of its own. The <br /> still owns the visual
+                break; a space before a line break collapses and is invisible. */}
             <h1 className="type-h1 sk-hero-start sk-hero-title">
-              We build brands and digital
-              <br />
+              We build brands and digital <br />
               products that make an <span className="sk-hero-accent">impact.</span>
             </h1>
 

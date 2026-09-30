@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { clients, type Client } from "@/data/clients";
 import { WebpImage } from "@/components/WebpImage";
+import { responsiveFor } from "@/lib/responsive-images";
 
 const ROW_HEIGHT = 44;
 
@@ -21,10 +22,19 @@ function usePrefersReducedMotion() {
 
 function LogoImage({ client, decorative = false }: { client: Client; decorative?: boolean }) {
   const width = Math.max(1, Math.round((ROW_HEIGHT * client.width) / client.height));
+  const logo = responsiveFor(client.logo);
 
   return (
     <WebpImage
-      src={client.logo}
+      src={logo.src}
+      srcSet={logo.srcSet}
+      webpSrcSet={logo.webpSrcSet}
+      // The row height is fixed at ROW_HEIGHT and the width follows from each
+      // logo's aspect ratio, so the slot is known exactly at render time —
+      // a px sizes hint beats a guess the browser has to reconcile.
+      sizes={`${width}px`}
+      width={width}
+      height={ROW_HEIGHT}
       alt={decorative ? "" : `${client.name} logo`}
       loading="lazy"
       decoding="async"

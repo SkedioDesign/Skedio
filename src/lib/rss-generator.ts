@@ -1,4 +1,5 @@
 import { siteConfig } from "./site-config";
+import { toAbsoluteUrl } from "./seo";
 import { blogPosts, type BlogPost } from "../data/blog";
 import { insightsArticles, type InsightArticle } from "../data/insights";
 
@@ -52,7 +53,10 @@ function toRfc2822(date: string): string {
 }
 
 function absolute(path: string): string {
-  return path.startsWith("http") ? path : `${siteConfig.url}${path}`;
+  // Delegates to the single builder in lib/seo.ts. The previous local copy
+  // concatenated the bare origin, so a channelPath of "/" would have emitted
+  // "https://www.skediodesign.in" — the one forbidden spelling of the root.
+  return toAbsoluteUrl(path);
 }
 
 interface FeedItem {

@@ -169,6 +169,8 @@ export const caseStudies: CaseStudyDocument[] = [
         coverImage: {
           name: "1",
           alt: "HAO Cabs — Taxi bidding experience platform",
+          width: 1600,
+          height: 900,
         },
       },
       {
@@ -188,8 +190,8 @@ export const caseStudies: CaseStudyDocument[] = [
         visual: {
           name: "1",
           alt: "HAO Cabs product promotional visual and editorial artwork",
-          width: 6000,
-          height: 3375,
+          width: 1600,
+          height: 900,
         },
       },
       {
@@ -206,18 +208,18 @@ export const caseStudies: CaseStudyDocument[] = [
         ],
         phoneCards: [
           {
-            image: { name: "2", alt: "Available driver bids", width: 3375, height: 3375 },
+            image: { name: "2", alt: "Available driver bids", width: 1600, height: 1600 },
             offset: "up",
           },
           {
-            image: { name: "4", alt: "Ride request screen", width: 3375, height: 3375 },
+            image: { name: "4", alt: "Ride request screen", width: 1600, height: 1600 },
           },
           {
             image: {
               name: "5",
               alt: "Fare comparison and bidding interface",
-              width: 3375,
-              height: 3375,
+              width: 1600,
+              height: 1600,
             },
             offset: "down",
           },
@@ -240,8 +242,8 @@ export const caseStudies: CaseStudyDocument[] = [
         visual: {
           name: "6",
           alt: "HAO Cabs design system, user flows and interface fragments",
-          width: 6000,
-          height: 3375,
+          width: 1600,
+          height: 900,
         },
       },
       {
@@ -264,8 +266,8 @@ export const caseStudies: CaseStudyDocument[] = [
               "Choosing a driver",
             ],
             phones: [
-              { name: "2", alt: "Rider fare comparison", width: 3375, height: 3375 },
-              { name: "5", alt: "Rider selecting a driver", width: 3375, height: 3375 },
+              { name: "2", alt: "Rider fare comparison", width: 1600, height: 1600 },
+              { name: "5", alt: "Rider selecting a driver", width: 1600, height: 1600 },
             ],
           },
           {
@@ -279,8 +281,8 @@ export const caseStudies: CaseStudyDocument[] = [
               "Navigation & earnings",
             ],
             phones: [
-              { name: "4", alt: "Driver receiving ride requests", width: 3375, height: 3375 },
-              { name: "7", alt: "Driver earnings and trip management", width: 6000, height: 3375 },
+              { name: "4", alt: "Driver receiving ride requests", width: 1600, height: 1600 },
+              { name: "7", alt: "Driver earnings and trip management", width: 1600, height: 900 },
             ],
           },
         ],
@@ -295,8 +297,8 @@ export const caseStudies: CaseStudyDocument[] = [
         showcase: {
           name: "3",
           alt: "HAO Cabs final mobile application — complete unified ride experience",
-          width: 3375,
-          height: 3375,
+          width: 1600,
+          height: 1600,
         },
         journeyKicker: "Product Story & Flow",
         journey: [
@@ -320,8 +322,8 @@ export const caseStudies: CaseStudyDocument[] = [
         visual: {
           name: "1",
           alt: "HAO Cabs final brand statement artwork",
-          width: 6000,
-          height: 3375,
+          width: 1600,
+          height: 900,
         },
         foot: "End of case study — Skédio",
       },
@@ -357,8 +359,8 @@ export const caseStudies: CaseStudyDocument[] = [
         coverImage: {
           name: "1",
           alt: "EDIOS — Video Production Studio",
-          width: 1920,
-          height: 1080,
+          width: 1600,
+          height: 900,
         },
       },
       {
@@ -425,8 +427,8 @@ export const caseStudies: CaseStudyDocument[] = [
         visual: {
           name: "4",
           alt: "EDIOS logomark — recording indicator and play button symbolism",
-          width: 1920,
-          height: 1080,
+          width: 1600,
+          height: 900,
         },
       },
       {
@@ -444,8 +446,8 @@ export const caseStudies: CaseStudyDocument[] = [
         visual: {
           name: "3",
           alt: "EDIOS logo construction — geometric grid and structure",
-          width: 1920,
-          height: 1080,
+          width: 1600,
+          height: 900,
         },
       },
       {
@@ -479,8 +481,8 @@ export const caseStudies: CaseStudyDocument[] = [
         visual: {
           name: "8",
           alt: "EDIOS visual language — metallic red, white, and maraschino red palette",
-          width: 1920,
-          height: 1080,
+          width: 1600,
+          height: 900,
         },
       },
       {
@@ -505,8 +507,8 @@ export const caseStudies: CaseStudyDocument[] = [
         visual: {
           name: "6",
           alt: "EDIOS typography — custom-styled futuristic wordmark",
-          width: 1920,
-          height: 1080,
+          width: 1600,
+          height: 900,
         },
       },
       {
@@ -541,8 +543,8 @@ export const caseStudies: CaseStudyDocument[] = [
         visual: {
           name: "7",
           alt: "EDIOS logo system — primary and secondary mark variations",
-          width: 1920,
-          height: 1080,
+          width: 1600,
+          height: 900,
         },
       },
       {
@@ -577,8 +579,8 @@ export const caseStudies: CaseStudyDocument[] = [
         footnote:
           "These applications helped validate the identity beyond a simple presentation board.",
         visuals: [
-          { name: "9", alt: "EDIOS production poster application", width: 1920, height: 1080 },
-          { name: "10", alt: "EDIOS monitor and screen application", width: 1920, height: 1080 },
+          { name: "9", alt: "EDIOS production poster application", width: 1600, height: 900 },
+          { name: "10", alt: "EDIOS monitor and screen application", width: 1600, height: 900 },
           {
             name: "11",
             alt: "EDIOS merchandise and clothing application",
@@ -628,8 +630,8 @@ export const caseStudies: CaseStudyDocument[] = [
         visual: {
           name: "1",
           alt: "EDIOS final brand statement artwork",
-          width: 1920,
-          height: 1080,
+          width: 1600,
+          height: 900,
         },
         foot: "End of case study — Skédio",
       },
@@ -664,8 +666,8 @@ export const caseStudies: CaseStudyDocument[] = [
         coverImage: {
           name: "1",
           alt: "Tiffinly — multi-role food subscription and delivery platform",
-          width: 4500,
-          height: 3000,
+          width: 1600,
+          height: 1067,
         },
       },
       {
@@ -685,8 +687,8 @@ export const caseStudies: CaseStudyDocument[] = [
         visual: {
           name: "2",
           alt: "Tiffinly connected mobile experience across three user roles",
-          width: 4500,
-          height: 3000,
+          width: 1600,
+          height: 1067,
         },
       },
       {
@@ -706,8 +708,8 @@ export const caseStudies: CaseStudyDocument[] = [
             image: {
               name: "5",
               alt: "Tiffinly user flow and wireframe exploration",
-              width: 4500,
-              height: 3000,
+              width: 1600,
+              height: 1067,
             },
             offset: "up",
           },
@@ -715,16 +717,16 @@ export const caseStudies: CaseStudyDocument[] = [
             image: {
               name: "9",
               alt: "Tiffinly information architecture and interface frames",
-              width: 3000,
-              height: 2000,
+              width: 1600,
+              height: 1067,
             },
           },
           {
             image: {
               name: "10",
               alt: "Tiffinly delivery workflow and interface states",
-              width: 3000,
-              height: 2000,
+              width: 1600,
+              height: 1067,
             },
             offset: "down",
           },
@@ -747,8 +749,8 @@ export const caseStudies: CaseStudyDocument[] = [
         visual: {
           name: "6",
           alt: "Tiffinly design process, user flows and interface system",
-          width: 3000,
-          height: 2000,
+          width: 1600,
+          height: 1067,
         },
       },
       {
@@ -773,8 +775,8 @@ export const caseStudies: CaseStudyDocument[] = [
         visual: {
           name: "3",
           alt: "Tiffinly customer app — discover, subscribe, pay and track",
-          width: 4500,
-          height: 3000,
+          width: 1600,
+          height: 1067,
         },
       },
       {
@@ -816,8 +818,8 @@ export const caseStudies: CaseStudyDocument[] = [
         visual: {
           name: "4",
           alt: "Tiffinly provider app — dashboard, menu and operations",
-          width: 4500,
-          height: 3000,
+          width: 1600,
+          height: 1067,
         },
       },
       {
@@ -842,8 +844,8 @@ export const caseStudies: CaseStudyDocument[] = [
         visual: {
           name: "7",
           alt: "Tiffinly delivery partner app — task-based delivery and navigation",
-          width: 4500,
-          height: 3000,
+          width: 1600,
+          height: 1067,
         },
       },
       {
@@ -895,8 +897,8 @@ export const caseStudies: CaseStudyDocument[] = [
         visual: {
           name: "1",
           alt: "Tiffinly final brand statement artwork",
-          width: 4500,
-          height: 3000,
+          width: 1600,
+          height: 1067,
         },
         foot: "End of case study — Skédio",
       },

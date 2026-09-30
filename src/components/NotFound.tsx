@@ -82,6 +82,30 @@ export function NotFound() {
             Read Insights
           </PillLink>
         </div>
+
+        {/*
+          Direct routes to the site's main sections. A visitor who landed on a
+          dead URL should not have to hunt the footer for a way out, and these
+          give crawlers a real path onward from a 404 instead of a dead end.
+        */}
+        <nav
+          aria-label="Site sections"
+          className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-3"
+        >
+          {[
+            { label: "Services", to: "/services" },
+            { label: "Projects", to: "/projects" },
+            { label: "Contact", to: "/contact" },
+          ].map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              className="type-sm font-semibold text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
       </main>
     </div>
   );

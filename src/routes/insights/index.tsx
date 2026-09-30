@@ -4,7 +4,8 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { insightsArticles } from "@/data/insights";
 import { seo, canonicalLink } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
-import { getBreadcrumbSchema } from "@/lib/schema";
+import { getBreadcrumbSchema, getWebPageSchema } from "@/lib/schema";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 export const Route = createFileRoute("/insights/")({
   head: () => ({
@@ -28,14 +29,27 @@ export const Route = createFileRoute("/insights/")({
 });
 
 function InsightsList() {
-  const breadcrumbs = getBreadcrumbSchema([
+  // Single source of truth: the visible trail and the JSON-LD are built from
+  // the same array, so they cannot drift apart.
+  const BREADCRUMB_ITEMS = [
     { name: "Home", item: "/" },
     { name: "Insights", item: "/insights" },
-  ]);
+  ];
+  const breadcrumbs = getBreadcrumbSchema(BREADCRUMB_ITEMS);
 
   return (
     <main id="main-content" className="min-h-screen bg-background text-foreground">
-      <StructuredData data={breadcrumbs} />
+      <StructuredData
+        data={[
+          breadcrumbs,
+          getWebPageSchema({
+            path: "/insights",
+            name: "Insights & Perspectives on Brand, UI/UX & Tech | Skédio",
+            description:
+              "Explore articles, design thinking frameworks, and strategic essays on brand building, user experience design, and digital product development.",
+          }),
+        ]}
+      />
 
       {/* Header */}
       <div className="border-b border-border/70 bg-background/80 backdrop-blur-md sticky top-0 z-40">
@@ -50,6 +64,7 @@ function InsightsList() {
       </div>
 
       <section className="mx-auto max-w-[1200px] px-6 pt-16 pb-24 md:pt-24 md:pb-32">
+        <Breadcrumbs items={BREADCRUMB_ITEMS} />
         <div className="max-w-3xl">
           <p className="eyebrow">Studio Journal</p>
           <h1 className="type-h1 mt-4">Insights &amp; Perspectives</h1>

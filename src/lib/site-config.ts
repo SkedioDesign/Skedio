@@ -2,15 +2,33 @@ export const siteConfig = {
   name: "Skédio",
   legalName: "Skédio Creative Studio",
   /**
-   * Canonical origin. MUST be the "www" host: https://skediodesign.in 308-redirects
-   * to https://www.skediodesign.in/, so pointing this at the bare apex would make
-   * every canonical, og:url, sitemap entry and JSON-LD URL a redirect.
+   * Canonical ORIGIN, used as a concatenation PREFIX — it deliberately carries
+   * no trailing slash so that `${siteConfig.url}${"/about"}` yields
+   * "https://www.skediodesign.in/about" and not a double slash.
+   *
+   * It is therefore NOT itself a page URL. The canonical root page URL is
+   * "https://www.skediodesign.in/" (WITH the slash), and the one canonical
+   * format for the whole site is:
+   *
+   *   root      -> https://www.skediodesign.in/     (trailing slash)
+   *   non-root  -> https://www.skediodesign.in/about  (no trailing slash)
+   *
+   * Never hand-write a page URL from this field. Use toAbsoluteUrl() in
+   * lib/seo.ts, which is the single builder for canonical, og:url, JSON-LD and
+   * any other absolute URL, and which applies the root rule above.
+   *
+   * MUST be the "www" host: the apex https://skediodesign.in 301-redirects to
+   * https://www.skediodesign.in/ (vercel.json), so pointing this at the bare
+   * apex would make every canonical, og:url, sitemap entry and JSON-LD URL a
+   * redirect.
    *
    * No MX record exists for this domain, so siteConfig.email is deliberately a
    * Gmail address rather than hello@skediodesign.in.
    */
   url: "https://www.skediodesign.in",
   ogImage: "/og-default.png",
+  /** BCP-47 tag for og:locale. India-based studio, English-language site. */
+  locale: "en_IN",
   description:
     "Skédio is a creative studio crafting bold brands, beautiful experiences and digital products that help businesses grow.",
   email: "skediodesignspace@gmail.com",

@@ -17,6 +17,12 @@ export interface BlogPost {
   metaTitle: string;
   metaDescription: string;
   ogImage: string;
+  /** The service this post concerns, for a contextual link. Optional: a post
+   *  with no honest service match simply renders no card. */
+  relatedServiceSlug?: string;
+  /** The project this post is illustrated by. Left unset where no single piece
+   *  of work would honestly illustrate the argument. */
+  relatedProjectSlug?: string;
 }
 
 export const blogPosts: BlogPost[] = [
@@ -35,6 +41,8 @@ export const blogPosts: BlogPost[] = [
     metaDescription:
       "Great UI isn't about how an interface looks — it's about making the user's next decision obvious.",
     ogImage: "/og-default.png",
+    relatedServiceSlug: "ui-ux-design",
+    relatedProjectSlug: "tiffinly",
   },
   {
     slug: "a-logo-is-not-a-brand",
@@ -49,6 +57,8 @@ export const blogPosts: BlogPost[] = [
     metaTitle: "A Logo Is Not A Brand | Skédio Studio",
     metaDescription: "Understanding the difference between a logo and a complete brand system.",
     ogImage: "/og-default.png",
+    relatedServiceSlug: "brand-identity",
+    relatedProjectSlug: "edios",
   },
   {
     slug: "ai-wont-replace-designers",
@@ -66,5 +76,6 @@ export const blogPosts: BlogPost[] = [
     metaDescription:
       "AI won't replace designers — but it changes the speed of exploration. How design process evolves.",
     ogImage: "/og-default.png",
+    relatedServiceSlug: "product-design",
   },
 ];

@@ -4,8 +4,9 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { blogPosts, type BlogPost } from "@/data/blog";
 import { seo, canonicalLink } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
-import { getBreadcrumbSchema } from "@/lib/schema";
+import { getBreadcrumbSchema, getWebPageSchema } from "@/lib/schema";
 import { WebpImage } from "@/components/WebpImage";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 export const Route = createFileRoute("/blog/")({
   head: () => ({
@@ -42,10 +43,13 @@ const readMinutes = (content: string) =>
   Math.max(1, Math.round(content.trim().split(/\s+/).length / 200));
 
 function BlogList() {
-  const breadcrumbs = getBreadcrumbSchema([
+  // Single source of truth: the visible trail and the JSON-LD are built from
+  // the same array, so they cannot drift apart.
+  const BREADCRUMB_ITEMS = [
     { name: "Home", item: "/" },
     { name: "Blog", item: "/blog" },
-  ]);
+  ];
+  const breadcrumbs = getBreadcrumbSchema(BREADCRUMB_ITEMS);
 
   const stories = [...blogPosts].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
   const featured = stories[0]!;
@@ -53,7 +57,17 @@ function BlogList() {
 
   return (
     <main id="main-content" className="min-h-screen bg-background text-foreground">
-      <StructuredData data={breadcrumbs} />
+      <StructuredData
+        data={[
+          breadcrumbs,
+          getWebPageSchema({
+            path: "/blog",
+            name: "Studio Blog | Skédio",
+            description:
+              "Read our articles on product design, brand identity, and digital product development.",
+          }),
+        ]}
+      />
 
       {/* Top bar */}
       <div className="sticky top-0 z-40 border-b border-foreground/10 bg-background/85 backdrop-blur-md">
@@ -74,6 +88,8 @@ function BlogList() {
       {/* Masthead */}
       <section className="mx-auto w-full max-w-[1200px] px-6 pt-12 md:pt-16">
         <div className="border-y border-foreground/10 pb-10 pt-8 md:pb-14 md:pt-12">
+          <Breadcrumbs items={BREADCRUMB_ITEMS} />
+
           <div className="grid items-end gap-10 lg:grid-cols-12 lg:gap-12">
             <div className="lg:col-span-8 xl:col-span-7">
               <p className="eyebrow">Skédio Journal</p>

@@ -7,9 +7,10 @@ import { getProjectsForService } from "@/data/projects";
 import { seo, canonicalLink } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
 import {
-  getServiceSchema,
   getBreadcrumbSchema,
   getFAQSchema,
+  getServiceSchema,
+  getWebPageSchema,
   type BreadcrumbItem,
 } from "@/lib/schema";
 import { useContactModal } from "@/context/use-contact-modal";
@@ -95,7 +96,18 @@ function ServiceDetail() {
 
   return (
     <main id="main-content" className="min-h-screen bg-background text-foreground">
-      <StructuredData data={[serviceSchema, breadcrumbSchema, faqSchema]} />
+      <StructuredData
+        data={[
+          serviceSchema,
+          breadcrumbSchema,
+          faqSchema,
+          getWebPageSchema({
+            path: `/services/${service.slug}`,
+            name: service.metaTitle,
+            description: service.metaDescription,
+          }),
+        ]}
+      />
 
       {/* Header / Nav Back */}
       <div className="border-b border-border/70 bg-background/80 backdrop-blur-md sticky top-0 z-40">
