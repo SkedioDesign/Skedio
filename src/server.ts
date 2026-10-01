@@ -1,5 +1,3 @@
-import "../instrument.server.mjs";
-
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import { existsSync } from "node:fs";
 import { readFile, stat } from "node:fs/promises";
@@ -7,9 +5,7 @@ import { extname, join, normalize, sep } from "node:path";
 import { createStartHandler, defaultStreamHandler } from "@tanstack/react-start/server";
 import type { Register } from "@tanstack/react-router";
 import type { RequestHandler } from "@tanstack/react-start/server";
-import { wrapFetchWithSentry } from "@sentry/tanstackstart-react";
 import { consumeLastCapturedError } from "./lib/error-capture";
-import { captureServerError, flushServerErrors } from "./lib/sentry-server";
 import { renderErrorPage } from "./lib/error-page";
 import { generateSitemapXml } from "./lib/sitemap-generator";
 import { generateRssFeedXml, type FeedSource } from "./lib/rss-generator";
@@ -24,25 +20,15 @@ const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
  * The one Content-Security-Policy for the app. Emitted here rather than in
  * vercel.json because the script nonce is generated per request; Vercel ships
  * no competing policy, so there is nothing to intersect with.
- *
- * `worker-src` is set explicitly because Sentry Session Replay spawns a
- * compression Web Worker from a Blob URL (the shipped `sentry-*.js` chunk logs
- * "Using compression worker" next to `new Worker(...)`). Without this directive
- * a worker falls back to `script-src`, which allows neither `blob:` nor
- * worker-scoped blob URLs, so Replay's worker was blocked and Lighthouse
- * reported the violation. Setting `worker-src` grants blob workers only and
- * leaves `script-src` — and therefore the nonce requirement for every script on
- * the page — completely untouched.
  */
 function buildContentSecurityPolicy(nonce: string): string {
   return [
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}' https://cloud.umami.is`,
-    "worker-src 'self' blob:",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' data: blob:",
     "font-src 'self' data: https://fonts.gstatic.com",
-    "connect-src 'self' https://formsubmit.co https://gateway.umami.is https://o4512119811014656.ingest.us.sentry.io",
+    "connect-src 'self' https://formsubmit.co https://gateway.umami.is",
     "object-src 'none'",
     "base-uri 'self'",
     "frame-ancestors 'none'",
@@ -101,8 +87,6 @@ async function handleWeeklyDigest(request: Request): Promise<Response> {
     });
   } catch (error) {
     console.error("[weekly-digest] Failed to send weekly analytics digest:", error);
-    captureServerError(error, "weekly-digest");
-    await flushServerErrors();
     return new Response(JSON.stringify({ ok: false, error: "Digest failed" }), {
       status: 500,
       headers: { "content-type": "application/json" },
@@ -402,14 +386,12 @@ const fetchHandler: RequestHandler<Register> = async (request) => {
     if (response.status < 500) return response;
     const captured = consumeLastCapturedError();
     if (captured === undefined) return response;
-    captureServerError(captured);
-    await flushServerErrors();
+    console.error(captured);
     return errorResponse(response.status, url.pathname);
   } catch (error) {
     console.error(error);
     const captured = consumeLastCapturedError() ?? error;
-    captureServerError(captured);
-    await flushServerErrors();
+    console.error(captured);
     return errorResponse(500, pathnameOf(request));
   }
 };
@@ -424,8 +406,6 @@ export function createServerEntry(entry: ServerEntry): ServerEntry {
   };
 }
 
-export default createServerEntry(
-  wrapFetchWithSentry({
-    fetch: (request: Request) => fetchHandler(request),
-  }),
-);
+export default createServerEntry({
+  fetch: (request: Request) => fetchHandler(request),
+});

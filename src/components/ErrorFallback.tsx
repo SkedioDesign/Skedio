@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { Link, type ErrorComponentProps } from "@tanstack/react-router";
 import { ArrowUpRight, RotateCcw } from "lucide-react";
 import { seo } from "@/lib/seo";
-import { captureClientError } from "@/lib/sentry-client";
 import { SiteHeader } from "@/components/SiteHeader";
 import { logError } from "@/lib/error-capture";
 
@@ -23,10 +22,6 @@ export function ErrorFallback({ error, info, reset }: ErrorComponentProps) {
     if (info?.componentStack) {
       logError(info.componentStack);
     }
-    captureClientError(error, {
-      tag: "error-boundary",
-      extra: { componentStack: info?.componentStack },
-    });
   }, [error, info]);
 
   return (

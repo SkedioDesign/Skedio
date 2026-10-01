@@ -2,7 +2,6 @@ import { defineConfig, type Plugin } from "vite";
 import { transformWithEsbuild } from "vite";
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { sentryTanstackStart } from "@sentry/tanstackstart-react/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { nitro } from "nitro/vite";
 import viteReact from "@vitejs/plugin-react";
@@ -12,8 +11,8 @@ import tailwindcss from "@tailwindcss/vite";
  * Strips `console.*` calls from production client chunks so they never reach the
  * browser. The server bundle is excluded via the `client` environment consumer:
  * Nitro builds its own server environments (consumer "server"), and keeping
- * those intact preserves server logging (server.ts, sentry-server.ts, and the
- * console-wrapping done in error-capture.ts). esbuild only runs here as a
+ * those intact preserves server logging (server.ts and the console-wrapping
+ * done in error-capture.ts). esbuild only runs here as a
  * minifier for the drop step; heavy/standard minification stays with
  * Vite/Rolldown's default.
  */
@@ -116,13 +115,7 @@ export default defineConfig({
     // Modern baseline target (matches Vite's default): ES2022-class syntax,
     // no downlevel transforms/polyfills for Array.from, optional chaining,
     // etc. Do NOT lower this to support legacy browsers — that would
-    // reintroduce transpiled helpers into every client chunk. The remaining
-    // "legacy" bytes live inside the prebuilt Sentry SDK dist (third-party
-    // code we must not edit) and stay statically bundled because
-    // src/start.ts wires its middleware at startup (dynamic import alone
-    // cannot split it — see INEFFECTIVE_DYNAMIC_IMPORT); Sentry.init plus
-    // its ingest connection and replay startup are instead deferred past
-    // LCP in src/instrument.client.ts.
+    // reintroduce transpiled helpers into every client chunk.
     target: "baseline-widely-available",
     rolldownOptions: {
       output: {
@@ -155,7 +148,6 @@ export default defineConfig({
           // `lenis.mjs` matches the `vendor` catch-all — both eager, verified by
           // build. Excluding the package here is what actually keeps it lazy.
           if (id.includes("/lenis/")) return;
-          if (id.includes("@sentry")) return "sentry";
           if (id.includes("lucide-react")) return "lucide";
           if (id.includes("react")) return "react";
           return "vendor";
@@ -187,17 +179,5 @@ export default defineConfig({
     tailwindcss(),
     devWebpMiddleware(),
     stripConsoleOnClient(),
-    // Uploads source maps to Sentry on build. Only active when
-    // SENTRY_AUTH_TOKEN is set (see .env.example), so local/CI builds without a
-    // token still succeed.
-    ...(process.env["SENTRY_AUTH_TOKEN"]
-      ? [
-          sentryTanstackStart({
-            org: "skedio-qm",
-            project: "javascript-tanstackstart-react",
-            authToken: process.env["SENTRY_AUTH_TOKEN"],
-          }),
-        ]
-      : []),
   ],
 });

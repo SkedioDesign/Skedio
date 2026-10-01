@@ -181,9 +181,6 @@ function PrivacyPolicy() {
                 <strong>Umami Software</strong> — cookieless, privacy-friendly web analytics
                 (enabled only with your consent).
               </li>
-              <li>
-                <strong>Sentry</strong> — error and performance monitoring to keep the site stable.
-              </li>
             </ul>
           </section>
 
