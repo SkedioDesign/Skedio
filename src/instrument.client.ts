@@ -44,7 +44,7 @@ function initSentry() {
           Sentry.replayIntegration(),
           ...(router ? [Sentry.tanstackRouterBrowserTracingIntegration(router)] : []),
         ],
-        tracesSampleRate: 1.0,
+        tracesSampleRate: 0.1,
         replaysSessionSampleRate: 0.1,
         replaysOnErrorSampleRate: 1.0,
       });
