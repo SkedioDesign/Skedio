@@ -38,6 +38,12 @@ export const Route = createFileRoute("/insights/$slug")({
         title: `${article.title} | Skédio Insights`,
         description: article.excerpt,
         image: article.coverImage,
+        // Conditional spread rather than `coverImageWidth: article
+        // .coverImageWidth`: this project sets exactOptionalPropertyTypes,
+        // which forbids an explicit undefined.
+        ...(article.coverImageWidth && article.coverImageHeight
+          ? { imageWidth: article.coverImageWidth, imageHeight: article.coverImageHeight }
+          : {}),
         url: `/insights/${article.slug}`,
         type: "article",
         publishedTime: article.datePublished,

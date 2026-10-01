@@ -60,6 +60,13 @@ export const Route = createFileRoute("/projects/$slug")({
         title: project.metaTitle,
         description: project.metaDescription,
         image: project.ogImage,
+        // Conditional spread rather than `imageWidth: project.ogImageWidth`:
+        // this project sets exactOptionalPropertyTypes, which forbids an
+        // explicit undefined. Entries that keep the default card pass neither,
+        // so seo() falls back to the measured 1200x630.
+        ...(project.ogImageWidth && project.ogImageHeight
+          ? { imageWidth: project.ogImageWidth, imageHeight: project.ogImageHeight }
+          : {}),
         url: `/projects/${project.slug}`,
         themeColor: project.themeColor,
         type: "article",
@@ -248,8 +255,9 @@ function RichText({ text }: { text: string }) {
 
 function useInView<T extends HTMLElement>(options?: IntersectionObserverInit) {
   const ref = useRef<T | null>(null);
+  // Init-only: the effect below is mount-once, so later `options` values would
+  // never be read anyway. Seeded here instead of assigned during render.
   const optionsRef = useRef(options);
-  optionsRef.current = options;
 
   useEffect(() => {
     const el = ref.current;

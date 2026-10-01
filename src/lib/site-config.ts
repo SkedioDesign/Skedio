@@ -27,6 +27,21 @@ export const siteConfig = {
    */
   url: "https://www.skediodesign.in",
   ogImage: "/og-default.png",
+  /**
+   * Intrinsic pixel size of the file named above, MEASURED rather than assumed
+   * (`sharp` metadata / the PNG IHDR chunk both report 1200x630).
+   *
+   * og:image:width/height let a crawler lay out the card before it fetches the
+   * image, so it is a layout hint — a wrong value shifts or crops the preview
+   * on the surface that renders it. They therefore live beside the asset path
+   * rather than as literals in seo.ts, so replacing og-default.png means
+   * replacing its dimensions in the same edit. Re-measure with:
+   *   node -e "require('sharp')('public/og-default.png').metadata().then(m=>console.log(m.width,m.height))"
+   *
+   * A route with a different card passes imageWidth/imageHeight to seo().
+   */
+  ogImageWidth: 1200,
+  ogImageHeight: 630,
   /** BCP-47 tag for og:locale. India-based studio, English-language site. */
   locale: "en_IN",
   description:

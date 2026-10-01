@@ -18,6 +18,15 @@ export interface ProjectSummary {
   metaTitle: string;
   metaDescription: string;
   ogImage: string;
+  /**
+   * Intrinsic size of `ogImage`, emitted as og:image:width/height by seo().
+   * Set ONLY when ogImage is not /og-default.png — omitting them falls back to
+   * the measured default (1200x630), which is a lie for every other card.
+   * Both or neither: a width without its height makes a crawler lay the card
+   * out at the wrong aspect ratio.
+   */
+  ogImageWidth?: number;
+  ogImageHeight?: number;
   themeColor: string;
   year: string;
   platform: string;
@@ -53,6 +62,10 @@ export const projects: ProjectSummary[] = [
     metaDescription:
       "Explore how Skédio designed HAO Cabs — a real-time taxi bidding and ride-booking mobile application connecting passengers and drivers seamlessly.",
     ogImage: "/HaoCabs/1.jpg",
+    // Measured from the file (sharp), not assumed: this card is a 6000px
+    // original, not a 1200x630 one.
+    ogImageWidth: 6000,
+    ogImageHeight: 3375,
     themeColor: "#FFC400",
     year: "2026",
     platform: "Mobile App (iOS & Android)",
@@ -78,6 +91,8 @@ export const projects: ProjectSummary[] = [
     metaTitle: "EDIOS — Video Production Studio Brand Identity | Skédio",
     metaDescription: "Brand identity and art direction for EDIOS, a video production studio.",
     ogImage: "/EDIOS/1.jpg",
+    ogImageWidth: 1920,
+    ogImageHeight: 1080,
     themeColor: "#b61318",
     year: "2026",
     platform: "Brand Identity System",
@@ -103,6 +118,8 @@ export const projects: ProjectSummary[] = [
     metaDescription:
       "Explore how Skédio designed Tiffinly — a multi-role food subscription and delivery platform connecting customers, tiffin providers, and delivery partners through a single ecosystem.",
     ogImage: "/tiffinly/1.jpg",
+    ogImageWidth: 1600,
+    ogImageHeight: 1067,
     themeColor: "#EA7B26",
     year: "2026",
     platform: "Mobile Apps (Customer · Provider · Delivery)",

@@ -17,7 +17,7 @@ import { BlogPreview } from "@/components/BlogPreview";
 import { Clients } from "@/components/Clients";
 import { Testimonials } from "@/components/Testimonials";
 import { FaqItem } from "@/components/FaqAccordion";
-import { getFAQSchema, getServiceSchema, getWebPageSchema } from "@/lib/schema";
+import { getFAQSchema, getWebPageSchema } from "@/lib/schema";
 import { servicesData } from "@/data/services";
 import { generalFaqs } from "@/data/faq";
 
@@ -284,22 +284,12 @@ function Index() {
     { scope: pageRef },
   );
 
-  const serviceSchemas = servicesData.map((s) =>
-    getServiceSchema({
-      name: s.title,
-      description: s.definition,
-      url: `/services/${s.slug}`,
-      serviceType: s.shortTitle,
-      deliverables: s.deliverables,
-    }),
-  );
   const faqSchema = getFAQSchema(generalFaqs);
 
   return (
     <main id="main-content" ref={pageRef} className="min-h-screen bg-background text-foreground">
       <StructuredData
         data={[
-          ...serviceSchemas,
           faqSchema,
           getWebPageSchema({
             path: "/",

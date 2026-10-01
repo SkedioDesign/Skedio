@@ -5,6 +5,15 @@ export interface SeoProps {
   description: string;
   image?: string;
   /**
+   * Intrinsic pixel size of `image`, emitted as og:image:width/height.
+   * Defaults to the measured size of siteConfig.ogImage — pass both whenever a
+   * page uses a card of its own, and pass them as a PAIR: a crawler that gets a
+   * width without the matching height lays the card out at the wrong aspect
+   * ratio, which is worse than not declaring either.
+   */
+  imageWidth?: number;
+  imageHeight?: number;
+  /**
    * Alt text for the social card image. Defaults to the page title so a card is
    * never published without a text alternative — a11y, and it is also what some
    * chat surfaces read out.
@@ -21,6 +30,33 @@ export interface SeoProps {
 /** SERP display limits. Copy outside these is truncated or rewritten by Google. */
 export const TITLE_LENGTH = { min: 30, max: 60 };
 export const DESCRIPTION_LENGTH = { min: 70, max: 160 };
+
+/**
+ * og:image:type, derived from the file extension so a card can never claim to
+ * be a format it is not (the JPEGs under /HaoCabs, /EDIOS and /tiffinly are
+ * used as cards on /projects and /insights).
+ *
+ * Anything outside this map OMITS the property rather than guessing. An absent
+ * type is ignored by crawlers; a wrong one is not, and one that contradicts the
+ * bytes actually served is how a card ends up rendering as a broken image on
+ * the one surface that chose to believe it.
+ */
+const OG_IMAGE_TYPES: Record<string, string> = {
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  webp: "image/webp",
+  gif: "image/gif",
+  avif: "image/avif",
+};
+
+function ogImageType(imageUrl: string): string | undefined {
+  const path = imageUrl.split(/[?#]/)[0] ?? "";
+  const ext = path.slice(path.lastIndexOf(".") + 1).toLowerCase();
+  // No dot at all (e.g. an /api/og?title=… endpoint): lastIndexOf is -1, so
+  // `ext` would be the whole path. Comparing against the path detects that.
+  return ext === path ? undefined : OG_IMAGE_TYPES[ext];
+}
 
 const warned = new Set<unknown>();
 
@@ -89,6 +125,8 @@ export function seo({
   title,
   description,
   image = siteConfig.ogImage,
+  imageWidth = siteConfig.ogImageWidth,
+  imageHeight = siteConfig.ogImageHeight,
   imageAlt,
   url = "/",
   type = "website",
@@ -101,6 +139,7 @@ export function seo({
   const fullUrl = toAbsoluteUrl(url);
   const fullImage = toAbsoluteUrl(image);
   const alt = imageAlt ?? title;
+  const imageType = ogImageType(fullImage);
 
   const metaList: Array<
     { title: string } | { name: string; content: string } | { property: string; content: string }
@@ -123,6 +162,12 @@ export function seo({
     { property: "og:title", content: title },
     { property: "og:description", content: description },
     { property: "og:image", content: fullImage },
+    // Declared AFTER og:image (which states WHICH file) and before og:image:alt
+    // (the text alternative), so a crawler reading in order sees the bytes'
+    // identity and geometry before its description.
+    { property: "og:image:width", content: String(imageWidth) },
+    { property: "og:image:height", content: String(imageHeight) },
+    ...(imageType ? [{ property: "og:image:type", content: imageType }] : []),
     { property: "og:image:alt", content: alt },
     { property: "og:url", content: fullUrl },
 

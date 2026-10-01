@@ -3,6 +3,14 @@ export interface InsightArticle {
   title: string;
   excerpt: string;
   coverImage: string;
+  /**
+   * Intrinsic size of `coverImage`, emitted as og:image:width/height by seo().
+   * Set ONLY when coverImage is not /og-default.png — omitting them falls back
+   * to the measured default (1200x630), which would misdescribe the card. Both
+   * or neither.
+   */
+  coverImageWidth?: number;
+  coverImageHeight?: number;
   datePublished: string;
   readingTime: string;
   author: {
@@ -66,6 +74,9 @@ export const insightsArticles: InsightArticle[] = [
     excerpt:
       "Key lessons from designing HAO Cabs: how to reduce cognitive friction in dual-sided real-time marketplace applications.",
     coverImage: "/HaoCabs/1.jpg",
+    // Measured from the file (sharp): 6000x3375, not the 1200x630 default.
+    coverImageWidth: 6000,
+    coverImageHeight: 3375,
     datePublished: "2026-01-28",
     readingTime: "6 min read",
     author: {
