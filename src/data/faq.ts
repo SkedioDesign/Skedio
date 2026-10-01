@@ -16,7 +16,7 @@ export const generalFaqs: FAQItem[] = [
   {
     question: "How much does a brand identity or UI/UX design project cost?",
     answer:
-      "Every project is customized based on scope, deliverables, and timeline. Engagements range from focused identity sprints to comprehensive end-to-end product design and engineering. Contact us via our inquiry form for a detailed proposal and transparent pricing.",
+      "Every project is customized based on scope, deliverables, and timeline. As a guide, brand identity engagements start from ₹35,000, UI/UX design from ₹80,000, and MVP or web development from ₹2,50,000. The final quote depends on scope. Contact us via our inquiry form for a detailed proposal and transparent pricing.",
     category: "Pricing & Engagement",
   },
   {
