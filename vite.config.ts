@@ -130,7 +130,6 @@ export default defineConfig({
         // single monolithic index bundle.
         manualChunks(id: string) {
           if (!id.includes("node_modules")) return;
-          if (id.includes("@radix-ui")) return "radix-ui";
           if (id.includes("@tanstack")) return "router";
           // ScrollTrigger drives scroll-linked reveals only (below the fold).
           // It loads on demand via lib/animation-loader.ts — keep it out of
@@ -142,7 +141,6 @@ export default defineConfig({
           if (id.includes("gsap")) return "gsap";
           if (id.includes("lenis")) return "lenis";
           if (id.includes("@sentry")) return "sentry";
-          if (id.includes("embla")) return "embla";
           if (id.includes("lucide-react")) return "lucide";
           if (id.includes("react")) return "react";
           return "vendor";
