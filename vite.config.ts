@@ -139,7 +139,22 @@ export default defineConfig({
           // rule: the ScrollTrigger path also contains "gsap".
           if (id.includes("gsap/ScrollTrigger")) return "gsap-st";
           if (id.includes("gsap")) return "gsap";
-          if (id.includes("lenis")) return "lenis";
+          // Lenis opts out of manual chunking entirely (returns undefined) so
+          // the `import("lenis/react")` in components/LenisProvider.tsx keeps
+          // ownership of its chunk. That import fires on main-thread idle, and
+          // it is the ONLY thing that should decide when ~20 KB of smooth-scroll
+          // code (5.7 KB brotli) is fetched.
+          //
+          // Any manualChunks name here overrides that dynamic boundary and puts
+          // Lenis in the STATIC import graph of every route chunk — the homepage
+          // then ships `<link rel="modulepreload" href="/assets/lenis-*.js">`
+          // and the browser downloads it during LCP, long before LenisProvider
+          // asks for it. Beware the obvious fixes: deleting a `return "lenis"`
+          // rule is not enough, because `node_modules/lenis/dist/lenis-react.mjs`
+          // then matches the generic `includes("react")` rule below and
+          // `lenis.mjs` matches the `vendor` catch-all — both eager, verified by
+          // build. Excluding the package here is what actually keeps it lazy.
+          if (id.includes("/lenis/")) return;
           if (id.includes("@sentry")) return "sentry";
           if (id.includes("lucide-react")) return "lucide";
           if (id.includes("react")) return "react";
