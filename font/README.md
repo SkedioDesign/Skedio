@@ -17,6 +17,13 @@ reaches the build output. The site loads web font formats from
 The woff2 files in `src/assets/fonts/` are **not** in `Gilroy-FREE/` — they
 were generated locally from these OTFs.
 
+The OTFs themselves are intentionally absent from this repository: clause (f),
+quoted below, forbids distributing the Font or making it available to any third
+party, and a tracked file in a public repo is exactly that. The originals come
+from the foundry download and are not redistributed here. The two `.woff2` files
+in `src/assets/fonts/` are the only Gilroy formats this project serves, and they
+are the only ones that reach the build.
+
 ### What the licence allows, and the one constraint that bites
 
 Relevant clauses, quoted verbatim from the PDF:

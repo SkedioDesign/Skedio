@@ -41,3 +41,7 @@ __MACOSX
 
 # Environment variables
 .env
+
+# Font binaries
+font/gilroy-font/**/*.otf
+*.otf
