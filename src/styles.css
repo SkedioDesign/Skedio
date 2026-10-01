@@ -6,8 +6,15 @@
    @font-face in it is downloaded by all 13. Two families qualify to live
    here because they paint above the fold everywhere: Montserrat (body,
    nav, buttons — the latin variable file covers weights 100–900 in one
-   request) and Gilroy (every heading, plus the OTF kept as a
-   non-woff2 fallback — browsers pick the woff2 and never fetch the OTF).
+   request) and Gilroy (every heading, woff2 only).
+
+   Gilroy ships as woff2 alone. The foundry EULA (see font/README.md)
+   permits generating and serving web font formats via @font-face, but
+   clause (f) forbids distributing the Font or making it available to a
+   third party — which is what publishing the source .otf to the CDN
+   would do. So the .otf src fallback is deliberately absent: it was never
+   fetched by a woff2-capable browser anyway, and legacy agents now fall
+   through to the next family in --font-heading.
 
    Fraunces does not: it is the site's largest family (~82 KB across the
    roman + italic latin files) and only 4 routes render it. Its rules moved
@@ -24,8 +31,7 @@
   font-family: "Gilroy";
   font-weight: 300;
   font-style: normal;
-  src: url("./assets/fonts/Gilroy-Light.woff2") format("woff2"),
-    url("./assets/fonts/Gilroy-Light.otf") format("opentype");
+  src: url("./assets/fonts/Gilroy-Light.woff2") format("woff2");
   font-display: swap;
 }
 
@@ -33,8 +39,7 @@
   font-family: "Gilroy";
   font-weight: 700 800;
   font-style: normal;
-  src: url("./assets/fonts/Gilroy-ExtraBold.woff2") format("woff2"),
-    url("./assets/fonts/Gilroy-ExtraBold.otf") format("opentype");
+  src: url("./assets/fonts/Gilroy-ExtraBold.woff2") format("woff2");
   font-display: swap;
 }
 
