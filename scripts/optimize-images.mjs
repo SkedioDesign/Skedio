@@ -19,14 +19,18 @@
  * stay in sync with the source art. They are deliberately sized to each
  * component's real rendered width (plus DPR headroom) — never upscaled.
  */
-import { promises as fs } from "node:fs";
+import { existsSync, promises as fs } from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import sharp from "sharp";
 
 const STATIC_DIR = process.argv[2] ?? ".vercel/output/static";
-const MIN_BYTES = 80 * 1024;
-const MAX_DIMENSION = 1600;
-const IMAGE_EXT = /\.(jpe?g|png|webp|avif)$/i;
+// Exported so scripts/prerender-originals.mjs can reuse the exact same numbers
+// instead of duplicating them — a drifted copy would silently produce a
+// different build than the one these thresholds describe.
+export const MIN_BYTES = 80 * 1024;
+export const MAX_DIMENSION = 1600;
+export const IMAGE_EXT = /\.(jpe?g|png|webp|avif)$/i;
 // Kept low: case-study JPEGs are up to 6000px / 5MB, and each sharp pipeline
 // holds multiple full-frame buffers — 8 concurrent pipelines OOMs (bus error)
 // on typical CI containers. 3 still keeps the step to a few seconds.
@@ -51,7 +55,7 @@ const CONCURRENCY = 3;
  * mozjpeg settings as full-size originals; PNG logo variants use palette
  * (they are smaller than WebP for flat logos).
  */
-const RESPONSIVE_VARIANTS = [
+export const RESPONSIVE_VARIANTS = [
   { src: "ProductDesign.png", widths: [480, 768], formats: ["webp"] },
   { src: "BrandIdentity.png", widths: [480, 768], formats: ["webp"] },
   { src: "VisualIdentity.png", widths: [480, 768], formats: ["webp"] },
@@ -125,6 +129,19 @@ async function* walk(dir) {
     if (entry.isDirectory()) yield* walk(full);
     else if (IMAGE_EXT.test(entry.name)) yield full;
   }
+}
+
+function lower_ext(file) {
+  return file.toLowerCase();
+}
+
+/**
+ * True when `file` is a .webp with a same-named .jpg/.jpeg/.png beside it —
+ * the signature of a committed twin that writeWebpTwin will regenerate.
+ */
+function hasRasterSibling(file) {
+  const base = file.replace(/\.webp$/i, "");
+  return [".jpg", ".jpeg", ".png"].some((ext) => existsSync(base + ext));
 }
 
 function encoderFor(file, dims) {
@@ -213,6 +230,17 @@ async function optimizeFile(file) {
   }
 
   await writeWebpTwin(file, dims);
+
+  // A committed .webp next to a .jpg/.jpeg/.png of the same name is a build
+  // artifact, and writeWebpTwin above regenerates it from that sibling into
+  // this exact path. Recompressing it in place as well means two workers write
+  // one file, so with CONCURRENCY > 1 the bytes depend on which worker lands
+  // last — two builds from identical input produced different output. Stand
+  // down: writeWebpTwin already emits the file this would have produced.
+  if (lower_ext(file).endsWith(".webp") && hasRasterSibling(file)) {
+    skipped += 1;
+    return;
+  }
 
   const stat = await fs.stat(file);
   if (stat.size < MIN_BYTES) {
@@ -319,7 +347,16 @@ async function main() {
   );
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Only run when invoked directly. Imported by prerender-originals.mjs for the
+// shared thresholds and variant table, which must not trigger a build pass.
+// argv[1] is undefined under `node -e`, where pathToFileURL would throw, so
+// guard the direct-run check rather than assume a script path.
+const isDirectRun =
+  process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (isDirectRun) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
