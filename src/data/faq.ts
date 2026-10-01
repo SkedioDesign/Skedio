@@ -10,7 +10,7 @@ export const generalFaqs: FAQItem[] = [
   {
     question: "What services does Skédio provide?",
     answer:
-      "Skédio is a creative studio specializing in Product Design, Brand Identity, Visual Design, and Full-Stack Digital Product Development. We partner with startups and scaling businesses to take products from idea to launch.",
+      "Skédio is a creative studio specializing in Product Design, Brand Identity, UI/UX Design, and Full-Stack Digital Product Development. We partner with startups and scaling businesses to take products from idea to launch.",
     category: "General",
   },
   {

@@ -189,7 +189,7 @@ export const servicesData: ServiceItem[] = [
     tagline: "Digital experiences built to be intuitive first, beautiful second.",
     definition:
       "UI/UX design is the discipline of researching user behaviors, structuring information architecture, and creating intuitive, aesthetically refined interfaces for web and mobile software. Skédio delivers research-backed user flows, wireframes, interactive prototypes, and production-ready design systems.",
-    metaTitle: "Visual Design Agency | Web & Mobile Product Design | Skédio",
+    metaTitle: "UI/UX Design Agency | Web & Mobile Product Design | Skédio",
     metaDescription:
       "Transform complex digital products into intuitive, high-converting web and mobile experiences. Explore Skédio's user-centric UI/UX design services.",
     ogImage: "/og-default.png",
