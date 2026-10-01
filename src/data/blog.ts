@@ -25,7 +25,7 @@ export interface BlogPost {
   relatedProjectSlug?: string;
 }
 
-export const blogPosts: BlogPost[] = [
+const rawBlogPosts: BlogPost[] = [
   {
     slug: "good-ui-isnt-about-making-things-beautiful",
     title: "Good UI Isn't About Making Things Beautiful",
@@ -79,3 +79,9 @@ export const blogPosts: BlogPost[] = [
     relatedProjectSlug: "edios",
   },
 ];
+
+/** Newest first. Sorted here rather than by hand so the order in the array above
+ *  is free to change without silently reordering every page that lists posts. */
+export const blogPosts = [...rawBlogPosts].sort(
+  (a, b) => b.publishedAt.localeCompare(a.publishedAt),
+);
