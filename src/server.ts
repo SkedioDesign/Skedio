@@ -382,6 +382,17 @@ const fetchHandler: RequestHandler<Register> = async (request) => {
       const rendered = await handle(request);
       const headers = new Headers(rendered.headers);
       headers.set("content-security-policy", buildContentSecurityPolicy(nonce));
+      // "/" only, GET only, 200 only. The homepage is a single public document
+      // with no per-visitor state, so one rendered copy can be stored at the
+      // edge and reused. Trade-off: the nonce above is then shared by everyone
+      // served that copy, so a leaked nonce stays usable for as long as the
+      // object is cached (60s, plus up to 300s of stale-while-revalidate)
+      // rather than expiring with one response.
+      // s-maxage / stale-while-revalidate are ignored by private browser
+      // caches, so individual visitors and local dev still revalidate.
+      if (url.pathname === "/" && request.method === "GET" && rendered.status === 200) {
+        headers.set("cache-control", "public, max-age=0, s-maxage=60, stale-while-revalidate=300");
+      }
       return new Response(rendered.body, {
         status: rendered.status,
         statusText: rendered.statusText,
