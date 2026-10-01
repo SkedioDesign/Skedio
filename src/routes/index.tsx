@@ -136,7 +136,10 @@ const partnerLogos = [
 ];
 
 // Two identical copies so the track's -50% translate loops seamlessly.
-const marqueeLogos = [...partnerLogos, ...partnerLogos];
+const marqueeLogos = [...partnerLogos, ...partnerLogos].map((item, i) => ({
+  ...item,
+  isRepeat: i >= partnerLogos.length,
+}));
 
 function PillLink({
   href,
@@ -369,6 +372,7 @@ function Index() {
                   {marqueeLogos.map((item, i) => (
                     <div
                       key={`${item.id}-${i}`}
+                      aria-hidden={item.isRepeat ? "true" : undefined}
                       className="flex h-40 w-52 shrink-0 items-center justify-center"
                     >
                       {"img" in item && item.img ? (
@@ -377,7 +381,7 @@ function Index() {
                           srcSet={item.imgSrcSet}
                           webpSrcSet={item.webpSrcSet}
                           sizes={PARTNER_LOGO_SIZES}
-                          alt={item.label}
+                          alt={item.isRepeat ? "" : item.label}
                           width={320}
                           height={320}
                           loading="lazy"
@@ -451,6 +455,7 @@ function Index() {
               {marqueeLogos.map((item, i) => (
                 <div
                   key={`${item.id}-${i}`}
+                  aria-hidden={item.isRepeat ? "true" : undefined}
                   className="flex h-auto shrink-0 items-center justify-center px-8 py-2"
                 >
                   {"img" in item && item.img ? (
@@ -459,7 +464,7 @@ function Index() {
                       srcSet={item.imgSrcSet}
                       webpSrcSet={item.webpSrcSet}
                       sizes={PARTNER_LOGO_SIZES}
-                      alt={item.label}
+                      alt={item.isRepeat ? "" : item.label}
                       width={320}
                       height={320}
                       loading="lazy"

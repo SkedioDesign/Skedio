@@ -1,5 +1,12 @@
 export interface Client {
+  /** Stable internal identifier for the slot. While a client is unnamed this
+   *  holds the "Client NN" placeholder and is never rendered to a user. */
   name: string;
+  /** The client's actual name, once known. Optional: absent means the logo has
+   *  no name we are cleared to publish, so its <img> is treated as decorative
+   *  rather than labelled. Leaving it unset for a name you are still holding
+   *  back is always safe — the logo still renders, it just goes unlabelled. */
+  realName?: string;
   logo: string;
   width: number;
   height: number;

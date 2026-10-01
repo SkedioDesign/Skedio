@@ -23,6 +23,14 @@ function usePrefersReducedMotion() {
 function LogoImage({ client, decorative = false }: { client: Client; decorative?: boolean }) {
   const width = Math.max(1, Math.round((ROW_HEIGHT * client.width) / client.height));
   const logo = responsiveFor(client.logo);
+  // Two independent reasons an <img> here carries no alt text: `decorative`
+  // marks the duplicate track that makes the marquee loop seamlessly (the
+  // original copy is already announced, so relabelling it would double every
+  // client), and a missing `realName` means we have no name we are cleared to
+  // publish — "Client 07 logo" is worse than silence, it leaks a placeholder
+  // into the accessibility tree. The row's role="group" + aria-label already
+  // conveys "a row of client logos", so an unnamed logo adds nothing.
+  const isDecorative = decorative || !client.realName;
 
   return (
     <WebpImage
@@ -35,10 +43,10 @@ function LogoImage({ client, decorative = false }: { client: Client; decorative?
       sizes={`${width}px`}
       width={width}
       height={ROW_HEIGHT}
-      alt={decorative ? "" : `${client.name} logo`}
+      alt={isDecorative ? "" : `${client.realName} logo`}
       loading="lazy"
       decoding="async"
-      tabIndex={decorative ? -1 : undefined}
+      tabIndex={isDecorative ? -1 : undefined}
       style={{ width, height: ROW_HEIGHT }}
       className="flex-none object-cover grayscale opacity-60 transition-all duration-200 ease-out hover:scale-[1.05] hover:grayscale-0 hover:opacity-100"
     />

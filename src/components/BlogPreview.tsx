@@ -51,9 +51,9 @@ function FeaturedStory({ post }: { post: BlogPost }) {
         />
       </div>
 
-      <h2 className="mt-7 font-serif text-[clamp(1.625rem,3vw,2.5rem)] font-extrabold leading-[1.08] tracking-tight text-balance decoration-primary decoration-2 underline-offset-[0.32em] underline decoration-transparent transition-[text-decoration-color] duration-300 group-hover:decoration-primary">
+      <h3 className="mt-7 font-serif text-[clamp(1.625rem,3vw,2.5rem)] font-extrabold leading-[1.08] tracking-tight text-balance decoration-primary decoration-2 underline-offset-[0.32em] underline decoration-transparent transition-[text-decoration-color] duration-300 group-hover:decoration-primary">
         {post.title}
-      </h2>
+      </h3>
 
       <p className="mt-4 max-w-[62ch] leading-[1.7] tracking-[-0.01em] text-muted-foreground">
         {post.excerpt}

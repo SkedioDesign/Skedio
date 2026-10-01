@@ -88,9 +88,9 @@ function TestimonialCard({ t, index }: { t: Testimonial; index: number }) {
       <div className="flex items-center gap-2.5">
         <Avatar src={t.image} name={t.name} />
         <div className="min-w-0">
-          <h3 className="truncate font-display text-[0.8125rem] font-bold leading-tight tracking-tight text-foreground">
+          <p className="truncate font-display text-[0.8125rem] font-bold leading-tight tracking-tight text-foreground">
             {t.name}
-          </h3>
+          </p>
           <p className="mt-0.5 truncate text-[0.625rem] leading-tight text-muted-foreground">
             {t.company ? `${t.role} · ${t.company}` : t.role}
           </p>
@@ -420,7 +420,7 @@ export function Testimonials() {
       <div className="mx-auto w-full max-w-[1200px] px-6 md:px-12">
         <ScrollReveal>
           <h2 className="sk-testimonials-title text-center">
-            <span>What the people we build for</span>
+            <span>What the people we build for</span>{" "}
             <span className="block">Say about working with us</span>
           </h2>
         </ScrollReveal>
