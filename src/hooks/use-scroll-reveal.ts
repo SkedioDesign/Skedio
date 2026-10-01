@@ -48,8 +48,7 @@ export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
       // visible on load and must not wait. Everything else loads ScrollTrigger
       // on idle/first-scroll via the shared loader.
       const nearViewport =
-        typeof window !== "undefined" &&
-        el.getBoundingClientRect().top < window.innerHeight * 1.5;
+        typeof window !== "undefined" && el.getBoundingClientRect().top < window.innerHeight * 1.5;
 
       let cancelled = false;
       // gsap.Tween isn't addressable as a namespace member in this GSAP

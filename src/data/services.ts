@@ -100,7 +100,7 @@ export const servicesData: ServiceItem[] = [
   },
   {
     slug: "brand-identity",
-    title: "Brand Identity & Visual Design Studio",
+    title: "Brand Identity & Logo Design Studio",
     shortTitle: "Brand Identity",
     tagline:
       "Distinctive visual identities built to be recognized at a glance and remembered long after.",
@@ -185,7 +185,7 @@ export const servicesData: ServiceItem[] = [
   {
     slug: "ui-ux-design",
     title: "UI/UX & Digital Product Design Agency",
-    shortTitle: "Visual Design",
+    shortTitle: "UI/UX Design",
     tagline: "Digital experiences built to be intuitive first, beautiful second.",
     definition:
       "UI/UX design is the discipline of researching user behaviors, structuring information architecture, and creating intuitive, aesthetically refined interfaces for web and mobile software. Skédio delivers research-backed user flows, wireframes, interactive prototypes, and production-ready design systems.",

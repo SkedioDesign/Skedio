@@ -307,7 +307,7 @@ function Index() {
         links={[
           { label: "Work", to: "/projects" },
           { label: "Services", to: "/services" },
-          { label: "Blog", to: "/", hash: "blog" },
+          { label: "Blog", to: "/blog" },
           { label: "About", to: "/about" },
         ]}
       />
@@ -359,7 +359,7 @@ function Index() {
               className="sk-hero-start mt-8 flex items-center gap-2 text-sm text-muted-foreground"
             >
               <Zap className="size-4 text-primary" />
-              {`Get reply within ${siteConfig.responseTime}`}
+              {`Get a reply within ${siteConfig.responseTime}`}
             </p>
           </div>
 
