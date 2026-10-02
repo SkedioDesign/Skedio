@@ -20,7 +20,7 @@ export interface ProjectSummary {
   ogImage: string;
   /**
    * Intrinsic size of `ogImage`, emitted as og:image:width/height by seo().
-   * Set ONLY when ogImage is not /og-default.png — omitting them falls back to
+   * Set ONLY when ogImage is not /og.webp — omitting them falls back to
    * the measured default (1200x630), which is a lie for every other card.
    * Both or neither: a width without its height makes a crawler lay the card
    * out at the wrong aspect ratio.
@@ -62,7 +62,7 @@ export const projects: ProjectSummary[] = [
     slug: "haocabs",
     name: "HAO Cabs",
     line: "A Taxi Bidding Experience App",
-    tag: "Product Design, UI/UX",
+    tag: "UI/UX",
     cover: "/HaoCabs/cover.png",
     metaTitle: "HAO Cabs — Taxi Bidding Experience App & UI/UX Case Study | Skédio",
     metaDescription:
@@ -75,14 +75,14 @@ export const projects: ProjectSummary[] = [
     themeColor: "#FFC400",
     year: "2026",
     platform: "Mobile App (iOS & Android)",
-    discipline: "Product Design & Strategy",
+    discipline: "UI/UX Design & Strategy",
     scope: "UI/UX, Flow Architecture, Design System",
     publishedDate: "2026-01-15",
     client: "HAO Mobility",
     summary:
       "A modern taxi-bidding platform where riders compare driver bids in real time and choose the ride that best fits their budget and schedule.",
-    services: ["Visual Design", "Product Design", "Product Development"],
-    serviceSlugs: ["product-design", "ui-ux-design", "product-development"],
+    services: ["Visual Design", "UI/UX Design", "Website Development"],
+    serviceSlugs: ["ui-ux-design", "website-development"],
     category: "UI/UX",
     tagColor: "purple",
     size: "hero",
@@ -118,7 +118,7 @@ export const projects: ProjectSummary[] = [
     slug: "tiffinly",
     name: "Tiffinly",
     line: "Multi-role Food Subscription & Delivery Platform",
-    tag: "Product Design, UX, Multi-role",
+    tag: "UI/UX, Multi-role",
     cover: "/tiffinly/1.jpg",
     metaTitle: "Tiffinly — Multi-role Food Subscription & Delivery Platform | Skédio",
     metaDescription:
@@ -129,14 +129,14 @@ export const projects: ProjectSummary[] = [
     themeColor: "#EA7B26",
     year: "2026",
     platform: "Mobile Apps (Customer · Provider · Delivery)",
-    discipline: "Product Design & Strategy",
+    discipline: "UI/UX Design & Strategy",
     scope: "Multi-role UI/UX, Flow Architecture, Design System",
     publishedDate: "2026-09-24",
     client: "Tiffinly",
     summary:
       "A multi-role food subscription platform connecting customers, tiffin providers, and delivery partners through three unified mobile experiences.",
-    services: ["Product Design", "UI/UX Design", "Design System"],
-    serviceSlugs: ["product-design", "ui-ux-design"],
+    services: ["UI/UX Design", "Design System"],
+    serviceSlugs: ["ui-ux-design"],
     category: "UI/UX",
     tagColor: "teal",
     size: "wide",

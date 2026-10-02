@@ -40,7 +40,7 @@ const rawBlogPosts: BlogPost[] = [
     metaTitle: "Good UI Isn't About Making Things Beautiful | Skédio Blog",
     metaDescription:
       "Great UI isn't about how an interface looks — it's about making the user's next decision obvious.",
-    ogImage: "/og-default.png",
+    ogImage: "/og.webp",
     relatedServiceSlug: "ui-ux-design",
     relatedProjectSlug: "tiffinly",
   },
@@ -59,8 +59,8 @@ const rawBlogPosts: BlogPost[] = [
     metaTitle: "AI Won't Replace Designers | Skédio Blog",
     metaDescription:
       "AI won't replace designers — but it changes the speed of exploration. How design process evolves.",
-    ogImage: "/og-default.png",
-    relatedServiceSlug: "product-design",
+    ogImage: "/og.webp",
+    relatedServiceSlug: "ui-ux-design",
   },
   {
     slug: "a-logo-is-not-a-brand",
@@ -74,7 +74,7 @@ const rawBlogPosts: BlogPost[] = [
     publishedAt: "2024-01-15",
     metaTitle: "A Logo Is Not A Brand | Skédio Studio",
     metaDescription: "Understanding the difference between a logo and a complete brand system.",
-    ogImage: "/og-default.png",
+    ogImage: "/og.webp",
     relatedServiceSlug: "brand-identity",
     relatedProjectSlug: "edios",
   },

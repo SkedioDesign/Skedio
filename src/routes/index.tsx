@@ -73,7 +73,7 @@ const HERO_MOBILE_SIZES = "calc(100vw - 48px)";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: seo({
-      title: "Skédio — Product Design, Identity & Digital Studio",
+      title: "Skédio — UI/UX Design, Identity & Digital Studio",
       description:
         "Skédio is a creative studio crafting bold brands, beautiful digital experiences, and high-performance digital products that help businesses grow.",
       url: "/",
@@ -375,7 +375,7 @@ function Index() {
           faqSchema,
           getWebPageSchema({
             path: "/",
-            name: "Skédio — Product Design, Identity & Digital Studio",
+            name: "Skédio — UI/UX Design, Identity & Digital Studio",
             description: siteConfig.description,
           }),
         ]}
@@ -410,7 +410,17 @@ function Index() {
               products that make an <span className="sk-hero-accent">impact.</span>
             </h1>
 
-            <div className="mt-10 flex flex-wrap items-center gap-x-2 gap-y-2 sm:flex-nowrap sm:gap-x-2">
+            {/* Driven straight off servicesData, so a service added there
+                appears here without touching this file. The row deliberately
+                stays `flex-wrap` at every width instead of forcing
+                `sm:flex-nowrap`: each pill is `whitespace-nowrap`, so a
+                nowrap row cannot wrap and silently pushes the last pill past
+                the viewport edge. With four services the row needs 549px of a
+                592px box at the 640px breakpoint -- 43px of slack, measured --
+                so one longer service name or a fifth service would overflow
+                rather than wrap. Wrapping costs nothing at the widths where the
+                pills already fit on one line. */}
+            <div className="mt-10 flex flex-wrap items-center gap-2">
               {servicesData.map((s) => (
                 <Link
                   key={s.slug}
@@ -520,7 +530,7 @@ function Index() {
                  two-branch form whose mobile branch (`calc(100vw - 48px)`)
                  described assets that are not in this srcset at all. */
               sizes={HERO_DESKTOP_SIZES}
-              alt="Skédio design studio hero showcase — bold brand identity and product design"
+              alt="Skédio design studio hero showcase — bold brand identity and UI/UX design"
               fetchPriority="high"
               loading="eager"
               decoding="async"

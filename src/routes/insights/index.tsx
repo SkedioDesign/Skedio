@@ -12,7 +12,7 @@ export const Route = createFileRoute("/insights/")({
     meta: seo({
       title: "Insights & Perspectives on Brand, UI/UX & Tech | Skédio",
       description:
-        "Explore articles, design thinking frameworks, and strategic essays on brand building, user experience design, and digital product development.",
+        "Explore articles, design thinking frameworks, and strategic essays on brand building, user experience design, and website development.",
       url: "/insights",
     }),
     links: [
@@ -46,7 +46,7 @@ function InsightsList() {
             path: "/insights",
             name: "Insights & Perspectives on Brand, UI/UX & Tech | Skédio",
             description:
-              "Explore articles, design thinking frameworks, and strategic essays on brand building, user experience design, and digital product development.",
+              "Explore articles, design thinking frameworks, and strategic essays on brand building, user experience design, and website development.",
           }),
         ]}
       />
@@ -69,8 +69,8 @@ function InsightsList() {
           <p className="eyebrow">Studio Journal</p>
           <h1 className="type-h1 mt-4">Insights &amp; Perspectives</h1>
           <p className="mt-6 text-lg text-muted-foreground">
-            Thoughtful analyses, tactical breakdowns, and design philosophies on product design,
-            user experience, and modern web architecture.
+            Thoughtful analyses, tactical breakdowns, and design philosophies on UI/UX design, brand
+            strategy, and modern web architecture.
           </p>
         </div>
 

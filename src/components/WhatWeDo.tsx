@@ -49,12 +49,6 @@ const SVC_IMAGE_WIDTH = 768;
 const SVC_IMAGE_HEIGHT = 527;
 
 const svcImages: Record<string, ServiceImage> = {
-  "product-design": {
-    src: "/ProductDesign-768.jpg",
-    srcSet: "/ProductDesign-480.jpg 480w, /ProductDesign-768.jpg 768w",
-    webpSrcSet:
-      "/ProductDesign-480.webp 480w, /ProductDesign-768.webp 768w, /ProductDesign.webp 1200w",
-  },
   "brand-identity": {
     src: "/BrandIdentity-768.jpg",
     srcSet: "/BrandIdentity-480.jpg 480w, /BrandIdentity-768.jpg 768w",
@@ -67,19 +61,28 @@ const svcImages: Record<string, ServiceImage> = {
     webpSrcSet:
       "/VisualIdentity-480.webp 480w, /VisualIdentity-768.webp 768w, /VisualIdentity.webp 1200w",
   },
-  "product-development": {
+  "website-development": {
     src: "/ProductDevelopment-768.jpg",
     srcSet: "/ProductDevelopment-480.jpg 480w, /ProductDevelopment-768.jpg 768w",
     webpSrcSet:
       "/ProductDevelopment-480.webp 480w, /ProductDevelopment-768.webp 768w, /ProductDevelopment.webp 1200w",
   },
+  // Reuses the ProductDesign art. That art was orphaned when the Product
+  // Design service merged into UI/UX Design, and this card is the only place
+  // that still needs it -- swap in dedicated marketing creative if one lands.
+  "marketing-creatives": {
+    src: "/ProductDesign-768.jpg",
+    srcSet: "/ProductDesign-480.jpg 480w, /ProductDesign-768.jpg 768w",
+    webpSrcSet:
+      "/ProductDesign-480.webp 480w, /ProductDesign-768.webp 768w, /ProductDesign.webp 1200w",
+  },
 };
 
 const accentColors: Record<string, string> = {
-  "product-design": "#8537f4",
   "brand-identity": "#7c3aed",
   "ui-ux-design": "#f97316",
-  "product-development": "#0d9488",
+  "website-development": "#0d9488",
+  "marketing-creatives": "#db2777",
 };
 
 interface WhatWeDoItem {
@@ -104,11 +107,11 @@ const services: WhatWeDoItem[] = servicesData
 
 const DEFAULT_SERVICE: WhatWeDoItem = {
   index: "01",
-  slug: "product-design",
-  title: "Product Design",
-  description: "Products that feel inevitable — shaped by strategy, research, and tested flows.",
-  image: svcImages["product-design"] as ServiceImage,
-  accentColor: "#8537f4",
+  slug: "ui-ux-design",
+  title: "UI/UX Design",
+  description: "Strategy, research, and interface craft — digital products that feel inevitable.",
+  image: svcImages["ui-ux-design"] as ServiceImage,
+  accentColor: "#f97316",
 };
 
 function AccentBar({ active }: { active: boolean }) {

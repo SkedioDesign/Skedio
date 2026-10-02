@@ -25,7 +25,7 @@ const feedConfigs: Record<FeedSource, FeedConfig> = {
   blog: {
     channelTitle: "Skédio Blog",
     channelDescription:
-      "Articles on product design, brand identity, and digital product development from the Skedio studio.",
+      "Articles on UI/UX design, brand identity, and website development from the Skedio studio.",
     channelPath: "/blog",
     feedPath: "/blog/feed.xml",
   },

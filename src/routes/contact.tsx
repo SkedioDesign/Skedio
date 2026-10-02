@@ -11,9 +11,9 @@ import { getBreadcrumbSchema, getContactPageSchema, getWebPageSchema } from "@/l
 
 const PROJECT_TYPES = [
   "Brand Identity",
-  "Product Design",
   "UI/UX Design",
-  "Product Development",
+  "Website Development",
+  "Marketing Creatives",
   "Something else",
 ] as const;
 
@@ -384,7 +384,7 @@ export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: seo({
       title: "Contact Skédio — Start a Brand or Product Project",
-      description: `Get in touch with Skédio about brand identity, product design, or digital product development. We reply to every inquiry within ${siteConfig.responseTime}.`,
+      description: `Get in touch with Skédio about UI/UX design, brand identity, website development, or marketing creatives. We reply to every inquiry within ${siteConfig.responseTime}.`,
       url: "/contact",
       type: "website",
     }),

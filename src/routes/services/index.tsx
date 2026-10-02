@@ -23,7 +23,7 @@ export const Route = createFileRoute("/services/")({
     meta: seo({
       title: "Design & Development Services for Brands and Digital Products | Skédio",
       description:
-        "Skédio is a creative studio offering product design, brand identity, UI/UX design, and full-stack product development services for startups and growing brands.",
+        "Skédio is a creative studio offering UI/UX design, website development, brand identity, and marketing creative services for startups and growing brands.",
       url: "/services",
     }),
     links: [...canonicalLink("/services"), { rel: "stylesheet", href: frauncesCss }],

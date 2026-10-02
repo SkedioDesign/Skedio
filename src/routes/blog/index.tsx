@@ -20,8 +20,7 @@ export const Route = createFileRoute("/blog/")({
   head: () => ({
     meta: seo({
       title: "Studio Blog | Skédio",
-      description:
-        "Read our articles on product design, brand identity, and digital product development.",
+      description: "Read our articles on UI/UX design, brand identity, and website development.",
       url: "/blog",
     }),
     links: [
@@ -73,7 +72,7 @@ function BlogList() {
             path: "/blog",
             name: "Studio Blog | Skédio",
             description:
-              "Read our articles on product design, brand identity, and digital product development.",
+              "Read our articles on UI/UX design, brand identity, and website development.",
           }),
         ]}
       />
@@ -106,8 +105,8 @@ function BlogList() {
                 Blog
               </h1>
               <p className="mt-6 max-w-xl leading-relaxed tracking-[-0.01em] text-muted-foreground md:mt-7">
-                Thoughtful analyses, tactical breakdowns, and design philosophies on product design,
-                user experience, and digital product development.
+                Thoughtful analyses, tactical breakdowns, and design philosophies on UI/UX design,
+                brand identity, and website development.
               </p>
             </div>
             <ul className="lg:col-span-4 xl:col-span-5">

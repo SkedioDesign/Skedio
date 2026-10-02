@@ -16,89 +16,6 @@ export interface ServiceItem {
 
 export const servicesData: ServiceItem[] = [
   {
-    slug: "product-design",
-    title: "Product Design & UX Strategy Services",
-    shortTitle: "Product Design",
-    tagline: "Products that feel inevitable — shaped by strategy, research, and tested flows.",
-    definition:
-      "Product design is the end-to-end discipline of turning a business problem into a digital experience people actually want to use. Skédio's product design engagements span discovery research, product strategy, information architecture, interaction design, interactive prototyping, and usability testing — delivering validated, launch-ready product experiences.",
-    metaTitle: "Product Design & UX Strategy Agency | Skédio",
-    metaDescription:
-      "Take digital products from idea to validated experience. Skédio pairs strategy, user research, and interaction design to craft products people love to use.",
-    ogImage: "/og-default.png",
-    themeColor: "#8537F4",
-    deliverables: [
-      "Product Discovery & UX Research Sprints",
-      "Product Strategy, Journeys & Information Architecture",
-      "Interactive Prototypes & Usability Testing",
-      "Interaction Design & Motion Guidelines",
-      "Scalable Product Design Systems & Handoff",
-    ],
-    process: [
-      {
-        step: "01",
-        title: "Discovery & User Research",
-        description:
-          "We audit your current product, interview stakeholders and real users, and map behavior to the problems actually worth solving.",
-      },
-      {
-        step: "02",
-        title: "Product Strategy & Experience Architecture",
-        description:
-          "We define what the product must do, map core journeys, and architect the flows and information that make it feel effortless.",
-      },
-      {
-        step: "03",
-        title: "Prototyping & Iterative Testing",
-        description:
-          "We turn flows into interactive prototypes and validate them with users, iterating until the experience proves itself.",
-      },
-      {
-        step: "04",
-        title: "Interaction Systems & Handoff",
-        description:
-          "We deliver a reusable product design system — tokens, components, interaction states — and align with engineers for a faithful build.",
-      },
-    ],
-    targetAudience: [
-      "Startups shaping a new product before a single line of code",
-      "Teams redesigning complex workflows that stall adoption",
-      "Companies wanting one partner from product strategy to launch-ready design",
-    ],
-    faqs: [
-      {
-        question: "What is included in a product design engagement?",
-        answer:
-          "A product design engagement at Skédio includes discovery research, product strategy, journey mapping, information architecture, interactive prototypes, usability testing, and a production-ready design system.",
-      },
-      {
-        question: "How long does a product design project take?",
-        answer:
-          "A scoped product design engagement typically takes 4 to 8 weeks depending on product complexity and the number of flows being reworked.",
-      },
-      {
-        question: "How does product design differ from UI/UX design?",
-        answer:
-          "Product design owns the strategic layer — research, product thinking, information architecture, prototyping, and validation — that decides what to build and why. UI/UX design crafts the polished interface itself. We often run the two as one continuous engagement.",
-      },
-      {
-        question: "Can we start product design before we have a product or customers?",
-        answer:
-          "Yes. Most of our product design work happens pre-launch: we help founders define the product, pressure-test assumptions with lightweight research, and ship a prototype ready for real users.",
-      },
-      {
-        question: "How do you design a product in a crowded or commoditized market?",
-        answer:
-          "Through user research and competitor teardowns, we map where meaningful players fall short, then design the experience wedge your category leaves open — built around a specific job for a specific audience rather than generic 'best-in-class' claims.",
-      },
-      {
-        question: "Do product design recommendations come with an execution roadmap?",
-        answer:
-          "Yes. Every engagement ends with a clear roadmap that sequences strategy into interface design, development, and launch. We can execute the adjoining work as well if you want a single partner from strategy to shipped product.",
-      },
-    ],
-  },
-  {
     slug: "brand-identity",
     title: "Brand Identity & Logo Design Studio",
     shortTitle: "Brand Identity",
@@ -106,10 +23,10 @@ export const servicesData: ServiceItem[] = [
       "Distinctive visual identities built to be recognized at a glance and remembered long after.",
     definition:
       "Brand identity design is the creation of a unified visual system — including logomarks, typography, color schemes, motion guidelines, and brand design assets. Skédio crafts cohesive visual languages tailored for high-growth digital businesses.",
-    metaTitle: "Brand Identity Design Agency | Logo & Visual Systems | Skédio",
+    metaTitle: "Brand Identity Design | Logo & Visual Systems | Skédio",
     metaDescription:
       "Distinctive logos, typography, color systems, and comprehensive design guidelines crafted for modern brands by Skédio.",
-    ogImage: "/og-default.png",
+    ogImage: "/og.webp",
     themeColor: "#8537F4",
     deliverables: [
       "Primary & Secondary Logomarks, Monograms & Favicons",
@@ -184,69 +101,70 @@ export const servicesData: ServiceItem[] = [
   },
   {
     slug: "ui-ux-design",
-    title: "UI/UX & Digital Product Design Agency",
+    title: "UI/UX Design & Product Strategy Agency",
     shortTitle: "UI/UX Design",
-    tagline: "Digital experiences built to be intuitive first, beautiful second.",
+    tagline: "Strategy, research, and interface craft — digital products that feel inevitable.",
     definition:
-      "UI/UX design is the discipline of researching user behaviors, structuring information architecture, and creating intuitive, aesthetically refined interfaces for web and mobile software. Skédio delivers research-backed user flows, wireframes, interactive prototypes, and production-ready design systems.",
-    metaTitle: "UI/UX Design Agency | Web & Mobile Product Design | Skédio",
+      "UI/UX design is the end-to-end discipline of turning a business problem into a digital experience people actually want to use. Skédio's engagements span product strategy, discovery research, information architecture, wireframes, interaction design, interactive prototyping, and usability testing — delivered as a validated, launch-ready product and a production-ready design system.",
+    metaTitle: "UI/UX Design Agency | Product Design & UX Strategy | Skédio",
     metaDescription:
-      "Transform complex digital products into intuitive, high-converting web and mobile experiences. Explore Skédio's user-centric UI/UX design services.",
-    ogImage: "/og-default.png",
+      "Skédio combines product strategy, user research, and interface design in UI/UX engagements — validated flows, wireframes, and a production-ready design system.",
+    ogImage: "/og.webp",
     themeColor: "#8537F4",
     deliverables: [
-      "User Journey Mapping & Information Architecture",
+      "Product Discovery, UX Research & Strategy Sprints",
+      "Product Strategy, User Journeys & Information Architecture",
       "Low-Fidelity & High-Fidelity Wireframes",
-      "Interactive Figma Prototypes & User Testing Sessions",
-      "Figma Design Systems with Auto-Layout & Design Tokens",
-      "Developer Handoff Specifications & Interaction States",
+      "Interactive Figma Prototypes & Usability Testing",
+      "Scalable Design Systems, Tokens & Developer Handoff",
     ],
     process: [
       {
         step: "01",
-        title: "User Research & Flow Architecture",
+        title: "Discovery & Product Strategy",
         description:
-          "We analyze user behavior, define core user journeys, and eliminate friction in product architecture.",
+          "We audit the current product, interview stakeholders and real users, then define what the product must do and map the core journeys that make it feel effortless.",
       },
       {
         step: "02",
-        title: "Wireframing & Structural Prototyping",
+        title: "Information Architecture & Wireframing",
         description:
-          "We build wireframes mapping every screen state, edge case, modal, and responsive breakpoint.",
+          "We structure the flows and information, then build wireframes mapping every screen state, edge case, modal, and responsive breakpoint.",
       },
       {
         step: "03",
-        title: "High-Fidelity Interface Design",
+        title: "Prototyping & High-Fidelity Interface Design",
         description:
-          "We craft pixel-perfect visual designs infused with typography, subtle motion cues, and high-contrast accessibility.",
+          "We turn flows into interactive prototypes and validate them with users, then craft pixel-perfect visual design with typography, subtle motion cues, and high-contrast accessibility.",
       },
       {
         step: "04",
-        title: "Design System & Developer Alignment",
+        title: "Design System & Developer Handoff",
         description:
-          "We build reusable component libraries and partner closely with engineering teams for zero-loss implementation.",
+          "We deliver a reusable design system — tokens, component libraries, interaction states — and align with engineers for a faithful, zero-loss build.",
       },
     ],
     targetAudience: [
+      "Startups shaping a new product before a single line of code",
       "SaaS and B2B platforms simplifying complex workflows",
       "Mobile applications (iOS & Android) optimizing engagement and retention",
-      "E-commerce & marketplace products driving conversion rate improvements",
+      "Teams redesigning complex workflows that stall adoption",
     ],
     faqs: [
       {
+        question: "What is included in a UI/UX design engagement?",
+        answer:
+          "A UI/UX design engagement at Skédio includes product discovery and user research, product strategy, journey mapping, information architecture, low- and high-fidelity wireframes, interactive prototypes, usability testing, and a production-ready design system with developer handoff.",
+      },
+      {
         question: "How long does a UI/UX design project take?",
         answer:
-          "A full mobile or web app UI/UX design engagement typically spans 4 to 8 weeks, including research, wireframes, visual design, and interactive prototyping.",
+          "A UI/UX design engagement typically spans 4 to 8 weeks depending on product complexity and the number of flows being reworked, covering research, strategy, wireframes, visual design, and interactive prototyping.",
       },
       {
-        question: "Do you provide Figma design files and developer handoff?",
+        question: "Can we start a UI/UX engagement before we have a product or customers?",
         answer:
-          "Yes, we provide organized, component-driven Figma files with auto-layout, documented design tokens, interactive prototypes, and developer specs.",
-      },
-      {
-        question: "Can you design for both iOS and Android natively?",
-        answer:
-          "Yes, our design team adheres to Apple Human Interface Guidelines and Google Material Design specifications to ensure native feel on every device.",
+          "Yes. Most of our UI/UX work happens pre-launch: we help founders define the product, pressure-test assumptions with lightweight research, and ship a prototype ready for real users.",
       },
       {
         question: "How do you incorporate user research and usability testing?",
@@ -254,9 +172,9 @@ export const servicesData: ServiceItem[] = [
           "We run stakeholder interviews, competitor teardowns, and lightweight usability tests on interactive prototypes at key decision points. Findings feed directly into the flows and screens, so the design decisions are based on observed user behavior instead of assumptions.",
       },
       {
-        question: "Can you improve the UX of an existing product without a full rebuild?",
+        question: "Do you provide Figma design files and developer handoff?",
         answer:
-          "Yes. We start with a UX audit of your current flows, analytics, and fundamentals, then prioritize low-effort, high-impact fixes into iterative design sprints. You see improvements incrementally without pausing development.",
+          "Yes, we provide organized, component-driven Figma files with auto-layout, documented design tokens, interactive prototypes, and developer specs.",
       },
       {
         question: "How do you hand off designs to our own engineering team?",
@@ -266,16 +184,16 @@ export const servicesData: ServiceItem[] = [
     ],
   },
   {
-    slug: "product-development",
-    title: "Full-Stack Product & Web Development",
-    shortTitle: "Product Development",
-    tagline: "End-to-end product development that turns ideas into scalable digital products.",
+    slug: "website-development",
+    title: "Custom Website Development Studio",
+    shortTitle: "Website Development",
+    tagline: "Fast, accessible websites engineered to convert and built to last.",
     definition:
-      "Product development is the end-to-end engineering of responsive web applications, mobile apps, and scalable digital architectures. Skédio combines modern frontend technologies (React, Next.js, TanStack Start, TypeScript) with resilient backend architectures to launch performant digital products.",
-    metaTitle: "Full-Stack Web & MVP Product Development Studio | Skédio",
+      "Website development is the engineering of responsive, accessible websites and the digital platforms behind them. Skédio combines modern frontend technologies (React, Next.js, TanStack Start, TypeScript) with resilient backend architectures to ship fast, secure, search-visible sites that hold up under real traffic.",
+    metaTitle: "Website Development | Custom Web Design & Build | Skédio",
     metaDescription:
-      "From MVP conception to high-performance web applications. Skédio engineers scalable, fast, and secure digital products for modern companies.",
-    ogImage: "/og-default.png",
+      "From landing pages to full web platforms. Skédio builds fast, accessible, SEO-ready websites with modern React and TypeScript stacks that scale with traffic.",
+    ogImage: "/og.webp",
     themeColor: "#8537F4",
     deliverables: [
       "Modern Web Applications (React, TanStack, Next.js, SSR)",
@@ -313,7 +231,7 @@ export const servicesData: ServiceItem[] = [
     targetAudience: [
       "Founders needing to build and launch a high-quality MVP rapidly",
       "Companies rebuilding legacy applications into modern SSR web stacks",
-      "Teams seeking a dedicated product engineering partner",
+      "Teams seeking a dedicated web engineering partner",
     ],
     faqs: [
       {
@@ -345,6 +263,89 @@ export const servicesData: ServiceItem[] = [
         question: "How do you estimate cost and scope for a development project?",
         answer:
           "We run a discovery and architecture workshop, then break the product into features and effort to produce a phased, milestone-based estimate. You pay per agreed milestone rather than by nebulous hourly effort.",
+      },
+    ],
+  },
+  {
+    slug: "marketing-creatives",
+    title: "Marketing Creatives & Content Design",
+    shortTitle: "Marketing Creatives",
+    tagline: "One brand voice, carried consistently across every channel that sells for you.",
+    definition:
+      "Marketing creatives are the repeatable visual and verbal assets a brand publishes D social posts, ad sets, email, print, and landing pages D so that every touchpoint looks like it came from the same studio. Sk—dio builds campaign systems, art direction, and content templates that stay on-brand as the calendar fills up.",
+    metaTitle: "Marketing Creatives | Social & Campaign Design | Skédio",
+    metaDescription:
+      "Marketing creatives that keep one brand voice across social, ads, email, and print — art direction, campaign systems, and on-brand content production.",
+    ogImage: "/og.webp",
+    themeColor: "#8537F4",
+    deliverables: [
+      "Campaign Concepts & Art Direction",
+      "Social Media Kits, Carousels & Story Templates",
+      "Paid Social & Display Ad Creative Sets",
+      "Email, Newsletter & Landing Page Design",
+      "Brand-Consistent Content Style Guide & Templates",
+    ],
+    process: [
+      {
+        step: "01",
+        title: "Channel Audit & Creative Strategy",
+        description:
+          "We map where the brand actually shows up, what is converting, and which assets are missing, then agree the creative direction for the cycle.",
+      },
+      {
+        step: "02",
+        title: "Concepting & System Design",
+        description:
+          "We explore distinct campaign directions, pick one, and build the layout, type, colour, and motion rules that make it repeatable.",
+      },
+      {
+        step: "03",
+        title: "Asset Production",
+        description:
+          "We produce the full set D social cuts, ad variants sized per placement, email art, and landing pages D in every ratio the channels require.",
+      },
+      {
+        step: "04",
+        title: "Templates & Handoff",
+        description:
+          "We deliver editable templates and a style guide so your team can ship on-brand assets between sprints without waiting on us.",
+      },
+    ],
+    targetAudience: [
+      "Brands publishing on a calendar they cannot keep up with",
+      "Teams whose social and ads stop looking like their own website",
+      "Founders who need launch-day creative without hiring in-house",
+    ],
+    faqs: [
+      {
+        question: "What is included in a marketing creatives engagement?",
+        answer:
+          "A marketing creatives engagement includes channel audit, campaign concepting and art direction, social and ad asset production in every required ratio, email and landing page design, and an editable template set with a brand style guide.",
+      },
+      {
+        question: "Do you produce assets in every size each platform needs?",
+        answer:
+          "Yes. We export each concept across the placements it has to run in D feed, story, reel cover, carousel, display ad widths, and email D rather than one master image stretched to fit.",
+      },
+      {
+        question: "Can we get templates we can use without you?",
+        answer:
+          "Yes. Every engagement ends with editable Figma and design templates plus a style guide covering type scale, colour, spacing, and do-and-don't examples, so your team can produce assets independently.",
+      },
+      {
+        question: "How long does a creative cycle take?",
+        answer:
+          "A campaign cycle typically takes 2 to 4 weeks from kickoff to final delivery, depending on how many concepts and how many channel formats are in scope.",
+      },
+      {
+        question: "Will the creative match our existing brand identity?",
+        answer:
+          "Yes. We work from your established identity D colour, type, and logo rules D and extend it into a campaign system rather than inventing a parallel look that drifts from the site.",
+      },
+      {
+        question: "Do you work alongside our in-house marketing team?",
+        answer:
+          "Yes. We often act as the creative arm for an in-house team, taking the heavier production and system-building while they own the calendar and the copy.",
       },
     ],
   },

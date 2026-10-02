@@ -10,7 +10,7 @@ export const generalFaqs: FAQItem[] = [
   {
     question: "What services does Skédio provide?",
     answer:
-      "Skédio is a creative studio specializing in Product Design, Brand Identity, UI/UX Design, and Full-Stack Digital Product Development. We partner with startups and scaling businesses to take products from idea to launch.",
+      "Skédio is a creative studio specializing in UI/UX Design, Website Development, Brand Identity, and Marketing Creatives. We partner with startups and scaling businesses to take products from idea to launch.",
     category: "General",
   },
   {
@@ -22,7 +22,7 @@ export const generalFaqs: FAQItem[] = [
   {
     question: "How long does a typical project take?",
     answer:
-      "Product design engagements typically take 4 to 8 weeks, identity sprints 3 to 5 weeks, while end-to-end MVP design and development usually ranges from 8 to 14 weeks.",
+      "UI/UX design engagements typically take 4 to 8 weeks, identity sprints 3 to 5 weeks, while end-to-end MVP design and development usually ranges from 8 to 14 weeks.",
     category: "Timeline",
   },
   {
@@ -56,9 +56,9 @@ export const generalFaqs: FAQItem[] = [
     category: "Clients",
   },
   {
-    question: "Should we start with brand identity or product design first?",
+    question: "Should we start with brand identity or UI/UX design first?",
     answer:
-      "Always start with strategy. Positioning, audience, and messaging are the foundation on which a distinctive visual identity is built — and product design flows from the same product truths. Starting with a logo before that foundation is set usually means redoing the design once the strategy firms up.",
+      "Always start with strategy. Positioning, audience, and messaging are the foundation on which a distinctive visual identity is built — and UI/UX design flows from the same product truths. Starting with a logo before that foundation is set usually means redoing the design once the strategy firms up.",
     category: "General",
   },
   {

@@ -161,7 +161,7 @@ export const caseStudies: CaseStudyDocument[] = [
         wordmark: [{ text: "HAO" }, { text: "CABS", accent: true }],
         facts: [
           { label: "Platform", value: "Mobile App" },
-          { label: "Discipline", value: "Product Design" },
+          { label: "Discipline", value: "UI/UX Design" },
           { label: "Scope", value: "UI/UX" },
           { label: "Year", value: "2026" },
         ],
@@ -658,7 +658,7 @@ export const caseStudies: CaseStudyDocument[] = [
         wordmark: [{ text: "TIFFIN**LY**" }],
         facts: [
           { label: "Platform", value: "3 Mobile Apps" },
-          { label: "Discipline", value: "Product Design" },
+          { label: "Discipline", value: "UI/UX Design" },
           { label: "Scope", value: "Multi-role UI/UX" },
           { label: "Year", value: "2026" },
         ],

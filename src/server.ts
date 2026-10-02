@@ -123,16 +123,31 @@ const handle = createStartHandler(defaultStreamHandler);
  * normalizer below uses 308 instead, because that is a method-preserving
  * canonicalization of the *same* resource, not a move.)
  *
- * Empty by design — no URL has moved yet. Anything added here must point at a
- * route that returns 200; the redirect verifier enforces that, along with the
- * no-chains rule.
+ * Anything added here must point at a route that returns 200; the redirect
+ * verifier enforces that, along with the no-chains rule. The trailing-slash
+ * spelling of a moved URL is matched by the lookup itself, so it stays a single
+ * hop.
  */
 const LEGACY_REDIRECTS: Record<string, string> = {
-  // "/old-path": "/current-path",
+  // The standalone "Product Design" service was merged into "UI/UX Design",
+  // which keeps the /services/ui-ux-design address. One hop, straight to the
+  // surviving page -- no intermediate alias, so link equity crosses a single
+  // redirect. The old page was indexed, so this is load-bearing for both
+  // inbound links and its existing search ranking.
+  "/services/product-design": "/services/ui-ux-design",
+  // "Product Development" was renamed "Website Development" and now answers at
+  // a slug that matches the service name.
+  "/services/product-development": "/services/website-development",
 };
 
 function legacyRedirect(url: URL): Response | null {
-  const destination = LEGACY_REDIRECTS[url.pathname];
+  const destination =
+    LEGACY_REDIRECTS[url.pathname] ??
+    // Also match the trailing-slash form so "/services/product-design/" is a
+    // single hop rather than a 308 to a path that then 301s. The map holds one
+    // canonical spelling per moved URL; a crawler or a link that picked up the
+    // slash must not pay two hops to reach it.
+    (url.pathname.endsWith("/") ? LEGACY_REDIRECTS[url.pathname.replace(/\/+$/, "")] : undefined);
   if (!destination) return null;
   // Path+query, never an absolute URL echoing the request Host.
   return new Response(null, {

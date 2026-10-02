@@ -5,7 +5,7 @@ export interface InsightArticle {
   coverImage: string;
   /**
    * Intrinsic size of `coverImage`, emitted as og:image:width/height by seo().
-   * Set ONLY when coverImage is not /og-default.png — omitting them falls back
+   * Set ONLY when coverImage is not /og.webp — omitting them falls back
    * to the measured default (1200x630), which would misdescribe the card. Both
    * or neither.
    */
@@ -34,7 +34,7 @@ export const insightsArticles: InsightArticle[] = [
     title: "The Future of Brand Building in an AI and Digital-First Era",
     excerpt:
       "Why distinct brand personality, opinionated positioning, and emotional resonance matter more than ever in an era of AI-generated homogeneity.",
-    coverImage: "/og-default.png",
+    coverImage: "/og.webp",
     datePublished: "2026-02-18",
     readingTime: "5 min read",
     author: {
@@ -42,8 +42,8 @@ export const insightsArticles: InsightArticle[] = [
       role: "Founder, Skédio",
       avatar: "/aakash.jpeg",
     },
-    tags: ["Product Design", "AI", "Design Trends"],
-    relatedServiceSlug: "product-design",
+    tags: ["UI/UX Design", "AI", "Design Trends"],
+    relatedServiceSlug: "ui-ux-design",
     relatedProjectSlug: "tiffinly",
     content: [
       {
@@ -84,7 +84,7 @@ export const insightsArticles: InsightArticle[] = [
       role: "UI/UX Lead, Skédio",
       avatar: "/harshita.jpeg",
     },
-    tags: ["UI/UX", "Case Study", "Product Design"],
+    tags: ["UI/UX", "Case Study"],
     relatedServiceSlug: "ui-ux-design",
     relatedProjectSlug: "haocabs",
     content: [
@@ -115,7 +115,7 @@ export const insightsArticles: InsightArticle[] = [
     title: "Typography in Modern Branding: Voice, Scale, and Digital Legibility",
     excerpt:
       "How intentional typographic hierarchies build recognition, convey prestige, and ensure readability across responsive screens.",
-    coverImage: "/og-default.png",
+    coverImage: "/og.webp",
     datePublished: "2026-01-10",
     readingTime: "4 min read",
     author: {

@@ -113,7 +113,7 @@ export function getServiceSchema(service: ServiceSchemaInput) {
 }
 
 export interface WebPageInput {
-  /** Root-relative path, e.g. "/services/product-design". Must match canonical. */
+  /** Root-relative path, e.g. "/services/ui-ux-design". Must match canonical. */
   path: string;
   name: string;
   description: string;
@@ -227,7 +227,7 @@ export function getContactPageSchema(path = "/contact") {
     "@id": `${absoluteUrl(path)}#contactpage`,
     url: absoluteUrl(path),
     name: `Contact ${siteConfig.name}`,
-    description: `Get in touch with ${siteConfig.name} about brand identity, product design, or digital product development.`,
+    description: `Get in touch with ${siteConfig.name} about UI/UX design, brand identity, website development, or marketing creatives.`,
     isPartOf: { "@id": `${siteConfig.url}/#website` },
     mainEntity: { "@id": `${siteConfig.url}/#organization` },
   };
@@ -313,7 +313,7 @@ export interface ArticleInput {
 
 export function getArticleSchema(article: ArticleInput) {
   const url = absoluteUrl(article.path);
-  const fullImage = toAbsoluteUrl(article.image || "/og-default.png");
+  const fullImage = toAbsoluteUrl(article.image || "/og.webp");
 
   return {
     "@context": "https://schema.org",
