@@ -14,91 +14,17 @@ export interface ServiceItem {
   faqs: Array<{ question: string; answer: string }>;
 }
 
+/*
+ * ORDER IS EDITORIAL AND LOADS EVERYWHERE. This array is the single source for
+ * the "What we do" accordion, the /services hub grid, the homepage hero pills
+ * and the numbered 01-04 indices — so reordering here moves all four together.
+ *
+ * UI/UX Design leads and Website Development follows: they are the two services
+ * most visitors arrive looking for, and they read as a natural pair (design the
+ * product, then build it), which puts the two craft-led offers ahead of the
+ * broader brand and campaign work.
+ */
 export const servicesData: ServiceItem[] = [
-  {
-    slug: "brand-identity",
-    title: "Brand Identity & Logo Design Studio",
-    shortTitle: "Brand Identity",
-    tagline:
-      "Distinctive visual identities built to be recognized at a glance and remembered long after.",
-    definition:
-      "Brand identity design is the creation of a unified visual system — including logomarks, typography, color schemes, motion guidelines, and brand design assets. Skédio crafts cohesive visual languages tailored for high-growth digital businesses.",
-    metaTitle: "Brand Identity Design | Logo & Visual Systems | Skédio",
-    metaDescription:
-      "Distinctive logos, typography, color systems, and comprehensive design guidelines crafted for modern brands by Skédio.",
-    ogImage: "/og.webp",
-    themeColor: "#8537F4",
-    deliverables: [
-      "Primary & Secondary Logomarks, Monograms & Favicons",
-      "Custom Color Palette & Semantic Color Guidelines",
-      "Curated Typography Hierarchy & Font Licensing Guidance",
-      "Iconography, Illustration & Graphic Element Kits",
-      "Comprehensive Digital & Print Brand Guidelines Book",
-    ],
-    process: [
-      {
-        step: "01",
-        title: "Moodboarding & Visual Direction",
-        description:
-          "We explore 2–3 distinct creative directions rooted in your strategic direction, presenting moodboards and style tiles.",
-      },
-      {
-        step: "02",
-        title: "Concept Design & Exploration",
-        description:
-          "We develop the selected direction into fully realized logo concepts, typographic systems, and visual elements.",
-      },
-      {
-        step: "03",
-        title: "Real-World Mockups & Stress-Testing",
-        description:
-          "We test how the identity renders across digital apps, social media, outdoor billboards, packaging, and merchandise.",
-      },
-      {
-        step: "04",
-        title: "Brand Design System & Asset Delivery",
-        description:
-          "We package vector assets, font guides, and comprehensive brand guidelines ensuring smooth handoff and scalable execution.",
-      },
-    ],
-    targetAudience: [
-      "Startups needing a credible, memorable identity for fundraising and launch",
-      "Consumer and tech companies wanting a modern visual refresh",
-      "Digital-first products needing robust visual design systems",
-    ],
-    faqs: [
-      {
-        question: "What files and formats do we receive at handoff?",
-        answer:
-          "You receive vector master files (SVG, EPS, AI), high-res web assets (PNG, WebP), font files/licenses, social media avatar kits, and a complete brand guidelines PDF with digital design tokens.",
-      },
-      {
-        question: "How many design concepts do you present?",
-        answer:
-          "We typically present 2 to 3 distinct creative concepts during the exploratory phase and iterate on the chosen direction until perfection.",
-      },
-      {
-        question: "How much does brand identity design cost?",
-        answer:
-          "Brand identity pricing depends on scope, deliverables, and company scale. Contact us for a tailored proposal matching your timeline and milestones.",
-      },
-      {
-        question: "How do you ensure a logo works across apps, packaging, and social media?",
-        answer:
-          "We stress-test every concept — from a 16px favicon to large-format print — on digital apps, packaging, social avatars, and merchandise before finalizing. You receive flexible lockups, clear-space rules, and responsive variants so the mark stays legible everywhere it appears.",
-      },
-      {
-        question: "Can you adapt an existing identity, or do we need a full redesign?",
-        answer:
-          "Both paths are covered by the same audit-first process. We assess the equity in your current marks and systems, then recommend a targeted refresh that keeps what works and evolves the rest, or a full redesign when a category reset is what you need.",
-      },
-      {
-        question: "How long does a complete brand identity project take?",
-        answer:
-          "A full identity project typically takes 3 to 5 weeks, including concept exploration, refinement, real-world mockups, and the final design system and brand guidelines.",
-      },
-    ],
-  },
   {
     slug: "ui-ux-design",
     title: "UI/UX Design & Product Strategy Agency",
@@ -263,6 +189,90 @@ export const servicesData: ServiceItem[] = [
         question: "How do you estimate cost and scope for a development project?",
         answer:
           "We run a discovery and architecture workshop, then break the product into features and effort to produce a phased, milestone-based estimate. You pay per agreed milestone rather than by nebulous hourly effort.",
+      },
+    ],
+  },
+  {
+    slug: "brand-identity",
+    title: "Brand Identity & Logo Design Studio",
+    shortTitle: "Brand Identity",
+    tagline:
+      "Distinctive visual identities built to be recognized at a glance and remembered long after.",
+    definition:
+      "Brand identity design is the creation of a unified visual system — including logomarks, typography, color schemes, motion guidelines, and brand design assets. Skédio crafts cohesive visual languages tailored for high-growth digital businesses.",
+    metaTitle: "Brand Identity Design | Logo & Visual Systems | Skédio",
+    metaDescription:
+      "Distinctive logos, typography, color systems, and comprehensive design guidelines crafted for modern brands by Skédio.",
+    ogImage: "/og.webp",
+    themeColor: "#8537F4",
+    deliverables: [
+      "Primary & Secondary Logomarks, Monograms & Favicons",
+      "Custom Color Palette & Semantic Color Guidelines",
+      "Curated Typography Hierarchy & Font Licensing Guidance",
+      "Iconography, Illustration & Graphic Element Kits",
+      "Comprehensive Digital & Print Brand Guidelines Book",
+    ],
+    process: [
+      {
+        step: "01",
+        title: "Moodboarding & Visual Direction",
+        description:
+          "We explore 2–3 distinct creative directions rooted in your strategic direction, presenting moodboards and style tiles.",
+      },
+      {
+        step: "02",
+        title: "Concept Design & Exploration",
+        description:
+          "We develop the selected direction into fully realized logo concepts, typographic systems, and visual elements.",
+      },
+      {
+        step: "03",
+        title: "Real-World Mockups & Stress-Testing",
+        description:
+          "We test how the identity renders across digital apps, social media, outdoor billboards, packaging, and merchandise.",
+      },
+      {
+        step: "04",
+        title: "Brand Design System & Asset Delivery",
+        description:
+          "We package vector assets, font guides, and comprehensive brand guidelines ensuring smooth handoff and scalable execution.",
+      },
+    ],
+    targetAudience: [
+      "Startups needing a credible, memorable identity for fundraising and launch",
+      "Consumer and tech companies wanting a modern visual refresh",
+      "Digital-first products needing robust visual design systems",
+    ],
+    faqs: [
+      {
+        question: "What files and formats do we receive at handoff?",
+        answer:
+          "You receive vector master files (SVG, EPS, AI), high-res web assets (PNG, WebP), font files/licenses, social media avatar kits, and a complete brand guidelines PDF with digital design tokens.",
+      },
+      {
+        question: "How many design concepts do you present?",
+        answer:
+          "We typically present 2 to 3 distinct creative concepts during the exploratory phase and iterate on the chosen direction until perfection.",
+      },
+      {
+        question: "How much does brand identity design cost?",
+        answer:
+          "Brand identity pricing depends on scope, deliverables, and company scale. Contact us for a tailored proposal matching your timeline and milestones.",
+      },
+      {
+        question: "How do you ensure a logo works across apps, packaging, and social media?",
+        answer:
+          "We stress-test every concept — from a 16px favicon to large-format print — on digital apps, packaging, social avatars, and merchandise before finalizing. You receive flexible lockups, clear-space rules, and responsive variants so the mark stays legible everywhere it appears.",
+      },
+      {
+        question: "Can you adapt an existing identity, or do we need a full redesign?",
+        answer:
+          "Both paths are covered by the same audit-first process. We assess the equity in your current marks and systems, then recommend a targeted refresh that keeps what works and evolves the rest, or a full redesign when a category reset is what you need.",
+      },
+      {
+        question: "How long does a complete brand identity project take?",
+        answer:
+          "A full identity project typically takes 3 to 5 weeks, including concept exploration, refinement, real-world mockups, and the final design system and brand guidelines.",
       },
     ],
   },

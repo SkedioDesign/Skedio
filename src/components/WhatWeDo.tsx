@@ -6,13 +6,17 @@ import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { servicesData } from "@/data/services";
 import { WebpImage } from "@/components/WebpImage";
 
-/** Fallback source, the JPEG candidates the `<img>` picks from, and the WebP
- *  candidates the `<source>` offers. Kept as one object per service so the two
- *  ladders can never drift out of sync with each other. */
+/** Fallback source, the JPEG candidates the `<img>` picks from, the WebP
+ *  candidates the `<source>` offers, and the intrinsic size of `src`. Kept as
+ *  one object per service so the ladders can never drift out of sync with each
+ *  other — and because the source aspect is no longer uniform (see below), the
+ *  intrinsic pair cannot be hoisted into shared constants any more. */
 type ServiceImage = {
   src: string;
   srcSet: string;
   webpSrcSet: string;
+  width: number;
+  height: number;
 };
 
 /**
@@ -39,33 +43,36 @@ type ServiceImage = {
 const SVC_SIZES = "(max-width: 768px) 100vw, 664px";
 
 /*
- * Intrinsic size of the file `src` resolves to, measured from the generated
- * 768w variant — all four service previews share one source aspect, so a single
- * pair covers them. Emitted as width/height so the browser reserves the box
- * before the bytes land. Both slots crop with object-cover, so these only
- * supply the aspect hint; keep in sync if a source PNG is replaced.
+ * `width`/`height` are the intrinsic size of the 768w variant, emitted so the
+ * browser reserves the box before the bytes land. Both slots crop with
+ * object-cover inside a fixed-aspect container, so these only supply the aspect
+ * hint — but the hint still has to be honest per source, and it no longer can
+ * be shared: the supplied artwork under images/ is 16:9 photography (768x432),
+ * while the lone surviving generated PNG still measures 1200x824 (768x527).
  */
-const SVC_IMAGE_WIDTH = 768;
-const SVC_IMAGE_HEIGHT = 527;
-
 const svcImages: Record<string, ServiceImage> = {
-  "brand-identity": {
-    src: "/BrandIdentity-768.jpg",
-    srcSet: "/BrandIdentity-480.jpg 480w, /BrandIdentity-768.jpg 768w",
-    webpSrcSet:
-      "/BrandIdentity-480.webp 480w, /BrandIdentity-768.webp 768w, /BrandIdentity.webp 1200w",
-  },
   "ui-ux-design": {
-    src: "/VisualIdentity-768.jpg",
-    srcSet: "/VisualIdentity-480.jpg 480w, /VisualIdentity-768.jpg 768w",
-    webpSrcSet:
-      "/VisualIdentity-480.webp 480w, /VisualIdentity-768.webp 768w, /VisualIdentity.webp 1200w",
+    src: "/images/uiux-768.jpg",
+    srcSet: "/images/uiux-480.jpg 480w, /images/uiux-768.jpg 768w",
+    webpSrcSet: "/images/uiux-480.webp 480w, /images/uiux-768.webp 768w, /images/uiux.webp 1200w",
+    width: 768,
+    height: 432,
   },
   "website-development": {
-    src: "/ProductDevelopment-768.jpg",
-    srcSet: "/ProductDevelopment-480.jpg 480w, /ProductDevelopment-768.jpg 768w",
+    src: "/images/website-development-768.jpg",
+    srcSet: "/images/website-development-480.jpg 480w, /images/website-development-768.jpg 768w",
     webpSrcSet:
-      "/ProductDevelopment-480.webp 480w, /ProductDevelopment-768.webp 768w, /ProductDevelopment.webp 1200w",
+      "/images/website-development-480.webp 480w, /images/website-development-768.webp 768w, /images/website-development.webp 1200w",
+    width: 768,
+    height: 432,
+  },
+  "brand-identity": {
+    src: "/images/brand-identity-768.jpg",
+    srcSet: "/images/brand-identity-480.jpg 480w, /images/brand-identity-768.jpg 768w",
+    webpSrcSet:
+      "/images/brand-identity-480.webp 480w, /images/brand-identity-768.webp 768w, /images/brand-identity.webp 1200w",
+    width: 768,
+    height: 432,
   },
   // Reuses the ProductDesign art. That art was orphaned when the Product
   // Design service merged into UI/UX Design, and this card is the only place
@@ -75,6 +82,8 @@ const svcImages: Record<string, ServiceImage> = {
     srcSet: "/ProductDesign-480.jpg 480w, /ProductDesign-768.jpg 768w",
     webpSrcSet:
       "/ProductDesign-480.webp 480w, /ProductDesign-768.webp 768w, /ProductDesign.webp 1200w",
+    width: 768,
+    height: 527,
   },
 };
 
@@ -267,8 +276,8 @@ function MobileAccordion({
                       srcSet={s.image.srcSet}
                       webpSrcSet={s.image.webpSrcSet}
                       sizes={SVC_SIZES}
-                      width={SVC_IMAGE_WIDTH}
-                      height={SVC_IMAGE_HEIGHT}
+                      width={s.image.width}
+                      height={s.image.height}
                       alt={s.title}
                       loading="lazy"
                       decoding="async"
@@ -340,8 +349,8 @@ export function WhatWeDo() {
                     srcSet={s.image.srcSet}
                     webpSrcSet={s.image.webpSrcSet}
                     sizes={SVC_SIZES}
-                    width={SVC_IMAGE_WIDTH}
-                    height={SVC_IMAGE_HEIGHT}
+                    width={s.image.width}
+                    height={s.image.height}
                     alt={s.title}
                     loading="lazy"
                     decoding="async"

@@ -76,6 +76,21 @@ const CONCURRENCY = 3;
  */
 export const RESPONSIVE_VARIANTS = [
   { src: "ProductDesign.png", widths: [480, 768], formats: ["webp", "jpg"] },
+  // Service art that replaced the generated BrandIdentity/VisualIdentity pieces.
+  // Both sources are 16:9 photography, so the 480/768 ladder still covers the
+  // ~664px desktop slot at 1x and 2x DPR exactly as the PNGs did. They live
+  // under images/ rather than at the static root because they are supplied
+  // artwork, not build output — the generated twins sit beside their source,
+  // so these land at images/brand-identity-480.webp and friends.
+  { src: "images/brand-identity.jpeg", widths: [480, 768], formats: ["webp", "jpg"] },
+  { src: "images/uiux.jpeg", widths: [480, 768], formats: ["webp", "jpg"] },
+  { src: "images/website-development.jpeg", widths: [480, 768], formats: ["webp", "jpg"] },
+  // Nothing renders these two any more — WhatWeDo.tsx moved to the supplied
+  // artwork above. Their entries stay ONLY so the committed -480/-768 twins keep
+  // being recognised as managed variants: drop them and `isResponsiveVariant`
+  // starts returning false for those files, which silently subjects them to
+  // in-place recompression on every build. Delete the originals and their
+  // variants together with these lines, never one without the other.
   { src: "BrandIdentity.png", widths: [480, 768], formats: ["webp", "jpg"] },
   { src: "VisualIdentity.png", widths: [480, 768], formats: ["webp", "jpg"] },
   { src: "ProductDevelopment.png", widths: [480, 768], formats: ["webp", "jpg"] },
