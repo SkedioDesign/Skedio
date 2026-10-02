@@ -32,7 +32,11 @@
  * pass, and every card added is paid for on mobile data.
  */
 export const heroCollageImages: string[] = [
-  "/EDIOS/1-480.webp",
+  // The -800/-720 rungs, not the -480 ones. A cell is 333px wide, so at 2x DPR
+  // it wants 666px of source; the 480px variants delivered 1.44 and read as a
+  // visibly soft card among 4.8 neighbours — most obviously the first one, which
+  // is the only card with nothing over it. Costs +2KB and +15KB respectively.
+  "/EDIOS/1-800.webp",
   "/EDIOS/2.jpg",
   "/EDIOS/5.jpg",
   "/EDIOS/11.jpg",
@@ -41,7 +45,7 @@ export const heroCollageImages: string[] = [
   "/HaoCabs/2.webp",
   "/HaoCabs/4.webp",
   "/HaoCabs/7.webp",
-  "/HaoCabs/cover-480.webp",
+  "/HaoCabs/cover-720.webp",
   "/tiffinly/1-1200.webp",
   "/tiffinly/3.webp",
   "/tiffinly/6.webp",

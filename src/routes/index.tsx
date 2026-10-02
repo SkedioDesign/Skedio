@@ -988,13 +988,27 @@ function Index() {
               </div>
             )}
 
-            {/* Beat 3 — the work, as a flush collage. A 4-column CSS grid whose
-              cells are 16:9, matching these landscape shots, with the final
-              row's two cards each spanning two columns so the rectangle closes
-              with no holes. No absolute positioning and no rotation: a grid is
-              tidy by construction, which is also why nothing here can drift
-              between server and client. Mounted late so 14 requests never
-              touch initial load. */}
+            {/* Beat 3 — the work, as a flush collage. A 4-column CSS grid with
+              four 1fr rows, the final row's two cards each spanning two columns
+              so the rectangle closes with no holes. No absolute positioning and
+              no rotation: a grid is tidy by construction, which is also why
+              nothing here can drift between server and client. Mounted late so
+              14 requests never touch initial load.
+
+              `h-full` on the cards is load-bearing, not tidying. The sources are
+              NOT uniform — a mix of 16:9, 1:1 and 2:3 portrait — and an <img>
+              that is only `w-full` resolves to width:100%; height:auto, i.e.
+              its own intrinsic aspect ratio. `object-fit: cover` then has no box
+              height to crop into, so it does nothing: 9 of the 14 cards rendered
+              TALLER than their 1fr row (a 1:1 shot became 333px in a 186px row),
+              spilled over the rows below, and pushed the collage to 1030px
+              inside a 756px frame where overflow-hidden guillotined the last 274px.
+              Worse, those heights came from each image's intrinsic size, so the
+              grid re-flowed as the bytes arrived — the whole collage visibly
+              jumped into place, worst at the top-left card with nothing over it.
+              `h-full` makes every card fill its row so cover actually crops to a
+              uniform 16:9 cell, which fixes the overlap, the clipping and the
+              load-time reflow in one declaration. */}
             {collageMounted && (
               <div
                 data-collage-layer=""
@@ -1012,7 +1026,7 @@ function Index() {
                     loading="lazy"
                     decoding="async"
                     style={spansTwoColumns(i) ? { gridColumn: "span 2" } : undefined}
-                    className="min-h-0 w-full rounded-lg object-cover opacity-0 shadow-lg"
+                    className="h-full min-h-0 w-full rounded-lg object-cover opacity-0 shadow-lg"
                   />
                 ))}
               </div>
