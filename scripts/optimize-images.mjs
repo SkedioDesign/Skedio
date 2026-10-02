@@ -6,6 +6,14 @@
  * original filename/format so existing references keep working. Huge images
  * are also downscaled to at most `MAX_DIMENSION` px on the longest side.
  *
+ * Runs AFTER `vite build`, against the build output (STATIC_DIR below), not
+ * against `public/`. The output directory does not exist until the build has
+ * written it, and writing the twins into `public/` instead would scatter
+ * generated artifacts through a git-tracked tree on every build. The deploy
+ * uploads whatever is in the output directory when the build command exits, so
+ * a post-build pass is what actually ships them — which is why `build` and
+ * `build:node` in package.json both chain this script after `vite build`.
+ *
  * Also emits a `.webp` twin next to every JPEG/PNG so the site's <WebpImage>
  * renderer can serve WebP to browsers automatically — the original format never
  * loads on the site.
@@ -18,6 +26,10 @@
  * full-size originals on every build so `srcset` candidates always exist and
  * stay in sync with the source art. They are deliberately sized to each
  * component's real rendered width (plus DPR headroom) — never upscaled.
+ *
+ * Run `bun run verify:images` against a served build afterwards: that is the
+ * only check that proves no rendered URL 404s, since `vite dev` synthesizes
+ * twins on demand and would pass even with a broken pipeline.
  */
 import { existsSync, promises as fs } from "node:fs";
 import path from "node:path";
@@ -54,12 +66,19 @@ const CONCURRENCY = 3;
  * WebP variants use quality 76 (same as twins); JPEG fallbacks use the same
  * mozjpeg settings as full-size originals; PNG logo variants use palette
  * (they are smaller than WebP for flat logos).
+ *
+ * Service cards emit JPEG alongside WebP because their originals are opaque
+ * 1200x824 photography-style art (no alpha, no flat brand colour): palette PNG
+ * at 768w is ~200KB — barely half the original — while mozjpeg is ~50KB. That
+ * keeps the `<img src>` fallback off the 293-445KB originals for any browser
+ * that skips the WebP `<source>`. The full-size PNG stays the variant source
+ * and is never a rendered candidate.
  */
 export const RESPONSIVE_VARIANTS = [
-  { src: "ProductDesign.png", widths: [480, 768], formats: ["webp"] },
-  { src: "BrandIdentity.png", widths: [480, 768], formats: ["webp"] },
-  { src: "VisualIdentity.png", widths: [480, 768], formats: ["webp"] },
-  { src: "ProductDevelopment.png", widths: [480, 768], formats: ["webp"] },
+  { src: "ProductDesign.png", widths: [480, 768], formats: ["webp", "jpg"] },
+  { src: "BrandIdentity.png", widths: [480, 768], formats: ["webp", "jpg"] },
+  { src: "VisualIdentity.png", widths: [480, 768], formats: ["webp", "jpg"] },
+  { src: "ProductDevelopment.png", widths: [480, 768], formats: ["webp", "jpg"] },
   { src: "Social Chums.png", widths: [160, 320], formats: ["webp", "png"] },
   { src: "Edios.png", widths: [160, 320], formats: ["webp", "png"] },
   { src: "tiffinly/1.jpg", widths: [480, 800, 1200], formats: ["webp", "jpg"] },
