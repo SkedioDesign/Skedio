@@ -24,9 +24,23 @@ function CategoryLabel({ category }: { category: string }) {
   );
 }
 
+/*
+ * Both card links below are labelled with `aria-label`. Unlabelled, the name
+ * would be assembled from the "01" index, the category, the "N min read", the
+ * <h3> title, the excerpt or date, and the "Read Article" affordance — a
+ * mouthful that identifies the post three times over. The label keeps the
+ * visible "Read Article" inside the name so it still satisfies WCAG 2.5.3
+ * (Label in Name) for voice-control users.
+ */
+
 function FeaturedStory({ post }: { post: BlogPost }) {
   return (
-    <Link to="/blog/$slug" params={{ slug: post.slug }} className="group flex flex-col">
+    <Link
+      to="/blog/$slug"
+      params={{ slug: post.slug }}
+      aria-label={`Read Article: ${post.title}`}
+      className="group flex flex-col"
+    >
       <div className="flex items-center gap-4">
         <span
           aria-hidden="true"
@@ -74,7 +88,12 @@ function FeaturedStory({ post }: { post: BlogPost }) {
 
 function ListEntry({ post, index }: { post: BlogPost; index: string }) {
   return (
-    <Link to="/blog/$slug" params={{ slug: post.slug }} className="group block py-7">
+    <Link
+      to="/blog/$slug"
+      params={{ slug: post.slug }}
+      aria-label={`Read Article: ${post.title}`}
+      className="group block py-7"
+    >
       <div className="flex items-center gap-3">
         <span
           aria-hidden="true"
@@ -132,7 +151,10 @@ export function BlogPreview() {
           <FeaturedStory post={blogPosts[0]!} />
 
           {blogPosts.length > 1 && (
-            <aside className="divide-y divide-foreground/10 pt-16 lg:pl-12">
+            <aside
+              aria-label="More articles"
+              className="divide-y divide-foreground/10 pt-16 lg:pl-12"
+            >
               {blogPosts.slice(1).map((post, i) => (
                 <ListEntry key={post.slug} post={post} index={String(i + 2).padStart(2, "0")} />
               ))}

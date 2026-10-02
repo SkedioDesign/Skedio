@@ -81,6 +81,14 @@ function ProjectCard({
         ref={(el) => registerRef?.(project.slug, el)}
         to="/projects/$slug"
         params={{ slug: project.slug }}
+        // Without a label the name is assembled from everything inside the card
+        // — cover alt ("<title> — <subtitle>"), the <h3> title, the outcome and
+        // the subtitle again, then "View Project" — so it announces the project
+        // name two or three times. The label replaces all of that. It keeps the
+        // visible "View Project" inside the name for WCAG 2.5.3 (Label in Name),
+        // so voice-control users saying "click View Project" still match. The
+        // cover alt below is deliberately left as-is.
+        aria-label={`View Project: ${project.title} case study`}
         className="group relative block h-full w-full overflow-hidden rounded-2xl bg-ink shadow-xl transition-transform duration-200 ease-out hover:scale-[1.02] hover:shadow-2xl"
       >
         <WebpImage
@@ -110,8 +118,7 @@ function ProjectCard({
               }`}
             >
               {project.title}
-            </h3>
-            <p
+            </h3>            <p
               className={`mt-1.5 line-clamp-1 text-white/80 ${
                 isBillboard ? "text-base sm:text-lg" : "text-sm"
               }`}
