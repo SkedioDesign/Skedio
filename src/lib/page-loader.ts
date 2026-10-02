@@ -39,11 +39,34 @@ export const PAGE_LOADER_MIN_MS = 1100;
  * Hard cap. A slow connection (or a resource that never finishes) must not
  * strand a visitor behind a loading screen — after this the overlay comes down
  * whatever the state of the load event.
+ *
+ * Also the backstop for the GIF gate: if the image never becomes decodable at
+ * all (blocked, 404, still streaming on a bad connection) the overlay will not
+ * wait for a cycle that cannot start.
  */
 export const PAGE_LOADER_MAX_MS = 5000;
 
 /** Crossfade duration. Must stay in sync with --sk-preloader-fade in styles.css. */
 export const PAGE_LOADER_EXIT_MS = 600;
+
+/**
+ * Duration of ONE full cycle of /video/loading.gif.
+ *
+ * The GIF carries a NETSCAPE2.0 loop extension, so it never "ends" — there is no
+ * `ended` event to wait on, and a fixed timer from mount is the wrong reference
+ * because the GIF may still be downloading when the exit timer starts. The exit
+ * is therefore gated on one full cycle elapsing from the moment the <img>
+ * reports it is decodable (see PageLoader.tsx), and this is how long that cycle
+ * is.
+ *
+ * Measured by summing the graphic-control delays of the 6 frames in the shipped
+ * file: 130 + 140 + 40 + 130 + (defaulted 100) + 130 = 570ms. Re-derive after
+ * replacing the asset, or the overlay will dismiss part-way through a loop.
+ *
+ * Must stay below PAGE_LOADER_MAX_MS, which is the cap that keeps a slow
+ * connection from stranding anyone behind this screen.
+ */
+export const PAGE_LOADER_GIF_MS = 570;
 
 /**
  * If the bundle errors out, hydration never commits, or React wedges, the

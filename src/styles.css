@@ -76,14 +76,11 @@
   --color-ink: var(--ink);
   --color-ink-foreground: var(--ink-foreground);
 
-  --font-sans: "Montserrat Variable", "Montserrat", "Poppins", ui-sans-serif,
-    system-ui, sans-serif;
-  --font-heading: "Gilroy", "Plus Jakarta Sans", "Montserrat", ui-sans-serif,
-    system-ui, sans-serif;
+  --font-sans: "Montserrat Variable", "Montserrat", "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Gilroy", "Plus Jakarta Sans", "Montserrat", ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-heading);
   --font-body: var(--font-sans);
-  --font-serif: "Fraunces Variable", "Fraunces", Georgia, "Times New Roman",
-    serif;
+  --font-serif: "Fraunces Variable", "Fraunces", Georgia, "Times New Roman", serif;
 
   --tracking-tightish: -0.04em;
 
@@ -125,7 +122,9 @@
   --secondary: #e9e9e9;
   --secondary-foreground: var(--sk-black);
   --muted: #ececec;
-  --muted-foreground: var(--sk-gray); /* AA on off-white & white; #777 reserved for large/decorative text */
+  --muted-foreground: var(
+    --sk-gray
+  ); /* AA on off-white & white; #777 reserved for large/decorative text */
   --accent: var(--sk-purple-light);
   --accent-foreground: var(--sk-black);
   --destructive: var(--sk-error);
@@ -203,7 +202,6 @@
     background: transparent;
   }
 }
-
 
 /* ------------------------------------------------------------------
    Responsive type scale — clamp() anchored to brief §3.2 values:
@@ -592,20 +590,8 @@ img {
   will-change: transform;
 }
 .sk-marquee {
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent,
-    black 12%,
-    black 88%,
-    transparent
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent,
-    black 12%,
-    black 88%,
-    transparent
-  );
+  -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
 }
 .sk-marquee:hover .sk-marquee-track {
   animation-play-state: paused;
@@ -667,9 +653,10 @@ img {
 
 /* Subtle magnetic / fluid card transitions */
 .sk-card-interactive {
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.35s ease;
+  transition:
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.35s ease;
   will-change: transform;
   transform: translate3d(0, 0, 0);
 }
@@ -773,7 +760,7 @@ img {
    Note that `display: none` (not `visibility: hidden`) is the resting state,
    because the tree is rebuilt once after hydration and that hands the overlay
    a brand-new node: a visibility-hidden <img> is still composited and its GIF
-   still plays, 27 frames of 1080x1080 looping behind the page for the rest of
+   still plays, 6 frames of 1080x1080 looping behind the page for the rest of
    the session. `display: none` costs nothing.
    ------------------------------------------------------------------- */
 .sk-preloader {
@@ -796,7 +783,9 @@ img {
   opacity: 1;
   /* Entering is quicker than leaving: the fade-out is what the eye follows
      into the page, so it gets the full duration. */
-  transition: opacity 0.2s ease, visibility 0s;
+  transition:
+    opacity 0.2s ease,
+    visibility 0s;
 }
 /* Coming down. Declared AFTER the armed rule on purpose — equal specificity, so
    source order is what lets this one win while the class is still on <html> and

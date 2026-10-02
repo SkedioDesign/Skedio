@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import {
   PAGE_LOADER_CLASS,
   PAGE_LOADER_EXIT_MS,
+  PAGE_LOADER_GIF_MS,
   PAGE_LOADER_MAX_MS,
   PAGE_LOADER_MIN_MS,
   notePageLoaderExit,
@@ -36,10 +37,12 @@ import {
  */
 export function PageLoader() {
   const ref = useRef<HTMLDivElement>(null);
+  const gifRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     const root = document.documentElement;
     const el = ref.current;
+    const gif = gifRef.current;
     if (!el || !root.classList.contains(PAGE_LOADER_CLASS)) return;
 
     const timers: number[] = [];
@@ -50,7 +53,7 @@ export function PageLoader() {
     const finish = () => {
       // `display: none`, not the `visibility: hidden` the base state uses: a
       // visibility-hidden image is still animated by the compositor, and this
-      // one is 27 frames of 1080x1080 that would otherwise loop for the life of
+      // one is 6 frames of 1080x1080 that would otherwise loop for the life of
       // the page behind the page.
       el.setAttribute("data-state", "done");
       // Also the only thing that releases the scroll lock the armed class sets.
@@ -78,13 +81,50 @@ export function PageLoader() {
       schedule(PAGE_LOADER_EXIT_MS - elapsed, finish);
     };
 
-    const onLoad = () => playExit();
+    // The exit needs BOTH halves: the document ready, and the GIF played out.
+    //
+    // The GIF half is not decoration. This asset loops forever (NETSCAPE2.0), so
+    // there is no `ended` event, and a timer started from mount is measuring the
+    // wrong thing entirely — on a warm cache `performance.now()` is already past
+    // PAGE_LOADER_MIN_MS by the time this effect runs, which made the overlay
+    // dismiss on `load` even while the GIF was still downloading. Visitors saw a
+    // loader that had barely started. Gating on the <img> becoming decodable,
+    // then waiting one full PAGE_LOADER_GIF_MS cycle, is what makes the
+    // animation actually finish before the page takes over.
+    let docReady = false;
+    let gifCycleDone = false;
+    const maybeExit = () => {
+      if (docReady && gifCycleDone) playExit();
+    };
+
+    const onGifLoad = () => {
+      // One cycle of the looped GIF, timed from the moment it can first paint.
+      schedule(PAGE_LOADER_GIF_MS, () => {
+        gifCycleDone = true;
+        maybeExit();
+      });
+    };
+
+    const onLoad = () => {
+      docReady = true;
+      maybeExit();
+    };
+
     window.addEventListener("load", onLoad);
+    // A cached GIF can be complete before this effect ever runs, in which case
+    // `load` has already fired and will not fire again.
+    if (gif?.complete && gif.naturalWidth > 0) onGifLoad();
+    else gif?.addEventListener("load", onGifLoad, { once: true });
     // Aesthetic floor — see PAGE_LOADER_MIN_MS. Also covers a document already
     // `complete` by hydration time, where `load` will never fire again.
-    schedule(PAGE_LOADER_MIN_MS - performance.now(), playExit);
-    // Backstop — see PAGE_LOADER_MAX_MS.
-    schedule(PAGE_LOADER_MAX_MS - performance.now(), playExit);
+    schedule(PAGE_LOADER_MIN_MS - performance.now(), onLoad);
+    // Backstop — see PAGE_LOADER_MAX_MS. Forces BOTH halves, so an image that
+    // never becomes decodable still releases the screen.
+    schedule(PAGE_LOADER_MAX_MS - performance.now(), () => {
+      docReady = true;
+      gifCycleDone = true;
+      maybeExit();
+    });
     // Resume an exit that a remount interrupted, if there was one.
     if (pageLoaderExitStartedAt() !== null) playExit();
 
@@ -106,6 +146,7 @@ export function PageLoader() {
     <div ref={ref} data-page-loader="" role="status" aria-live="polite" className="sk-preloader">
       <span className="sr-only">Loading Skédio</span>
       <img
+        ref={gifRef}
         src="/video/loading.gif"
         alt=""
         aria-hidden="true"
