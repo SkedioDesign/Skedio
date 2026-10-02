@@ -149,7 +149,34 @@ export default defineConfig({
           // build. Excluding the package here is what actually keeps it lazy.
           if (id.includes("/lenis/")) return;
           if (id.includes("lucide-react")) return "lucide";
-          if (id.includes("react")) return "react";
+          // EXPLICIT package match, not `id.includes("react")`. A substring
+          // test matches any path containing "react" anywhere, so a package
+          // whose name merely STARTS with "react" (react-hook-form,
+          // react-day-picker, react-resizable-panels, react-remove-scroll, …)
+          // gets hoisted into the eager React chunk and downloaded by every
+          // route on first paint — including routes that never touch it. None
+          // of those are installed today, so this is preventative, but the
+          // failure mode is silent and expensive when it does happen.
+          //
+          // The regex is deliberately greedy: pnpm ids look like
+          // `/…/Skedio/node_modules/.pnpm/react@19.3.0/node_modules/react/index.js`,
+          // so the leading `.*` backtracks to the LAST `node_modules/` and
+          // yields the real package name (`react`) instead of the store
+          // directory (`.pnpm`).
+          const pkg = /.*\/node_modules\/(?:@[^/]+\/)?([^/]+)\//.exec(id)?.[1];
+          if (
+            pkg === "react" ||
+            pkg === "react-dom" ||
+            pkg === "scheduler" ||
+            // Grouped with React on purpose: it is the shim
+            // @tanstack/react-store uses, so it genuinely is on the critical
+            // path. Letting it fall through to `vendor` would merge it with
+            // `marked` (used only by /blog and /insights) and put a blog-only
+            // dependency on the critical path of every other route.
+            pkg === "use-sync-external-store"
+          ) {
+            return "react";
+          }
           return "vendor";
         },
       },
