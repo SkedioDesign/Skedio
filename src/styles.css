@@ -547,12 +547,23 @@ img {
 /* ------------------------------------------------------------------
    One authored moment: hero entrance (respects reduced motion)
    Initial hidden state — GSAP (SplitText + timeline) animates it in.
-   LCP SAFETY: [data-hero-visual] is the LCP element and must NEVER be
-   opacity-gated — it paints on first frame without waiting for JS. The
-   :not() guard below is a regression tripwire: even if someone re-adds
-   .sk-hero-start to the visual, it stays visible.
+
+   PROGRESSIVE ENHANCEMENT: the hidden state is scoped to `.js` (set on <html>
+   by the inline script in src/routes/__root.tsx), exactly like `.js
+   .sk-reveal-base` below. Unprefixed, this rule blanked the H1 and every hero
+   CTA whenever the bundle did not run — measured with Playwright at
+   `javaScriptEnabled: false`: `.sk-hero-title` computed `opacity: 0`
+   permanently, so the page's only <h1> never appeared. Scoping to `.js` means
+   the entrance is applied *after* JS has confirmed it can run and undo it; a
+   crawler, a JS error or a blocked bundle now just gets the static hero.
+
+   LCP SAFETY: [data-hero-visual] is the LCP element (verified — see the
+   comment on <img> in src/routes/index.tsx) and is NEVER opacity-gated, so it
+   paints on the first frame without waiting for JS. The :not() guard is a
+   regression tripwire: even if someone re-adds .sk-hero-start to the visual,
+   it stays visible.
    ------------------------------------------------------------------- */
-.sk-hero-start:not([data-hero-visual]) {
+.js .sk-hero-start:not([data-hero-visual]) {
   opacity: 0;
 }
 [data-hero-visual] {

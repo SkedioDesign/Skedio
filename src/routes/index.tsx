@@ -53,6 +53,23 @@ const loadFrauncesAsync =
   `l.href=${JSON.stringify(frauncesCss)};l.fetchPriority="low";` +
   `document.head.appendChild(l)}catch(e){}})()`;
 
+/**
+ * `sizes` for the hero <picture>, shared by the preload links and the
+ * <source>/<img> elements below.
+ *
+ * The visual is full-bleed inside a `max-w-[1440px]` section with `px-6`
+ * (24px/side) and `md:px-12` (48px/side), so the rendered width is
+ * `min(100vw, 1440) - 96` and therefore CAPS at 1344px — past ~1536px of
+ * viewport it stops growing. That cap is why the desktop branch is a fixed
+ * `1344px` rather than another `100vw` expression.
+ *
+ * Declared once because the preload's `imageSizes` and the `<source sizes>`
+ * MUST be the identical string: if they disagree the browser picks a different
+ * candidate for the preload than for the image and downloads two files.
+ */
+const HERO_DESKTOP_SIZES = "(max-width: 1440px) calc(100vw - 96px), 1344px";
+const HERO_MOBILE_SIZES = "calc(100vw - 48px)";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: seo({
@@ -64,14 +81,27 @@ export const Route = createFileRoute("/")({
     links: [
       ...canonicalLink("/"),
       // Preload the LCP hero image early so discovery doesn't wait for the
-      // <picture> to parse. Only the single most-likely candidate per
-      // breakpoint is preloaded (1280w desktop ≈ 1244px rendered, 720w
-      // mobile covers 2x DPR) — never the whole srcset. `type` + `media`
-      // ensure the browser only fetches the variant it will render.
+      // <picture> to parse.
+      //
+      // `imagesrcset` + `imagesizes` (not a bare `href`) is the load-bearing
+      // detail. The <picture> below picks its candidate from a 4-entry srcset
+      // via `sizes`, so a preload naming ONE fixed URL matches only by luck:
+      // measured with Playwright, `href={hero1280Avif}` matched at a 1280px
+      // viewport and double-downloaded everywhere else — at 1440px both
+      // hero-1280 (preload) and hero-1440 (what actually rendered) were
+      // fetched, and at 390px a 720w preload was fetched while the 480w source
+      // that actually rendered came down second. Handing the preload the SAME
+      // srcset+sizes pair makes the browser run the identical selection, so the
+      // preload is deduplicated against the <img> request at every width.
+      // `href` remains as the fallback for engines that ignore imagesrcset —
+      // it points at the SMALLEST candidate, so an approximate preload there
+      // wastes as few bytes as possible.
       {
         rel: "preload",
         as: "image",
-        href: hero1280Avif,
+        href: hero768Avif,
+        imageSrcSet: `${hero768Avif} 768w, ${hero1024Avif} 1024w, ${hero1280Avif} 1280w, ${heroDesktopAvif} 1440w`,
+        imageSizes: HERO_DESKTOP_SIZES,
         type: "image/avif",
         media: "(min-width: 1024px)",
         fetchPriority: "high",
@@ -79,7 +109,9 @@ export const Route = createFileRoute("/")({
       {
         rel: "preload",
         as: "image",
-        href: heroMobileAvif,
+        href: heroMobile480Avif,
+        imageSrcSet: `${heroMobile480Avif} 480w, ${heroMobileAvif} 720w`,
+        imageSizes: HERO_MOBILE_SIZES,
         type: "image/avif",
         media: "(max-width: 1023px)",
         fetchPriority: "high",
@@ -199,99 +231,135 @@ function Index() {
 
   const pageRef = useRef<HTMLDivElement>(null);
 
+  // How many animation frames to wait before building the entrance.
+  // `useGSAP` runs in a layout effect, i.e. BEFORE the browser paints the
+  // hydrated tree, and SplitText.create() measures the heading to find word
+  // boundaries. Doing that measurement there means a forced synchronous layout
+  // inside the hydration commit. Two nested rAFs push the whole setup past the
+  // LCP frame — the hero <img> paints first, then the animation runs. The cost
+  // is ~2 frames (~32ms) of delay on a state that is already invisible.
+  const HERO_ENTRANCE_DEFER_FRAMES = 2;
+
   useGSAP(
     () => {
       const root = pageRef.current;
       if (!root) return;
 
-      const title = root.querySelector<HTMLElement>(".sk-hero-title");
-      const accent = title?.querySelector<HTMLElement>(".sk-hero-accent") ?? null;
+      // Reduced motion: bail BEFORE any query, SplitText or tween is built.
+      // Nothing here needs to be undone — the reduced-motion block at the end
+      // of this stylesheet already forces `opacity: 1 !important` on
+      // `.sk-hero-start`, so skipping the JS entirely leaves the hero exactly
+      // as the SSR HTML painted it. (It previously still ran three gsap.set()
+      // calls to reach that same state.)
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-      // NOTE (LCP): [data-hero-visual] is intentionally EXCLUDED here. The hero
-      // <img> is the LCP element and must paint on the very first frame — it
-      // must never be opacity-gated behind GSAP/hydration. Only non-LCP hero
-      // chrome (pills, CTAs, proof, partner card) participates in the opacity
-      // entrance timeline. The visual gets a transform-only nudge (no opacity,
-      // no pre-hidden CSS state) so its first paint still counts for LCP.
-      const reveals = Array.from(
-        root.querySelectorAll<HTMLElement>(
-          "[data-hero-pill], [data-hero-cta], [data-hero-proof], [data-hero-partner]",
-        ),
-      );
-
-      const visual = root.querySelector<HTMLElement>("[data-hero-visual]");
-
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        gsap.set(title, { opacity: 1 });
-        gsap.set(reveals, { opacity: 1, clearProps: "transform" });
-        if (visual) gsap.set(visual, { clearProps: "transform" });
-        return;
-      }
-
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      let disposed = false;
+      const rafs: number[] = [];
+      let tl: gsap.core.Timeline | null = null;
       let split: ReturnType<typeof SplitText.create> | null = null;
 
-      if (title) {
-        split = SplitText.create(title, { type: "words" });
-        tl.set(title, { opacity: 1 }, 0).fromTo(
-          split.words,
-          { y: 38, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.8, stagger: 0.045 },
+      const build = () => {
+        if (disposed || !root.isConnected) return;
+
+        const title = root.querySelector<HTMLElement>(".sk-hero-title");
+        const accent = title?.querySelector<HTMLElement>(".sk-hero-accent") ?? null;
+
+        // NOTE (LCP): [data-hero-visual] is intentionally EXCLUDED from the
+        // opacity reveals. The hero <img> is this page's LCP element (verified
+        // in Chrome: the winning candidate is the 1344x756 <img>, not the H1)
+        // and it paints on the very first frame at opacity 1 — it is never gated
+        // on GSAP or hydration. Only non-LCP hero chrome (pills, CTAs, proof,
+        // partner card) participates in the opacity entrance, and the visual
+        // gets a transform-only nudge so its first paint still counts for LCP.
+        const reveals = Array.from(
+          root.querySelectorAll<HTMLElement>(
+            "[data-hero-pill], [data-hero-cta], [data-hero-proof], [data-hero-partner]",
+          ),
         );
-        if (accent) {
+
+        const visual = root.querySelector<HTMLElement>("[data-hero-visual]");
+
+        // READS BEFORE WRITES. Every querySelector above and the Split() call
+        // below happen BEFORE the first gsap.set()/fromTo(), and nothing after
+        // this point reads geometry — so no write-then-read interleaving forces
+        // a second synchronous layout within the setup.
+        tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+        if (title) {
+          split = SplitText.create(title, { type: "words" });
+          tl.set(title, { opacity: 1 }, 0).fromTo(
+            split.words,
+            { y: 38, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.8, stagger: 0.045 },
+          );
+          if (accent) {
+            tl.fromTo(
+              accent,
+              { scale: 0.75, opacity: 0 },
+              { scale: 1, opacity: 1, duration: 0.55, ease: "back.out(2.5)" },
+              "<0.15",
+            );
+          }
+        } else {
+          tl.set([...reveals], { opacity: 0 }, 0);
+        }
+
+        tl.fromTo(
+          root.querySelectorAll<HTMLElement>("[data-hero-pill]"),
+          { y: 18, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.55, stagger: 0.06 },
+          ">-0.25",
+        )
+          .fromTo(
+            root.querySelectorAll<HTMLElement>("[data-hero-cta], [data-hero-proof]"),
+            { y: 18, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.55, stagger: 0.08 },
+            "-=0.28",
+          )
+          .fromTo(
+            root.querySelectorAll<HTMLElement>("[data-hero-partner]"),
+            { y: 24, opacity: 0, scale: 0.985 },
+            { y: 0, opacity: 1, scale: 1, duration: 0.8, stagger: 0.1 },
+            ">-0.2",
+          );
+
+        // Transform-only nudge for the LCP visual: no opacity involved, and
+        // immediateRender: false so nothing is hidden before the tween starts.
+        // First paint (opacity 1, final layout) happens before JS runs.
+        if (visual) {
           tl.fromTo(
-            accent,
-            { scale: 0.75, opacity: 0 },
-            { scale: 1, opacity: 1, duration: 0.55, ease: "back.out(2.5)" },
-            "<0.15",
+            visual,
+            { y: 24, scale: 0.985 },
+            {
+              y: 0,
+              scale: 1,
+              duration: 0.8,
+              clearProps: "transform",
+              immediateRender: false,
+            },
+            "<0.1",
           );
         }
-      } else {
-        tl.set([...reveals], { opacity: 0 }, 0);
-      }
+      };
 
-      tl.fromTo(
-        root.querySelectorAll<HTMLElement>("[data-hero-pill]"),
-        { y: 18, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.55, stagger: 0.06 },
-        ">-0.25",
-      )
-        .fromTo(
-          root.querySelectorAll<HTMLElement>("[data-hero-cta], [data-hero-proof]"),
-          { y: 18, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.55, stagger: 0.08 },
-          "-=0.28",
-        )
-        .fromTo(
-          root.querySelectorAll<HTMLElement>("[data-hero-partner]"),
-          { y: 24, opacity: 0, scale: 0.985 },
-          { y: 0, opacity: 1, scale: 1, duration: 0.8, stagger: 0.1 },
-          ">-0.2",
-        );
+      let n = 0;
+      const step = () => {
+        if (disposed) return;
+        if (n++ < HERO_ENTRANCE_DEFER_FRAMES) {
+          rafs.push(requestAnimationFrame(step));
+          return;
+        }
+        build();
+      };
+      rafs.push(requestAnimationFrame(step));
 
-      // Transform-only nudge for the LCP visual: no opacity involved, and
-      // immediateRender: false so nothing is hidden before the tween starts.
-      // First paint (opacity 1, final layout) happens before JS runs.
-      if (visual) {
-        tl.fromTo(
-          visual,
-          { y: 24, scale: 0.985 },
-          {
-            y: 0,
-            scale: 1,
-            duration: 0.8,
-            clearProps: "transform",
-            immediateRender: false,
-          },
-          "<0.1",
-        );
-      }
-
-      // useGSAP auto-reverts transform/opacity tweens via gsap.context, but
-      // SplitText injects word wrappers into the DOM — revert them so no
-      // detached nodes or stale measurements linger after unmount/HMR.
+      // Tweens built inside the deferred callback are created after
+      // gsap.context() has already run, so useGSAP's automatic revert does not
+      // capture them — they are killed explicitly here instead.
       return () => {
-        tl.kill();
+        disposed = true;
+        rafs.forEach((id) => cancelAnimationFrame(id));
+        tl?.kill();
         split?.revert();
       };
     },
@@ -425,29 +493,33 @@ function Index() {
             <source
               media="(min-width: 1024px)"
               srcSet={`${hero768Avif} 768w, ${hero1024Avif} 1024w, ${hero1280Avif} 1280w, ${heroDesktopAvif} 1440w`}
-              sizes="(max-width: 1440px) calc(100vw - 96px), 1344px"
+              sizes={HERO_DESKTOP_SIZES}
               type="image/avif"
             />
             <source
               media="(min-width: 1024px)"
               srcSet={`${hero768Webp} 768w, ${hero1024Webp} 1024w, ${hero1280Webp} 1280w, ${heroDesktopWebp} 1440w`}
-              sizes="(max-width: 1440px) calc(100vw - 96px), 1344px"
+              sizes={HERO_DESKTOP_SIZES}
               type="image/webp"
             />
             <source
               srcSet={`${heroMobile480Avif} 480w, ${heroMobileAvif} 720w`}
-              sizes="calc(100vw - 48px)"
+              sizes={HERO_MOBILE_SIZES}
               type="image/avif"
             />
             <source
               srcSet={`${heroMobile480Webp} 480w, ${heroMobileWebp} 720w`}
-              sizes="calc(100vw - 48px)"
+              sizes={HERO_MOBILE_SIZES}
               type="image/webp"
             />
             <img
               src={heroFallback}
               srcSet={`${heroFallback768} 768w, ${heroFallback1024} 1024w, ${heroFallback1280} 1280w, ${heroFallback} 1440w`}
-              sizes="(min-width: 1024px) calc(100vw - 96px), calc(100vw - 48px)"
+              /* This <img> is the no-<picture> fallback, so its srcset holds only
+                 the desktop JPEGs — hence HERO_DESKTOP_SIZES rather than the old
+                 two-branch form whose mobile branch (`calc(100vw - 48px)`)
+                 described assets that are not in this srcset at all. */
+              sizes={HERO_DESKTOP_SIZES}
               alt="Skédio design studio hero showcase — bold brand identity and product design"
               fetchPriority="high"
               loading="eager"

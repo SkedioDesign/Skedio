@@ -57,6 +57,13 @@ export function LenisProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
+    // Reduced motion means reduced motion. Smooth scrolling is inertia applied
+    // to the whole document on every wheel tick, which is exactly what the
+    // preference asks to be turned off — so Lenis is never even loaded, not
+    // merely disabled after the fact. Native scrolling is not animation and is
+    // left exactly as the browser ships it.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
     let cancelled = false;
     void onAnimationIdle()
       .then(() => import("lenis/react"))
@@ -74,6 +81,11 @@ export function LenisProvider({ children }: { children: ReactNode }) {
   const lenisRef = useRef<React.ComponentRef<LenisModule["ReactLenis"]>>(null);
 
   useGSAP(() => {
+    // Nothing to drive under reduced motion — Lenis is never loaded, so this
+    // callback would be a permanent no-op that still keeps the GSAP ticker
+    // (and its RAF loop) alive for the life of the page.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
     // Single RAF clock: ticker drives Lenis only. ScrollTrigger is updated
     // from Lenis's scroll event in <ScrollSync /> — calling
     // ScrollTrigger.update() here too forced a full trigger re-measurement
