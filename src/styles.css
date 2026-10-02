@@ -137,6 +137,12 @@
   --surface-alt: var(--sk-black);
   --ink: var(--sk-black);
   --ink-foreground: #ffffff;
+
+  /* Intro overlay crossfade. PAGE_LOADER_EXIT_MS in src/lib/page-loader.ts
+     hard-codes the same duration to know when it may drop the overlay; the two
+     have to move together or the fade gets cut short (or the overlay lingers
+     invisible for a beat before it is removed). */
+  --sk-preloader-fade: 600ms;
 }
 
 @layer base {
@@ -736,6 +742,94 @@ img {
   animation: sk-deck-shift 1.6s ease-in-out infinite;
 }
 
+/* ------------------------------------------------------------------
+   Intro loader (components/PageLoader.tsx)
+   Covers the first paint, then hands the screen to the hero entrance.
+
+   VISIBILITY IS CSS-OWNED, on purpose. The overlay is in the SSR HTML — that
+   is how its GIF is discovered at HTML-parse time instead of after hydration —
+   but only the `.sk-preloader-pending` class on <html>, added by the inline
+   boot script, can reveal it. So the page is never held hostage to a bundle:
+   scripting off, a reduced-motion machine, or the second page of a session
+   all leave the overlay `display: none` from the very first frame.
+
+   SCROLL LOCK rides the same class, so it is released at exactly the moment
+   the overlay starts leaving. `scrollbar-gutter: stable` (see @layer base) is
+   what keeps locking it from shifting the layout sideways.
+
+   The un-arming backstop lives in the boot script rather than here, as a
+   setTimeout: only JS can take the class off, and this overlay's release path
+   is React, which is exactly what might be broken.
+
+   LAYOUT LIVES HERE AND NOT IN UTILITY CLASSES, which is unusual for this
+   file. Tailwind v4 puts utilities in @layer utilities and unlayered rules
+   beat every layer, so a `display: none` in a plain `.sk-preloader` rule would
+   win over the element's `flex` utility and the overlay could never be shown
+   at all. Keeping both halves of the state machine — `display`, `visibility`,
+   `opacity` — in one unlayered block is what makes the ordering below legible:
+   base < armed < leaving < done, each declared in that order at equal
+   specificity so source order decides.
+
+   Note that `display: none` (not `visibility: hidden`) is the resting state,
+   because the tree is rebuilt once after hydration and that hands the overlay
+   a brand-new node: a visibility-hidden <img> is still composited and its GIF
+   still plays, 27 frames of 1080x1080 looping behind the page for the rest of
+   the session. `display: none` costs nothing.
+   ------------------------------------------------------------------- */
+.sk-preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: var(--background);
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity var(--sk-preloader-fade) cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0s linear var(--sk-preloader-fade);
+}
+.sk-preloader-pending .sk-preloader {
+  display: flex;
+  visibility: visible;
+  opacity: 1;
+  /* Entering is quicker than leaving: the fade-out is what the eye follows
+     into the page, so it gets the full duration. */
+  transition: opacity 0.2s ease, visibility 0s;
+}
+/* Coming down. Declared AFTER the armed rule on purpose — equal specificity, so
+   source order is what lets this one win while the class is still on <html> and
+   the transition can actually run. The class comes off once the fade completes,
+   which is also what releases the scroll lock. `display` is deliberately not
+   touched here — the overlay has to stay rendered in order to fade. */
+.sk-preloader[data-state="leaving"] {
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity var(--sk-preloader-fade) cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0s linear var(--sk-preloader-fade);
+}
+/* Finished — also what a post-hydration remount lands on, since the armed class
+   is already gone by then and the base state has nothing left to render. */
+.sk-preloader[data-state="done"] {
+  display: none;
+}
+/* The GIF drifts up and grows slightly as it leaves — the only motion in an
+   otherwise still overlay, so it reads as one continuous gesture. */
+.sk-preloader-gif {
+  transform: translate3d(0, 0, 0) scale(1);
+  transition: transform var(--sk-preloader-fade) cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
+}
+.sk-preloader[data-state="leaving"] .sk-preloader-gif {
+  transform: translate3d(0, -8%, 0) scale(1.06);
+}
+
+html.sk-preloader-pending {
+  overflow: hidden;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -752,5 +846,14 @@ img {
     transition: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+  /* Deliberately NOT in the list above: forcing `opacity: 1` on an overlay that
+     is supposed to be hidden would uncover the page mid-load. It normally
+     never shows at all here — the boot script skips arming it under reduced
+     motion — so all that is left to neutralise is its motion, for the case of
+     someone toggling the OS setting mid-session. */
+  .sk-preloader,
+  .sk-preloader-gif {
+    transition: none !important;
   }
 }

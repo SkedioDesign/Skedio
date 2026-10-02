@@ -17,6 +17,8 @@ import { siteConfig } from "../lib/site-config";
 import { NotFound } from "../components/NotFound";
 import { ErrorFallback } from "../components/ErrorFallback";
 import { CookieConsent } from "../components/CookieConsent";
+import { PageLoader } from "../components/PageLoader";
+import { PAGE_LOADER_BOOT_SCRIPT } from "../lib/page-loader";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -68,9 +70,16 @@ export const Route = createRootRoute({
     // opacity and whole sections render blank. Declared through `head.scripts`
     // so TanStack applies the CSP nonce (ssr.nonce in src/router.tsx); a raw
     // inline <script> is blocked by `script-src 'self' 'nonce-…'`.
+    //
+    // PAGE_LOADER_BOOT_SCRIPT joins it in the same place, for the same reason
+    // plus one more: it has to run before the first paint for the intro overlay
+    // to be up on frame one instead of flashing the page and then covering it.
     scripts: [
       {
         children: "document.documentElement.classList.add('js')",
+      },
+      {
+        children: PAGE_LOADER_BOOT_SCRIPT,
       },
     ],
   }),
@@ -111,6 +120,11 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <a href="#main-content" className="sk-skip-link">
           Skip to main content
         </a>
+        {/* First thing in the body so it paints over the document immediately.
+            It renders on the server (that is how its GIF is pre-discovered) and
+            stays hidden unless the head script above armed it — see
+            src/components/PageLoader.tsx. */}
+        <PageLoader />
         {children}
         <Scripts />
       </body>
