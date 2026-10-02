@@ -6,6 +6,7 @@ import {
   PAGE_LOADER_MAX_MS,
   PAGE_LOADER_MIN_MS,
   notePageLoaderExit,
+  pageLoaderArmed,
   pageLoaderExitStartedAt,
 } from "@/lib/page-loader";
 
@@ -43,17 +44,26 @@ export function PageLoader() {
     const root = document.documentElement;
     const el = ref.current;
     const gif = gifRef.current;
-    if (!el || !root.classList.contains(PAGE_LOADER_CLASS)) return;
+    // Deliberately NOT `root.classList.contains(PAGE_LOADER_CLASS)`: React
+    // empties that class attribute when it commits after hydration, so the
+    // check is only true for the first ~1.2s. pageLoaderArmed() is the durable
+    // record of the boot script's decision.
+    if (!el || !pageLoaderArmed()) return;
 
     const timers: number[] = [];
     const schedule = (delayMs: number, fn: () => void) => {
       timers.push(window.setTimeout(fn, Math.max(0, delayMs)));
     };
 
+    let finished = false;
+    let observer: MutationObserver | null = null;
+
     const finish = () => {
+      finished = true;
+      observer?.disconnect();
       // `display: none`, not the `visibility: hidden` the base state uses: a
       // visibility-hidden image is still animated by the compositor, and this
-      // one is 6 frames of 1080x1080 that would otherwise loop for the life of
+      // one is 27 frames of 1080x1080 that would otherwise loop for the life of
       // the page behind the page.
       el.setAttribute("data-state", "done");
       // Also the only thing that releases the scroll lock the armed class sets.
@@ -87,15 +97,34 @@ export function PageLoader() {
     // there is no `ended` event, and a timer started from mount is measuring the
     // wrong thing entirely — on a warm cache `performance.now()` is already past
     // PAGE_LOADER_MIN_MS by the time this effect runs, which made the overlay
-    // dismiss on `load` even while the GIF was still downloading. Visitors saw a
-    // loader that had barely started. Gating on the <img> becoming decodable,
-    // then waiting one full PAGE_LOADER_GIF_MS cycle, is what makes the
-    // animation actually finish before the page takes over.
+    // dismiss on `load` even while the GIF was still downloading. Gating on the
+    // <img> becoming decodable, then waiting one full PAGE_LOADER_GIF_MS cycle,
+    // is what makes the animation actually finish before the page takes over.
     let docReady = false;
     let gifCycleDone = false;
     const maybeExit = () => {
       if (docReady && gifCycleDone) playExit();
     };
+
+    // Keep the armed class on <html>, because React takes it away.
+    //
+    // The class is the whole reason CSS shows the overlay, and React's
+    // post-hydration commit recreates <html> and empties its class attribute —
+    // boot script armed it at 81ms, React cleared it at 1220ms. Until this was
+    // noticed the overlay was vanishing ~1.2s in on every cold load, mid-GIF,
+    // with all of the timers below still counting. Re-arming on the mutation is
+    // the smallest thing that survives React without moving visibility out of
+    // CSS.
+    observer = new MutationObserver(() => {
+      // Past the hard cap the backstop owns the screen; re-arming past it would
+      // override the boot script's own FAILSAFE_MS timer and strand the visitor.
+      if (finished || performance.now() >= PAGE_LOADER_MAX_MS) {
+        observer?.disconnect();
+        return;
+      }
+      if (!root.classList.contains(PAGE_LOADER_CLASS)) root.classList.add(PAGE_LOADER_CLASS);
+    });
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
 
     const onGifLoad = () => {
       // One cycle of the looped GIF, timed from the moment it can first paint.
@@ -131,11 +160,12 @@ export function PageLoader() {
     return () => {
       timers.forEach((id) => window.clearTimeout(id));
       window.removeEventListener("load", onLoad);
+      observer?.disconnect();
       // Deliberately NOT un-arming the class here. StrictMode runs this cleanup
       // between its two effect invocations, before a single timer has fired, so
       // releasing on cleanup blanks the loader in dev and does nothing in
       // production. finish() is the one place that releases it; if the bundle
-      // never gets that far, the boot script's own 6s timer does.
+      // never gets that far, the boot script's own timer does.
     };
   }, []);
 

@@ -760,7 +760,7 @@ img {
    Note that `display: none` (not `visibility: hidden`) is the resting state,
    because the tree is rebuilt once after hydration and that hands the overlay
    a brand-new node: a visibility-hidden <img> is still composited and its GIF
-   still plays, 6 frames of 1080x1080 looping behind the page for the rest of
+   still plays, 27 frames of 1080x1080 looping behind the page for the rest of
    the session. `display: none` costs nothing.
    ------------------------------------------------------------------- */
 .sk-preloader {

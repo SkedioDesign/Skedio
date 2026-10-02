@@ -29,7 +29,7 @@ export const servicesData: ServiceItem[] = [
     slug: "ui-ux-design",
     title: "UI/UX Design & Product Strategy Agency",
     shortTitle: "UI/UX Design",
-    tagline: "Strategy, research, and interface craft — digital products that feel inevitable.",
+    tagline: "UI/UX design for websites and apps that people enjoy using and come back to.",
     definition:
       "UI/UX design is the end-to-end discipline of turning a business problem into a digital experience people actually want to use. Skédio's engagements span product strategy, discovery research, information architecture, wireframes, interaction design, interactive prototyping, and usability testing — delivered as a validated, launch-ready product and a production-ready design system.",
     metaTitle: "UI/UX Design Agency | Product Design & UX Strategy | Skédio",
@@ -113,7 +113,8 @@ export const servicesData: ServiceItem[] = [
     slug: "website-development",
     title: "Custom Website Development Studio",
     shortTitle: "Website Development",
-    tagline: "Fast, accessible websites engineered to convert and built to last.",
+    tagline:
+      "Fast, responsive website development that turns your design into a site built to convert.",
     definition:
       "Website development is the engineering of responsive, accessible websites and the digital platforms behind them. Skédio combines modern frontend technologies (React, Next.js, TanStack Start, TypeScript) with resilient backend architectures to ship fast, secure, search-visible sites that hold up under real traffic.",
     metaTitle: "Website Development | Custom Web Design & Build | Skédio",
@@ -197,7 +198,7 @@ export const servicesData: ServiceItem[] = [
     title: "Brand Identity & Logo Design Studio",
     shortTitle: "Brand Identity",
     tagline:
-      "Distinctive visual identities built to be recognized at a glance and remembered long after.",
+      "Logos, color, typography, and guidelines that give your brand a consistent, recognizable identity.",
     definition:
       "Brand identity design is the creation of a unified visual system — including logomarks, typography, color schemes, motion guidelines, and brand design assets. Skédio crafts cohesive visual languages tailored for high-growth digital businesses.",
     metaTitle: "Brand Identity Design | Logo & Visual Systems | Skédio",
@@ -280,7 +281,8 @@ export const servicesData: ServiceItem[] = [
     slug: "marketing-creatives",
     title: "Marketing Creatives & Content Design",
     shortTitle: "Marketing Creatives",
-    tagline: "One brand voice, carried consistently across every channel that sells for you.",
+    tagline:
+      "Eye-catching marketing creatives for social, ads, and campaigns that keep your brand on message.",
     definition:
       "Marketing creatives are the repeatable visual and verbal assets a brand publishes D social posts, ad sets, email, print, and landing pages D so that every touchpoint looks like it came from the same studio. Sk—dio builds campaign systems, art direction, and content templates that stay on-brand as the calendar fills up.",
     metaTitle: "Marketing Creatives | Social & Campaign Design | Skédio",

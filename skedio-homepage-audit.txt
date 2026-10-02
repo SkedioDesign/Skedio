@@ -1,0 +1,117 @@
+===== SERVER =====
+HTTP: 200
+TTFB: 5.861685s
+TOTAL: 6.191370s
+SIZE: 114705 bytes
+
+===== CACHE =====
+age: 0
+cache-control: public, max-age=0, must-revalidate
+server: Vercel
+strict-transport-security: max-age=63072000; includeSubDomains; preload
+x-vercel-cache: MISS
+
+===== SEO =====
+<title>Skédio — Product Design, Identity &amp; Digital Studio
+<meta name="description" content="Skédio is a creative studio crafting bold brands, beautiful digital experiences, and high-performance digital products that help businesses grow." nonce="1ERD1/zQOS5ek7dmV7tQIg=="/
+<meta name="robots" content="index, follow" nonce="1ERD1/zQOS5ek7dmV7tQIg=="/
+<meta property="og:title" content="Skédio — Product Design, Identity &amp; Digital Studio" nonce="1ERD1/zQOS5ek7dmV7tQIg=="/
+<meta property="og:description" content="Skédio is a creative studio crafting bold brands, beautiful digital experiences, and high-performance digital products that help businesses grow." nonce="1ERD1/zQOS5ek7dmV7tQIg=="/
+<meta property="og:image" content="https://www.skediodesign.in/og-default.png" nonce="1ERD1/zQOS5ek7dmV7tQIg=="/
+<meta property="og:image:alt" content="Skédio — Product Design, Identity &amp; Digital Studio" nonce="1ERD1/zQOS5ek7dmV7tQIg=="/
+<meta name="twitter:description" content="Skédio is a creative studio crafting bold brands, beautiful digital experiences, and high-performance digital products that help businesses grow." nonce="1ERD1/zQOS5ek7dmV7tQIg=="/
+<link rel="canonical" href="https://www.skediodesign.in/" nonce="1ERD1/zQOS5ek7dmV7tQIg=="/
+
+===== PRELOADS =====
+/assets/FaqAccordion-txdWp9DB.js
+/assets/fraunces-CyMDk2pW.css
+/assets/gsap-C_8-Q54n.js
+/assets/index-oN-slwBy.js
+/assets/lenis-BlQGOmzZ.js
+/assets/lucide-DqUPO9a3.js
+/assets/react-DIngiQik.js
+/assets/responsive-images-BSv0Vd2l.js
+/assets/rolldown-runtime-hePW80VL.js
+/assets/router-C6cnnY1s.js
+/assets/routes-DARGHzml.js
+/assets/styles-wKBsVmYy.css
+/assets/use-scroll-animation-CkegGe2d.js
+
+===== BUILD JS =====
+295.5 KB  sentry-M0a4iIwR.js
+219.5 KB  router-D4SdZYOP.js
+177.5 KB  react-DIngiQik.js
+91.5 KB  gsap-C_8-Q54n.js
+44.1 KB  routes-C06NgDoh.js
+42.0 KB  vendor-D-4qwdPy.js
+33.1 KB  gsap-st-Dw6YHtNE.js
+20.8 KB  case-studies-CokPwqHP.js
+20.4 KB  lenis-BlQGOmzZ.js
+17.1 KB  about-DW3qK96d.js
+15.7 KB  _slug-DABQdbef.js
+11.1 KB  privacy-D2bhBEz3.js
+9.8 KB  contact-B-jd8SnM.js
+8.9 KB  _slug-w3vXmoLU.js
+7.5 KB  services-PPdFzkzb.js
+6.7 KB  blog-DEGbmWHl.js
+6.2 KB  terms-DEf-JIBe.js
+5.9 KB  projects-DgeBcO-8.js
+5.2 KB  lucide-DqUPO9a3.js
+5.0 KB  _slug-DWWAuMXH.js
+3.9 KB  _slug-C3ivOtKR.js
+2.8 KB  insights-ByP9ZdPO.js
+2.0 KB  ArticleRelatedLinks-DSjQ-adD.js
+2.0 KB  responsive-images-BSv0Vd2l.js
+1.7 KB  FaqAccordion-Dr_gBvS_.js
+1.6 KB  index-BcmHfHpJ.js
+1.2 KB  use-scroll-animation-B2VZyGKC.js
+1.1 KB  Breadcrumbs-DU7vAKPY.js
+0.9 KB  _slug-CKx_GFUy.js
+0.7 KB  _slug-B9TdN5A0.js
+
+===== HOMEPAGE IMPORTS =====
+1:import { createFileRoute, Link } from "@tanstack/react-router";
+2:import { ArrowUpRight, Zap } from "lucide-react";
+3:import { useGSAP } from "@gsap/react";
+4:import { gsap } from "gsap";
+5:import { SplitText } from "gsap/SplitText";
+6:import { useRef, useState } from "react";
+7:import { ScrollReveal } from "@/hooks/use-scroll-animation";
+8:import { useContactModal } from "@/context/use-contact-modal";
+9:import { seo, canonicalLink } from "@/lib/seo";
+10:import { siteConfig } from "@/lib/site-config";
+11:import { StructuredData } from "@/components/StructuredData";
+12:import { SiteHeader } from "@/components/SiteHeader";
+13:import { WebpImage } from "@/components/WebpImage";
+14:import { WhatWeDo } from "@/components/WhatWeDo";
+15:import { SelectedWork } from "@/components/SelectedWork";
+16:import { BlogPreview } from "@/components/BlogPreview";
+17:import { Clients } from "@/components/Clients";
+18:import { Testimonials } from "@/components/Testimonials";
+19:import { FaqItem } from "@/components/FaqAccordion";
+20:import { getFAQSchema, getServiceSchema, getWebPageSchema } from "@/lib/schema";
+21:import { servicesData } from "@/data/services";
+22:import { generalFaqs } from "@/data/faq";
+24:import heroDesktopAvif from "@/assets/hero.avif";
+25:import heroDesktopWebp from "@/assets/hero.webp";
+26:import hero1280Avif from "@/assets/hero-1280.avif";
+27:import hero1280Webp from "@/assets/hero-1280.webp";
+28:import hero1024Avif from "@/assets/hero-1024.avif";
+29:import hero1024Webp from "@/assets/hero-1024.webp";
+30:import hero768Avif from "@/assets/hero-768.avif";
+31:import hero768Webp from "@/assets/hero-768.webp";
+32:import heroMobileAvif from "@/assets/hero-mobile.avif";
+33:import heroMobileWebp from "@/assets/hero-mobile.webp";
+34:import heroMobile480Avif from "@/assets/hero-mobile-480.avif";
+35:import heroMobile480Webp from "@/assets/hero-mobile-480.webp";
+36:import heroFallback from "@/assets/hero.jpg";
+37:import heroFallback768 from "@/assets/hero-768.jpg";
+38:import heroFallback1024 from "@/assets/hero-1024.jpg";
+39:import heroFallback1280 from "@/assets/hero-1280.jpg";
+41:import frauncesCss from "@/fraunces.css?url";
+493:        <WhatWeDo />
+496:        <SelectedWork />
+499:        <BlogPreview />
+502:        <Clients />
+505:        <Testimonials />
+525:                <FaqItem

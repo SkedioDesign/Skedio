@@ -43,8 +43,17 @@ export const PAGE_LOADER_MIN_MS = 1100;
  * Also the backstop for the GIF gate: if the image never becomes decodable at
  * all (blocked, 404, still streaming on a bad connection) the overlay will not
  * wait for a cycle that cannot start.
+ *
+ * MUST stay above PAGE_LOADER_GIF_MS + PAGE_LOADER_EXIT_MS, or the backstop
+ * fires while a full cycle is still legitimately playing and truncates it. It
+ * also has to leave room for the GIF to *download* inside that budget: the exit
+ * waits for both, so a cap of GIF_MS + EXIT_MS would truncate the loop for any
+ * connection slower than the crossfade. 9000ms buys ~3.4s of load time on top of
+ * the 5s cycle; the cost is that a genuinely bad connection now sits in front
+ * of the page for up to 9s. Lower it toward ~6s if that trade ever goes the
+ * other way, but the loop will start getting cut on slow connections.
  */
-export const PAGE_LOADER_MAX_MS = 5000;
+export const PAGE_LOADER_MAX_MS = 9000;
 
 /** Crossfade duration. Must stay in sync with --sk-preloader-fade in styles.css. */
 export const PAGE_LOADER_EXIT_MS = 600;
@@ -52,21 +61,23 @@ export const PAGE_LOADER_EXIT_MS = 600;
 /**
  * Duration of ONE full cycle of /video/loading.gif.
  *
- * The GIF carries a NETSCAPE2.0 loop extension, so it never "ends" — there is no
- * `ended` event to wait on, and a fixed timer from mount is the wrong reference
- * because the GIF may still be downloading when the exit timer starts. The exit
- * is therefore gated on one full cycle elapsing from the moment the <img>
- * reports it is decodable (see PageLoader.tsx), and this is how long that cycle
- * is.
+ * The GIF carries a NETSCAPE2.0 loop extension (loop count 0 = forever), so it
+ * never "ends" — there is no `ended` event to wait on, and a timer started from
+ * mount is the wrong reference, because the GIF may still be downloading when
+ * the exit timer starts. The exit is therefore gated on one full cycle elapsing
+ * from the moment the <img> reports it is decodable (see PageLoader.tsx), and
+ * this is how long that cycle is.
  *
- * Measured by summing the graphic-control delays of the 6 frames in the shipped
- * file: 130 + 140 + 40 + 130 + (defaulted 100) + 130 = 570ms. Re-derive after
- * replacing the asset, or the overlay will dismiss part-way through a loop.
+ * 5000ms across 27 frames, i.e. [130, 140, 30, 130, 40, 100, 30, 130, 40, 130,
+ * 30, 170, 2770, 30, 130, 40, 100, 30, 130, 40, 130, 30, 140, 30, 130, 40,
+ * 130] — read off the shipped file with Pillow. Note the 2770ms tail: most of
+ * the cycle is one long held frame, not animation, so the perceived "wait" is
+ * much longer than the frame count suggests.
  *
- * Must stay below PAGE_LOADER_MAX_MS, which is the cap that keeps a slow
- * connection from stranding anyone behind this screen.
+ * Re-derive after replacing the asset (`PIL.Image.open(path)` and sum
+ * `info["duration"]` per frame) or the overlay will cut the loop short.
  */
-export const PAGE_LOADER_GIF_MS = 570;
+export const PAGE_LOADER_GIF_MS = 5000;
 
 /**
  * If the bundle errors out, hydration never commits, or React wedges, the
@@ -76,7 +87,7 @@ export const PAGE_LOADER_GIF_MS = 570;
  * might be broken). Measured from HTML parse, so it is a genuine backstop
  * behind PAGE_LOADER_MAX_MS rather than a competitor to it.
  */
-const FAILSAFE_MS = 6000;
+const FAILSAFE_MS = 11000;
 
 /**
  * Inline boot script, mounted through `head.scripts` in __root.tsx so it runs
@@ -99,7 +110,7 @@ const FAILSAFE_MS = 6000;
  * The session flag is written *before* revealing, so a document that never
  * hydrates does not replay the loader on the next reload.
  */
-export const PAGE_LOADER_BOOT_SCRIPT = `(function(){var d=document.documentElement;try{if(sessionStorage.getItem("${SEEN_KEY}"))return;if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;sessionStorage.setItem("${SEEN_KEY}","1");d.classList.add("${PAGE_LOADER_CLASS}");}catch(e){return;}setTimeout(function(){d.classList.remove("${PAGE_LOADER_CLASS}");},${FAILSAFE_MS});})();`;
+export const PAGE_LOADER_BOOT_SCRIPT = `(function(){var d=document.documentElement;try{if(sessionStorage.getItem("${SEEN_KEY}"))return;if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;sessionStorage.setItem("${SEEN_KEY}","1");window.__skPreloaderArmed=1;d.classList.add("${PAGE_LOADER_CLASS}");}catch(e){return;}setTimeout(function(){d.classList.remove("${PAGE_LOADER_CLASS}");},${FAILSAFE_MS});})();`;
 
 /**
  * Longest the hero entrance will hold for a loader that never reports in.
@@ -107,6 +118,21 @@ export const PAGE_LOADER_BOOT_SCRIPT = `(function(){var d=document.documentEleme
  * forever — the failure mode this whole design is trying to avoid.
  */
 const HANDOFF_BACKSTOP_MS = 1500;
+
+/**
+ * Whether the boot script above decided to show the overlay.
+ *
+ * This reads a JS global rather than the DOM on purpose. React recreates <html>
+ * when it commits after hydration, and that commit wipes *everything* on the
+ * element — the armed class, any data attribute, any inline style. Measured: the
+ * boot script armed `sk-preloader-pending` at 81ms and React emptied the class
+ * attribute at 1220ms, which dismissed the overlay mid-GIF no matter what the
+ * exit timers decided. A global survives that, so it is the only honest record
+ * of the original decision.
+ */
+export function pageLoaderArmed(): boolean {
+  return typeof window !== "undefined" && window.__skPreloaderArmed === 1;
+}
 
 /** Fired on `window` the instant the overlay starts fading. */
 const EXIT_EVENT = "sk:pageloader:exit";
@@ -142,7 +168,10 @@ export function pageLoaderExitStartedAt(): number | null {
  */
 export function afterPageLoaderExit(): Promise<void> {
   if (typeof window === "undefined") return Promise.resolve();
-  if (exitStartedAt !== null || !document.documentElement.classList.contains(PAGE_LOADER_CLASS)) {
+  // pageLoaderArmed(), not classList.contains(): React empties <html>'s class
+  // attribute on its post-hydration commit, and reading it here would report "no
+  // loader" and start the hero entrance behind a still-visible overlay.
+  if (exitStartedAt !== null || !pageLoaderArmed()) {
     return Promise.resolve();
   }
 

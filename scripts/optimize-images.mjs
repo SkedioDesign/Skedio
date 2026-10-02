@@ -75,24 +75,28 @@ const CONCURRENCY = 3;
  * and is never a rendered candidate.
  */
 export const RESPONSIVE_VARIANTS = [
-  { src: "ProductDesign.png", widths: [480, 768], formats: ["webp", "jpg"] },
-  // Service art that replaced the generated BrandIdentity/VisualIdentity pieces.
-  // Both sources are 16:9 photography, so the 480/768 ladder still covers the
-  // ~664px desktop slot at 1x and 2x DPR exactly as the PNGs did. They live
-  // under images/ rather than at the static root because they are supplied
-  // artwork, not build output — the generated twins sit beside their source,
-  // so these land at images/brand-identity-480.webp and friends.
+  // Service art supplied under images/. All four are 16:9, so the 480/768 ladder
+  // covers the ~664px desktop slot at 1x and 2x DPR. They live under images/
+  // rather than at the static root because they are supplied artwork, not build
+  // output — the generated twins sit beside their source, so these land at
+  // images/brand-identity-480.webp and friends.
+  //
+  // The slug is `marketing-creatives` but the file is `marketing-creative.jpeg`
+  // (singular). Variant names follow the FILE, so WhatWeDo.tsx must reference
+  // `marketing-creative-*`; renaming one side without the other silently 404s.
   { src: "images/brand-identity.jpeg", widths: [480, 768], formats: ["webp", "jpg"] },
   { src: "images/uiux.jpeg", widths: [480, 768], formats: ["webp", "jpg"] },
   { src: "images/website-development.jpeg", widths: [480, 768], formats: ["webp", "jpg"] },
-  // Nothing renders these two any more — WhatWeDo.tsx moved to the supplied
-  // artwork above. Their entries stay ONLY so the committed -480/-768 twins keep
-  // being recognised as managed variants: drop them and `isResponsiveVariant`
-  // starts returning false for those files, which silently subjects them to
-  // in-place recompression on every build. Delete the originals and their
-  // variants together with these lines, never one without the other.
+  { src: "images/marketing-creative.jpeg", widths: [480, 768], formats: ["webp", "jpg"] },
+  // Nothing renders these any more — WhatWeDo.tsx moved to the supplied artwork
+  // above. Their entries stay ONLY so the committed -480/-768 twins keep being
+  // recognised as managed variants: drop them and `isResponsiveVariant` starts
+  // returning false for those files, which silently subjects them to in-place
+  // recompression on every build. Delete the originals and their variants
+  // together with these lines, never one without the other.
   { src: "BrandIdentity.png", widths: [480, 768], formats: ["webp", "jpg"] },
   { src: "VisualIdentity.png", widths: [480, 768], formats: ["webp", "jpg"] },
+  { src: "ProductDesign.png", widths: [480, 768], formats: ["webp", "jpg"] },
   { src: "ProductDevelopment.png", widths: [480, 768], formats: ["webp", "jpg"] },
   { src: "Social Chums.png", widths: [160, 320], formats: ["webp", "png"] },
   { src: "Edios.png", widths: [160, 320], formats: ["webp", "png"] },

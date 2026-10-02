@@ -46,9 +46,9 @@ const SVC_SIZES = "(max-width: 768px) 100vw, 664px";
  * `width`/`height` are the intrinsic size of the 768w variant, emitted so the
  * browser reserves the box before the bytes land. Both slots crop with
  * object-cover inside a fixed-aspect container, so these only supply the aspect
- * hint — but the hint still has to be honest per source, and it no longer can
- * be shared: the supplied artwork under images/ is 16:9 photography (768x432),
- * while the lone surviving generated PNG still measures 1200x824 (768x527).
+ * hint — kept per service rather than hoisted because the hint has to stay
+ * honest if a source is ever swapped. All four are currently 16:9 supplied
+ * artwork under images/ (768x432).
  */
 const svcImages: Record<string, ServiceImage> = {
   "ui-ux-design": {
@@ -74,16 +74,16 @@ const svcImages: Record<string, ServiceImage> = {
     width: 768,
     height: 432,
   },
-  // Reuses the ProductDesign art. That art was orphaned when the Product
-  // Design service merged into UI/UX Design, and this card is the only place
-  // that still needs it -- swap in dedicated marketing creative if one lands.
+  // Source is `marketing-creative.jpeg` (singular) while the slug is
+  // `marketing-creatives` — the variant names follow the FILE, so keep the
+  // ladder on `marketing-creative-*`.
   "marketing-creatives": {
-    src: "/ProductDesign-768.jpg",
-    srcSet: "/ProductDesign-480.jpg 480w, /ProductDesign-768.jpg 768w",
+    src: "/images/marketing-creative-768.jpg",
+    srcSet: "/images/marketing-creative-480.jpg 480w, /images/marketing-creative-768.jpg 768w",
     webpSrcSet:
-      "/ProductDesign-480.webp 480w, /ProductDesign-768.webp 768w, /ProductDesign.webp 1200w",
+      "/images/marketing-creative-480.webp 480w, /images/marketing-creative-768.webp 768w, /images/marketing-creative.webp 1200w",
     width: 768,
-    height: 527,
+    height: 432,
   },
 };
 
@@ -118,7 +118,7 @@ const DEFAULT_SERVICE: WhatWeDoItem = {
   index: "01",
   slug: "ui-ux-design",
   title: "UI/UX Design",
-  description: "Strategy, research, and interface craft — digital products that feel inevitable.",
+  description: "UI/UX design for websites and apps that people enjoy using and come back to.",
   image: svcImages["ui-ux-design"] as ServiceImage,
   accentColor: "#f97316",
 };
