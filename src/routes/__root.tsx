@@ -89,7 +89,7 @@ function RootComponent() {
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en-IN">
       <head>
         <HeadContent />
         <StructuredData data={[getOrganizationSchema(), getWebSiteSchema()]} />

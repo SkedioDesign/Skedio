@@ -1,5 +1,6 @@
 import { siteConfig } from "./site-config";
 import { toAbsoluteUrl } from "./seo";
+import { servicesData } from "../data/services";
 
 export function getOrganizationSchema() {
   return {
@@ -8,6 +9,7 @@ export function getOrganizationSchema() {
     "@id": `${siteConfig.url}/#organization`,
     name: siteConfig.name,
     legalName: siteConfig.legalName,
+    alternateName: ["Skedio", "Skedio Design"],
     url: toAbsoluteUrl("/"),
     logo: `${siteConfig.url}/skedio-logomark.png`,
     image: `${siteConfig.url}/skedio-primary.png`,
@@ -25,6 +27,12 @@ export function getOrganizationSchema() {
         availableLanguage: ["English", "Hindi"],
       },
     ],
+    founder: {
+      "@type": "Person",
+      name: "Aakash Choudhary",
+      url: toAbsoluteUrl("/about"),
+    },
+    knowsAbout: servicesData.map((service) => service.shortTitle),
     address: {
       "@type": "PostalAddress",
       addressCountry: siteConfig.address.addressCountry,
@@ -43,7 +51,7 @@ export function getWebSiteSchema() {
     publisher: {
       "@id": `${siteConfig.url}/#organization`,
     },
-    inLanguage: "en-US",
+    inLanguage: "en-IN",
   };
 }
 

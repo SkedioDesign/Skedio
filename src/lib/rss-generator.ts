@@ -134,7 +134,7 @@ ${categories}
     <title>${escapeXml(config.channelTitle)}</title>
     <link>${escapeXml(absolute(config.channelPath))}</link>
     <description>${escapeXml(config.channelDescription)}</description>
-    <language>en-US</language>
+    <language>en-in</language>
     <ttl>60</ttl>
     <lastBuildDate>${escapeXml(lastBuildDate)}</lastBuildDate>
     <atom:link href="${escapeXml(absolute(config.feedPath))}" rel="self" type="application/rss+xml" />
