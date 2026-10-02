@@ -117,6 +117,19 @@ export function toAbsoluteUrl(path: string = "/"): string {
 }
 
 /**
+ * Robots directive for indexable pages.
+ *
+ * `max-image-preview:large` is Google's opt-in that lets a result show the
+ * full-size image instead of a thumbnail — without it, large images are capped
+ * at ~300px wide in image results, which starves the case-study and blog work.
+ * `max-snippet:-1` and `max-video-preview:-1` lift Google's length caps on
+ * text and video results. All three are index-only: a noindexed page keeps the
+ * plain "noindex, nofollow" pair, because an unstated directive defaults to
+ * "index, follow" and the intent must stay written down either way.
+ */
+const ROBOTS_INDEX = "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
+
+/**
  * Builds the full metadata set for a page. Every route's `head()` goes through
  * here — this is the only place that emits title/description/robots/OG/Twitter,
  * which is what keeps the nine required fields from drifting between routes.
@@ -151,7 +164,7 @@ export function seo({
     // directive means "index, follow" by default, which leaves the indexability
     // decision implicit and therefore unauditable — every route's intent should
     // be written down where it can be asserted in a test.
-    { name: "robots", content: noindex ? "noindex, nofollow" : "index, follow" },
+    { name: "robots", content: noindex ? "noindex, nofollow" : ROBOTS_INDEX },
 
     { name: "theme-color", content: themeColor },
 

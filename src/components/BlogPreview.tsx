@@ -6,6 +6,22 @@ import { WebpImage } from "@/components/WebpImage";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+/*
+ * Intrinsic size of each post's preview image, measured from the files in
+ * src/assets. Keyed by slug rather than baked into FeaturedStory because that
+ * component renders whichever post is first: a single hardcoded pair would go
+ * stale (and lie) the moment the featured post changes. A post with no entry
+ * simply renders without dimensions.
+ */
+const previewDims: Record<string, { width: number; height: number }> = {
+  // svc-uiux.jpg
+  "good-ui-isnt-about-making-things-beautiful": { width: 700, height: 560 },
+  // insight-1.jpg
+  "ai-wont-replace-designers": { width: 560, height: 560 },
+  // svc-identity.jpg
+  "a-logo-is-not-a-brand": { width: 700, height: 560 },
+};
+
 function fmtDate(iso?: string) {
   if (!iso || iso.length < 10) return "";
   const [y, m, d] = iso.slice(0, 10).split("-");
@@ -34,6 +50,7 @@ function CategoryLabel({ category }: { category: string }) {
  */
 
 function FeaturedStory({ post }: { post: BlogPost }) {
+  const dims = previewDims[post.slug];
   return (
     <Link
       to="/blog/$slug"
@@ -59,6 +76,7 @@ function FeaturedStory({ post }: { post: BlogPost }) {
         <WebpImage
           src={post.previewImage}
           alt=""
+          {...(dims ? { width: dims.width, height: dims.height } : {})}
           loading="lazy"
           decoding="async"
           className="aspect-[3/2] w-full object-cover will-change-transform transition-transform duration-700 ease-out group-hover:scale-[1.02]"

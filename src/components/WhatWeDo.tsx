@@ -25,6 +25,15 @@ const svcImages: Record<string, string> = {
  */
 const SVC_SIZES = "(max-width: 768px) 100vw, 664px";
 
+/*
+ * Intrinsic size of every service preview, measured from the source files —
+ * all four PNGs are 1200x824. Emitted as width/height so the browser reserves
+ * the box before the bytes land. Both slots crop with object-cover, so these
+ * only supply the aspect hint; keep in sync if a PNG is replaced.
+ */
+const SVC_IMAGE_WIDTH = 1200;
+const SVC_IMAGE_HEIGHT = 824;
+
 const svcWebpSrcSets: Record<string, string> = {
   "product-design":
     "/ProductDesign-480.webp 480w, /ProductDesign-768.webp 768w, /ProductDesign.webp 1200w",
@@ -224,6 +233,8 @@ function MobileAccordion({
                       src={s.image}
                       webpSrcSet={svcWebpSrcSets[s.slug]}
                       sizes={SVC_SIZES}
+                      width={SVC_IMAGE_WIDTH}
+                      height={SVC_IMAGE_HEIGHT}
                       alt={s.title}
                       loading="lazy"
                       decoding="async"
@@ -294,6 +305,8 @@ export function WhatWeDo() {
                     src={s.image}
                     webpSrcSet={svcWebpSrcSets[s.slug]}
                     sizes={SVC_SIZES}
+                    width={SVC_IMAGE_WIDTH}
+                    height={SVC_IMAGE_HEIGHT}
                     alt={s.title}
                     loading="lazy"
                     decoding="async"

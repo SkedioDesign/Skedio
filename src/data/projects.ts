@@ -49,6 +49,12 @@ export interface ProjectSummary {
   tagColor: ProjectTagColor;
   size: ProjectCellSize;
   published: boolean;
+  /*
+   * Optional one-line result of the work, shown on the homepage card under
+   * the title. Leave unset when there is no outcome worth claiming — the
+   * card then renders exactly as it did before this field existed.
+   */
+  outcome?: string;
 }
 
 export const projects: ProjectSummary[] = [
@@ -147,6 +153,7 @@ export interface SelectedWorkItem {
   tagColor: ProjectTagColor;
   image: string;
   size: ProjectCellSize;
+  outcome?: string;
 }
 
 export const selectedWork: SelectedWorkItem[] = projects.map((p) => ({
@@ -157,6 +164,9 @@ export const selectedWork: SelectedWorkItem[] = projects.map((p) => ({
   tagColor: p.tagColor,
   image: p.cover,
   size: p.size,
+  // Spread rather than `outcome: p.outcome` so an unset field stays absent
+  // from the item (exactOptionalPropertyTypes rejects an explicit undefined).
+  ...(p.outcome ? { outcome: p.outcome } : {}),
 }));
 
 export function getProjectBySlug(slug: string): ProjectSummary | undefined {

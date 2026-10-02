@@ -168,8 +168,15 @@ export function Footer() {
 
         <div>
           <p className="type-h6">Let's create something great</p>
-          <p className="type-sm mt-5 text-white/60">{siteConfig.email}</p>
-          <p className="type-sm text-white/60">{siteConfig.phone}</p>
+          <p className="type-sm mt-5 text-white/60">
+            <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
+          </p>
+          {/* Same tel: construction as /contact — the href strips every
+              non-digit so dialling works, while the visible text keeps the
+              spacing people read. */}
+          <p className="type-sm text-white/60">
+            <a href={`tel:${siteConfig.phone.replace(/[^+\d]/g, "")}`}>{siteConfig.phone}</a>
+          </p>
           {status === "sent" ? (
             <div className="mt-6 flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-5 py-3 text-sm font-semibold text-emerald-400">
               <Check className="size-4" />

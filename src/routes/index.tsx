@@ -515,14 +515,19 @@ function Index() {
           </ScrollReveal>
 
           <div className="mt-12 space-y-4">
-            {(showMore ? generalFaqs : generalFaqs.slice(0, 4)).map((faq, index) => (
+            {generalFaqs.map((faq, index) => (
               <ScrollReveal key={faq.question} delay={index % 3}>
-                <FaqItem
-                  question={faq.question}
-                  answer={faq.answer}
-                  isOpen={openFaq === index}
-                  onToggle={() => setOpenFaq(openFaq === index ? null : index)}
-                />
+                <div
+                  className={!showMore && index >= 4 ? "sr-only pointer-events-none" : undefined}
+                  aria-hidden={!showMore && index >= 4}
+                >
+                  <FaqItem
+                    question={faq.question}
+                    answer={faq.answer}
+                    isOpen={openFaq === index}
+                    onToggle={() => setOpenFaq(openFaq === index ? null : index)}
+                  />
+                </div>
               </ScrollReveal>
             ))}
           </div>

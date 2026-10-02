@@ -45,6 +45,20 @@ const sizeClasses: Record<ProjectCellSize, string> = {
 
 const isCompactSize = (size: ProjectCellSize) => size === "normal";
 
+/*
+ * Intrinsic size of each cover, measured from the file the card's `src`
+ * resolves to: the full original for HaoCabs, the 800w candidate for the two
+ * that ship a srcset. Every candidate in a srcset keeps the source ratio, so
+ * these stay correct whichever one the browser picks. Keyed by the `cover`
+ * path from src/data/projects.ts, so a new project shows up as missing here
+ * rather than rendering with the wrong aspect hint.
+ */
+const coverDims: Record<string, { width: number; height: number }> = {
+  "/HaoCabs/cover.png": { width: 941, height: 1672 },
+  "/EDIOS/1.jpg": { width: 800, height: 450 },
+  "/tiffinly/1.jpg": { width: 800, height: 534 },
+};
+
 const MORPH_MS = 480;
 const EXIT_MS = 340;
 
@@ -69,6 +83,7 @@ function ProjectCard({
       ? "justify-between p-8 md:p-12"
       : "justify-between p-5 md:p-7";
   const responsive = responsiveFor(project.image);
+  const dims = coverDims[project.image];
   const sizes = isCompact ? COMPACT_SIZES : WIDE_SIZES;
   const hasResponsive = responsive.webpSrcSet.length > 0;
   return (
@@ -97,6 +112,7 @@ function ProjectCard({
           webpSrcSet={hasResponsive ? responsive.webpSrcSet : undefined}
           sizes={hasResponsive ? sizes : undefined}
           alt={`${project.title} — ${project.subtitle}`}
+          {...(dims ? { width: dims.width, height: dims.height } : {})}
           loading="lazy"
           decoding="async"
           className="absolute inset-0 h-full w-full object-cover"
@@ -118,7 +134,17 @@ function ProjectCard({
               }`}
             >
               {project.title}
-            </h3>            <p
+            </h3>
+            {project.outcome && (
+              <p
+                className={`mt-1.5 line-clamp-1 font-medium text-white/60 ${
+                  isBillboard ? "text-sm sm:text-base" : "text-xs sm:text-sm"
+                }`}
+              >
+                {project.outcome}
+              </p>
+            )}
+            <p
               className={`mt-1.5 line-clamp-1 text-white/80 ${
                 isBillboard ? "text-base sm:text-lg" : "text-sm"
               }`}

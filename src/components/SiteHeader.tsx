@@ -33,6 +33,10 @@ export function SiteHeader({ links }: { links: HeaderLink[] }) {
   // Set when the menu closes as a side effect of opening the contact modal,
   // so focus restoration doesn't yank focus out from under the modal.
   const suppressRestore = useRef(false);
+  // Whether focus sits inside the menu right now. Tracked explicitly because
+  // the closed menu is inert, and adding `inert` blurs whatever had focus —
+  // so by the time the close effect runs, activeElement is already <body>.
+  const focusInsideMenu = useRef(false);
 
   useEffect(() => {
     if (menuOpen) {
@@ -74,7 +78,10 @@ export function SiteHeader({ links }: { links: HeaderLink[] }) {
       if (openMethod.current === "keyboard") closeRef.current?.focus({ preventScroll: true });
       openMethod.current = null;
     } else {
-      if (!suppressRestore.current && menuRef.current?.contains(document.activeElement)) {
+      const hadFocusInside =
+        focusInsideMenu.current || menuRef.current?.contains(document.activeElement);
+      focusInsideMenu.current = false;
+      if (!suppressRestore.current && hadFocusInside) {
         triggerRef.current?.focus({ preventScroll: true });
       }
       suppressRestore.current = false;
@@ -82,7 +89,7 @@ export function SiteHeader({ links }: { links: HeaderLink[] }) {
   }, [menuOpen]);
 
   // Keep Tab / Shift+Tab cycling inside the open menu. The closed menu is
-  // inert (see below), so the trap only needs to run while open.
+  // inert (see the container below), so the trap only needs to run while open.
   const onMenuKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
       setMenuOpen(false);
@@ -175,6 +182,15 @@ export function SiteHeader({ links }: { links: HeaderLink[] }) {
       <div
         id="site-mobile-menu"
         aria-hidden={!menuOpen}
+        inert={!menuOpen}
+        onFocus={() => {
+          focusInsideMenu.current = true;
+        }}
+        onBlur={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+            focusInsideMenu.current = false;
+          }
+        }}
         className={cn(
           "fixed inset-0 z-[60] flex flex-col bg-background transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] md:hidden",
           menuOpen ? "translate-x-0 opacity-100" : "pointer-events-none translate-x-full opacity-0",
