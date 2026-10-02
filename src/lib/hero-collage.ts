@@ -76,18 +76,23 @@ export const COLLAGE_STAGGER_MS = 200;
  * The stage is `position: sticky`, so this is not the height of the hero — it
  * is the extra scroll distance the visitor travels while the hero stays pinned.
  *
- * Was 420vh, which worked out to ~320vh of scrolling before the hero would let
- * anyone past. That was solving a problem the dwell floors already solve: the
- * gates only ever DELAY a stage, so the minimum time on each beat is enforced
- * by LOGOS_DWELL_MS / COLLAGE_DWELL_MS regardless of how hard the visitor
- * scrolls. A long track therefore bought no extra pacing and cost a lot of
- * scrolling through a stage that was only waiting on a timer.
+ * Was 420vh, then 200vh. That history was solving a problem the dwell floors
+ * already solve: the gates only ever DELAY a stage, so the minimum time on each
+ * beat is enforced by LOGOS_DWELL_MS / COLLAGE_DWELL_MS regardless of how hard
+ * the visitor scrolls. A long track therefore bought no extra pacing and cost a
+ * lot of scrolling through a stage that was only waiting on a timer.
  *
- * At 200vh the pin distance is one viewport, which still spreads the three
- * gates over 28vh / 46vh / 64vh of travel — enough that the beats arrive in
- * order on a natural scroll — while letting someone past in roughly one flick.
+ * At 150vh the pin distance is half a viewport, so clearing the hero is a short
+ * flick rather than a chore. The gates stay scroll-usable because they are
+ * FRACTIONS of the pin distance, not fixed offsets — they rescale with this
+ * constant for free, landing at 14vh / 23vh / 32vh of travel here.
+ *
+ * The floor worth respecting: the collage gate (0.64) must stay far enough into
+ * the pin that an ordinary scroll reaches it. Below roughly 140vh the gate lands
+ * inside a single flick, every stage releases on its timer instead of on scroll,
+ * and cutting further buys no speed — it only starts truncating the collage.
  */
-export const HERO_TRACK_VH = 200;
+export const HERO_TRACK_VH = 150;
 
 /**
  * Scroll-progress gates, as a fraction of the pinned scroll distance.
