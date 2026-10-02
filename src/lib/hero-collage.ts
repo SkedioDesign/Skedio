@@ -75,10 +75,19 @@ export const COLLAGE_STAGGER_MS = 200;
  *
  * The stage is `position: sticky`, so this is not the height of the hero — it
  * is the extra scroll distance the visitor travels while the hero stays pinned.
- * At ~420vh there is roughly 320vh of pin time, which at a typical trackpad
- * flick is a comfortable few seconds of held hero rather than a blur past.
+ *
+ * Was 420vh, which worked out to ~320vh of scrolling before the hero would let
+ * anyone past. That was solving a problem the dwell floors already solve: the
+ * gates only ever DELAY a stage, so the minimum time on each beat is enforced
+ * by LOGOS_DWELL_MS / COLLAGE_DWELL_MS regardless of how hard the visitor
+ * scrolls. A long track therefore bought no extra pacing and cost a lot of
+ * scrolling through a stage that was only waiting on a timer.
+ *
+ * At 200vh the pin distance is one viewport, which still spreads the three
+ * gates over 28vh / 46vh / 64vh of travel — enough that the beats arrive in
+ * order on a natural scroll — while letting someone past in roughly one flick.
  */
-export const HERO_TRACK_VH = 420;
+export const HERO_TRACK_VH = 200;
 
 /**
  * Scroll-progress gates, as a fraction of the pinned scroll distance.
