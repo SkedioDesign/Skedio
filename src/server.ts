@@ -20,14 +20,27 @@ const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
  * The one Content-Security-Policy for the app. Emitted here rather than in
  * vercel.json because the script nonce is generated per request; Vercel ships
  * no competing policy, so there is nothing to intersect with.
+ *
+ * Every third-party origin listed below is one the browser actually contacts;
+ * anything absent was verified unused against the built bundle. Fonts are
+ * self-hosted (`@fontsource-variable/montserrat` plus local Gilroy woff2), so
+ * no Google Fonts origin appears here, and nothing emits a `data:` or `blob:`
+ * URL, so neither is allowed in `img-src`/`font-src`.
  */
 function buildContentSecurityPolicy(nonce: string): string {
   return [
     "default-src 'self'",
+    // cloud.umami.is serves the analytics tag; the injected <script> is created
+    // by JS and so carries no nonce, which is why the origin is allowed here.
     `script-src 'self' 'nonce-${nonce}' https://cloud.umami.is`,
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "img-src 'self' data: blob:",
-    "font-src 'self' data: https://fonts.gstatic.com",
+    // 'unsafe-inline' is required for the React inline style attributes
+    // (GSAP-driven transforms, responsive-image sizing) that cannot carry a
+    // nonce; no stylesheet is fetched from a third party.
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self'",
+    "font-src 'self'",
+    // formsubmit.co is the contact form's fetch target; gateway.umami.is is
+    // the endpoint the Umami tag posts events to.
     "connect-src 'self' https://formsubmit.co https://gateway.umami.is",
     "object-src 'none'",
     "base-uri 'self'",
@@ -366,17 +379,17 @@ const fetchHandler: RequestHandler<Register> = async (request) => {
       const rendered = await handle(request);
       const headers = new Headers(rendered.headers);
       headers.set("content-security-policy", buildContentSecurityPolicy(nonce));
-      // "/" only, GET only, 200 only. The homepage is a single public document
-      // with no per-visitor state, so one rendered copy can be stored at the
-      // edge and reused. Trade-off: the nonce above is then shared by everyone
-      // served that copy, so a leaked nonce stays usable for as long as the
-      // object is cached (60s, plus up to 300s of stale-while-revalidate)
-      // rather than expiring with one response.
-      // s-maxage / stale-while-revalidate are ignored by private browser
-      // caches, so individual visitors and local dev still revalidate.
-      if (url.pathname === "/" && request.method === "GET" && rendered.status === 200) {
-        headers.set("cache-control", "public, max-age=0, s-maxage=60, stale-while-revalidate=300");
-      }
+      // The nonce above is minted per request, so the document that carries it
+      // must not outlive that request in ANY shared cache. An earlier revision
+      // sent "/" as `public, max-age=0, s-maxage=60, stale-while-revalidate=300`,
+      // which let the edge replay one response — and therefore one nonce — to
+      // every visitor for up to 60s plus 300s of stale-while-revalidate. That
+      // defeats the point of a per-request nonce: an attacker who observes the
+      // cached copy holds a token that still validates for every other visitor
+      // the edge serves from it. `no-store` also states the intent directly
+      // instead of relying on the absence of s-maxage, so a later edit that
+      // re-adds a shared directive cannot silently reintroduce the reuse.
+      headers.set("cache-control", "private, no-store");
       return new Response(rendered.body, {
         status: rendered.status,
         statusText: rendered.statusText,
