@@ -63,6 +63,16 @@ export const Route = createRootRoute({
       { rel: "manifest", href: "/site.webmanifest" },
       { rel: "stylesheet", href: appCss },
     ],
+    // Gates the `.js .sk-reveal-base { opacity: 0 }` start state so scroll
+    // reveals are progressive enhancement — without JS nothing clears that
+    // opacity and whole sections render blank. Declared through `head.scripts`
+    // so TanStack applies the CSP nonce (ssr.nonce in src/router.tsx); a raw
+    // inline <script> is blocked by `script-src 'self' 'nonce-…'`.
+    scripts: [
+      {
+        children: "document.documentElement.classList.add('js')",
+      },
+    ],
   }),
   component: RootComponent,
   errorComponent: ErrorFallback,

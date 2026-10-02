@@ -3,9 +3,10 @@ import { ArrowUpRight, Zap } from "lucide-react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { SplitText } from "gsap/SplitText";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { useContactModal } from "@/context/use-contact-modal";
+import { loadScrollTrigger } from "@/lib/animation-loader";
 import { seo, canonicalLink } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 import { StructuredData } from "@/components/StructuredData";
@@ -88,11 +89,9 @@ export const Route = createFileRoute("/")({
       // Fraunces is the one family this page genuinely needs that nothing
       // above the fold uses. Its only two renderers here — BlogPreview's
       // numerals and title, and Testimonials' quote glyph — live in
-      // `section[id]` subtrees, which src/styles.css gives
-      // `content-visibility: auto`, so they aren't painted at all until
-      // scrolled near; BlogPreview's are additionally opacity-0 behind
-      // ScrollReveal. So the ~82 KB roman + italic can load after first
-      // paint without a visible reflow.
+      // below-fold headings that sit opacity-0 behind ScrollReveal until
+      // they scroll into view. So the ~82 KB roman + italic can load after
+      // first paint without a visible reflow.
       //
       // A <link> in `links` would still be render-blocking and would put
       // 82 KB in front of the preloaded hero image that is this page's
@@ -185,6 +184,18 @@ function Index() {
   const { openContactModal } = useContactModal();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [showMore, setShowMore] = useState(false);
+
+  // "Show more" and the accordion both change the document height, and
+  // ScrollTrigger caches absolute trigger positions. Without a refresh the
+  // reveals below the FAQ list keep firing against stale offsets. Deferred
+  // past the 0.5s accordion tween so the measurement lands on final heights.
+  useEffect(() => {
+    const id = window.setTimeout(
+      () => void loadScrollTrigger().then((mod) => mod?.ScrollTrigger.refresh()),
+      600,
+    );
+    return () => window.clearTimeout(id);
+  }, [showMore, openFaq]);
 
   const pageRef = useRef<HTMLDivElement>(null);
 
@@ -517,10 +528,12 @@ function Index() {
           <div className="mt-12 space-y-4">
             {generalFaqs.map((faq, index) => (
               <ScrollReveal key={faq.question} delay={index % 3}>
-                <div
-                  className={!showMore && index >= 4 ? "sr-only pointer-events-none" : undefined}
-                  aria-hidden={!showMore && index >= 4}
-                >
+                {/* `hidden` (display:none) rather than `sr-only` + aria-hidden:
+                    sr-only clips to 1x1px but stays focusable, which put seven
+                    invisible FAQ buttons in the tab order while announcing
+                    aria-hidden="true". `hidden` drops them from the a11y tree,
+                    the tab order, and layout, and still avoids remounting. */}
+                <div hidden={!showMore && index >= 4}>
                   <FaqItem
                     question={faq.question}
                     answer={faq.answer}

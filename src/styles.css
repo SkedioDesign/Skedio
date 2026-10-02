@@ -527,13 +527,17 @@
 }
 
 /* ------------------------------------------------------------------
-   Performance: GPU compositing & content-visibility
-   Off-screen sections skip paint until near viewport → faster FPS
+   Performance: GPU compositing
+   NOTE: `content-visibility: auto` was removed from `section[id]` here.
+   It made below-fold sections report `contain-intrinsic-size` placeholder
+   heights (observed: 696px) until the browser picked a moment to render
+   them, then jump to their real height. ScrollTrigger measures absolute
+   document positions once at refresh and never observes a skipped subtree
+   expanding (no `resize` fires), so its cached trigger positions went stale
+   and whole sections stayed parked at `.sk-reveal-base { opacity: 0 }` on
+   first paint — blank until the user scrolled. Correct reveal beats
+   skipped paint.
 ------------------------------------------------------------------- */
-section[id] {
-  content-visibility: auto;
-  contain-intrinsic-size: 0 600px;
-}
 
 img {
   /* GPU-composited layer hint for images during scroll */
@@ -618,8 +622,14 @@ img {
 
 /* ------------------------------------------------------------------
    120fps Hardware-Accelerated Scroll Reveals
+   The hidden start state is scoped to `.js` (set on <html> by an inline
+   script in RootDocument). Without JS nothing ever clears this opacity,
+   so the testimonials and FAQ sections were structurally present but
+   rendered fully blank — verified 12/12 FAQ wrappers at opacity 0 with
+   scripting off. Gating on `.js` makes the reveal progressive
+   enhancement: no JS, no hidden state, content just shows.
 ------------------------------------------------------------------- */
-.sk-reveal-base {
+.js .sk-reveal-base {
   opacity: 0;
 }
 
