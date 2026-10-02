@@ -91,50 +91,62 @@ function DesktopAccordion({ active, onSelect }: { active: number; onSelect: (i: 
     <div className="flex flex-col pt-28">
       {services.map((s, i) => {
         const isActive = i === active;
+        const isLast = i === services.length - 1;
         return (
-          <button
-            key={s.slug}
-            type="button"
-            onMouseEnter={() => onSelect(i)}
-            onClick={() => onSelect(i)}
-            aria-pressed={isActive}
-            className={cn(
-              "group relative flex w-full cursor-pointer items-center gap-5 border-b py-7 pr-2 text-left transition-all duration-300 ease-out last:border-b-0",
-              isActive ? "border-primary/30 lg:pl-5" : "border-border lg:pl-0 lg:hover:pl-3",
-            )}
-          >
-            <AccentBar active={isActive} />
-            <span
-              aria-hidden="true"
+          // The heading carries the service name for assistive tech and the
+          // document outline; the button stays inside it, which is the standard
+          // accordion pattern. `tracking-[-0.04em]` re-states the body tracking
+          // the button used to inherit directly, because styles.css applies a
+          // tighter -0.025em to every h1-h6 and would otherwise loosen the
+          // index and title spans.
+          <h3 key={s.slug} className="tracking-[-0.04em]">
+            <button
+              type="button"
+              onMouseEnter={() => onSelect(i)}
+              onClick={() => onSelect(i)}
+              aria-pressed={isActive}
               className={cn(
-                "type-label shrink-0 transition-colors duration-300 ease-out",
-                isActive
-                  ? "font-extrabold text-primary"
-                  : "text-muted-foreground group-hover:text-primary",
+                "group relative flex w-full cursor-pointer items-center gap-5 py-7 pr-2 text-left transition-all duration-300 ease-out",
+                // `last:border-b-0` cannot live on the button any more: it is the
+                // heading's only child, so `:last-child` would strip every row's
+                // divider. Resolved from the index instead.
+                isLast ? "border-b-0" : "border-b",
+                isActive ? "border-primary/30 lg:pl-5" : "border-border lg:pl-0 lg:hover:pl-3",
               )}
             >
-              {s.index}
-            </span>
-            <span
-              className={cn(
-                "flex-1 font-display text-xl transition-colors duration-300 ease-out md:text-2xl",
-                isActive
-                  ? "font-extrabold text-foreground"
-                  : "font-semibold text-muted-foreground/70 group-hover:text-foreground",
-              )}
-            >
-              {s.title}
-            </span>
-            <ArrowUpRight
-              aria-hidden="true"
-              className={cn(
-                "size-5 shrink-0 transition-all duration-300 ease-out",
-                isActive
-                  ? "-translate-y-0 translate-x-0 text-primary opacity-100"
-                  : "-translate-y-1 translate-x-1 text-muted-foreground/50 opacity-0 group-hover:text-primary group-hover:opacity-100",
-              )}
-            />
-          </button>
+              <AccentBar active={isActive} />
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "type-label shrink-0 transition-colors duration-300 ease-out",
+                  isActive
+                    ? "font-extrabold text-primary"
+                    : "text-muted-foreground group-hover:text-primary",
+                )}
+              >
+                {s.index}
+              </span>
+              <span
+                className={cn(
+                  "flex-1 font-display text-xl transition-colors duration-300 ease-out md:text-2xl",
+                  isActive
+                    ? "font-extrabold text-foreground"
+                    : "font-semibold text-muted-foreground/70 group-hover:text-foreground",
+                )}
+              >
+                {s.title}
+              </span>
+              <ArrowUpRight
+                aria-hidden="true"
+                className={cn(
+                  "size-5 shrink-0 transition-all duration-300 ease-out",
+                  isActive
+                    ? "-translate-y-0 translate-x-0 text-primary opacity-100"
+                    : "-translate-y-1 translate-x-1 text-muted-foreground/50 opacity-0 group-hover:text-primary group-hover:opacity-100",
+                )}
+              />
+            </button>
+          </h3>
         );
       })}
     </div>
@@ -160,37 +172,43 @@ function MobileAccordion({
               isOpen ? "border-primary/50" : "border-border",
             )}
           >
-            <button
-              type="button"
-              onClick={() => onSelect(isOpen ? null : i)}
-              aria-expanded={isOpen}
-              aria-controls={`service-panel-${s.slug}`}
-              className="flex w-full cursor-pointer items-center gap-4 p-6 text-left"
-            >
-              <span
-                className={cn(
-                  "type-label shrink-0 transition-colors duration-300 ease-out",
-                  isOpen ? "font-extrabold text-primary" : "text-muted-foreground",
-                )}
+            {/* Same accordion pattern as the desktop list: heading outside,
+                button inside. `tracking-[-0.04em]` for the reason given there —
+                the title span's own `tracking-tight` already pins the visible
+                text, this keeps the index label matching. */}
+            <h3 className="tracking-[-0.04em]">
+              <button
+                type="button"
+                onClick={() => onSelect(isOpen ? null : i)}
+                aria-expanded={isOpen}
+                aria-controls={`service-panel-${s.slug}`}
+                className="flex w-full cursor-pointer items-center gap-4 p-6 text-left"
               >
-                {s.index}
-              </span>
-              <span
-                className={cn(
-                  "flex-1 font-display text-lg font-bold tracking-tight transition-colors duration-300 ease-out",
-                  isOpen ? "text-foreground" : "text-foreground/70",
-                )}
-              >
-                {s.title}
-              </span>
-              <ChevronDown
-                aria-hidden="true"
-                className={cn(
-                  "size-5 shrink-0 transition-transform duration-300 ease-out",
-                  isOpen ? "rotate-180 text-primary" : "text-muted-foreground",
-                )}
-              />
-            </button>
+                <span
+                  className={cn(
+                    "type-label shrink-0 transition-colors duration-300 ease-out",
+                    isOpen ? "font-extrabold text-primary" : "text-muted-foreground",
+                  )}
+                >
+                  {s.index}
+                </span>
+                <span
+                  className={cn(
+                    "flex-1 font-display text-lg font-bold tracking-tight transition-colors duration-300 ease-out",
+                    isOpen ? "text-foreground" : "text-foreground/70",
+                  )}
+                >
+                  {s.title}
+                </span>
+                <ChevronDown
+                  aria-hidden="true"
+                  className={cn(
+                    "size-5 shrink-0 transition-transform duration-300 ease-out",
+                    isOpen ? "rotate-180 text-primary" : "text-muted-foreground",
+                  )}
+                />
+              </button>
+            </h3>
 
             <div
               id={`service-panel-${s.slug}`}
@@ -300,9 +318,13 @@ export function WhatWeDo() {
                   <span className="h-px flex-1 bg-border" />
                   <span className="type-caption text-muted-foreground">Our services</span>
                 </div>
-                <h3 className="mt-2.5 font-display text-xl font-extrabold tracking-tight">
+                {/* Was an <h3>, which made the active service's name a second
+                heading for the same text. The name is already the heading in
+                the list that drives this panel, so this repeats the styling
+                without repeating the semantics. */}
+                <p className="mt-2.5 font-display text-xl font-extrabold tracking-tight">
                   {item.title}
-                </h3>
+                </p>
                 <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
                   {item.description}
                 </p>
