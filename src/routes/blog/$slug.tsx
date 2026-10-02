@@ -28,7 +28,7 @@ export const Route = createFileRoute("/blog/$slug")({
     if (!post) {
       return {
         meta: seo({
-          title: "Article Not Found | Skédio",
+          title: "Article Not Found | Skédio Insights",
           description: "The requested article could not be found.",
           noindex: true,
         }),

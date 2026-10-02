@@ -6,7 +6,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { logError } from "@/lib/error-capture";
 
 const errorMeta = seo({
-  title: "Something went wrong — Skédio",
+  title: "Something Went Wrong | Skédio Design Studio",
   description:
     "An unexpected error occurred while rendering this page. Try again or head back home.",
   noindex: true,

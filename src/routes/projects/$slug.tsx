@@ -48,7 +48,7 @@ export const Route = createFileRoute("/projects/$slug")({
     if (!project) {
       return {
         meta: seo({
-          title: "Case Study Not Found | Skédio",
+          title: "Case Study Not Found | Skédio Design Studio",
           description: "The requested project case study could not be found.",
           noindex: true,
         }),

@@ -30,7 +30,7 @@ export const Route = createFileRoute("/services/$slug")({
     if (!service) {
       return {
         meta: seo({
-          title: "Service Not Found | Skédio",
+          title: "Service Not Found | Skédio Design Studio",
           description: "The requested service could not be found.",
           noindex: true,
         }),

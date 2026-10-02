@@ -5,7 +5,7 @@ import { seo } from "@/lib/seo";
 import { SiteHeader } from "@/components/SiteHeader";
 
 const notFoundMeta = seo({
-  title: "Page Not Found — Skédio",
+  title: "Page Not Found | Skédio Design Studio",
   description:
     "The page you're looking for doesn't exist or has moved. Head back home or explore our work.",
   noindex: true,
