@@ -1,13 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, Volume2, VolumeX, Zap } from "lucide-react";
+import { ArrowUpRight, Zap } from "lucide-react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { SplitText } from "gsap/SplitText";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import carouselPlates from "virtual:carousel-manifest";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { useContactModal } from "@/context/use-contact-modal";
 import { loadScrollTrigger } from "@/lib/animation-loader";
-import { afterPageLoaderExit } from "@/lib/page-loader";
 import { seo, canonicalLink } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 import { StructuredData } from "@/components/StructuredData";
@@ -20,41 +20,167 @@ import { Clients } from "@/components/Clients";
 import { Testimonials } from "@/components/Testimonials";
 import { FaqItem } from "@/components/FaqAccordion";
 import { getFAQSchema, getWebPageSchema } from "@/lib/schema";
-import {
-  COLLAGE_COLUMNS,
-  COLLAGE_DWELL_MS,
-  COLLAGE_STAGGER_MS,
-  HERO_GATES,
-  HERO_TRACK_VH,
-  LOGOS_DWELL_MS,
-  SLIDE_MS,
-  heroCollageImages,
-  spansTwoColumns,
-} from "@/lib/hero-collage";
 import { clients } from "@/data/clients";
+import { responsiveFor } from "@/lib/responsive-images";
 import { servicesData } from "@/data/services";
-import { generalFaqs } from "@/data/faq";
+import { homepageFaqs } from "@/data/faq";
 
-import heroDesktopAvif from "@/assets/hero.avif";
-import heroDesktopWebp from "@/assets/hero.webp";
-import hero1280Avif from "@/assets/hero-1280.avif";
-import hero1280Webp from "@/assets/hero-1280.webp";
-import hero1024Avif from "@/assets/hero-1024.avif";
-import hero1024Webp from "@/assets/hero-1024.webp";
-import hero768Avif from "@/assets/hero-768.avif";
-import hero768Webp from "@/assets/hero-768.webp";
-import heroMobileAvif from "@/assets/hero-mobile.avif";
-import heroMobileWebp from "@/assets/hero-mobile.webp";
-import heroMobile480Avif from "@/assets/hero-mobile-480.avif";
-import heroMobile480Webp from "@/assets/hero-mobile-480.webp";
-import heroFallback from "@/assets/hero.jpg";
-import heroFallback768 from "@/assets/hero-768.jpg";
-import heroFallback1024 from "@/assets/hero-1024.jpg";
-import heroFallback1280 from "@/assets/hero-1280.jpg";
 // Route-scoped serif — see src/fraunces.css and the head() note below.
 import frauncesCss from "@/fraunces.css?url";
 
 gsap.registerPlugin(SplitText);
+
+/* ---------------------------------------------------------------------------
+ * Hero beat two — once the film finishes, the word "Clients" types itself into
+ * the middle of the frame and the client logos bloom outward around it.
+ *
+ * The positions are hand-placed, not computed. An ellipse was the obvious
+ * choice and it was wrong twice over: on a 2.39:1 frame the arc step per 30deg
+ * slot is RX*dTheta at 12 and 6 o'clock but RY*dTheta at 3 and 9 — 286px vs
+ * 107px on a 1440px-wide frame, so the logos bunched at the poles and strung
+ * out at the sides. And any radial layout reads as a clock face, which is the
+ * one thing scattered logos must not do.
+ *
+ * A table also buys the keep-out that a formula could not express: every entry
+ * sits outside x 38.5-61.5%, y 41.5-58.5%, which is the "Clients" word's own
+ * bounding box at its worst ratio (the word caps at 4rem, so its share of the
+ * frame peaks near a ~1185px viewport, not at the 1440px max-width). Entries
+ * are clear of that box by at least 5% of frame width in one axis, and of the
+ * frame edges by ~7%, and no two logos' boxes overlap at any viewport.
+ *
+ * The frame's aspect ratio is locked, so one table serves every width: a
+ * percentage of width and a percentage of height always describe the same
+ * physical distance, and the whole layout scales as one piece.
+ *
+ * `scale` varies ink height per logo to give the scatter depth. It is capped so the
+ * widest mark (929x205, 4.53:1) still renders under 240px at 1440 — that keeps
+ * every logo inside the 480w candidate in responsive-images.ts at 2x DPR.
+ *
+ * SIZING IS BY INK, NOT BY CANVAS. Every /Clients/*.png is a 1080x1080 square
+ * canvas with the mark centred inside it and transparent padding around it, and
+ * the padding is not uniform: ink fills 77% of the canvas height for Client 12
+ * but only 19% for Client 04. Sizing the box by canvas height therefore rendered
+ * visible marks between 1.9% and 7.7% of the frame height — a 4x spread that
+ * reads as "some of the logos are broken". `client.width`/`client.height` are
+ * the INK box, so dividing the target by `client.height / canvas` gives every
+ * logo the same visible height and lets `scale` be the only variable.
+ *
+ * Because the ink is centred, the visible mark inside the box is
+ * `height * (inkHeight / canvas)` tall and `height * (inkWidth / canvas)` wide,
+ * anchored on the slot point. Collision checks have to use those ink rects: at
+ * equal ink height the boxes themselves overlap heavily, because the box of the
+ * 4.53:1 mark is nearly as wide as it is tall while its ink is a thin sliver.
+ */
+const CLIENT_LOGO_CANVAS = 1080;
+
+/** Visible (ink) height of a scale-1.0 logo, as a percentage of frame height. */
+const HERO_LOGO_INK_PCT = 8;
+
+/**
+ * Hero mockup beat. The sequence is whatever `public/carousel/` contains, read at
+ * build time by the `skedio:carousel-manifest` plugin in vite.config.ts — drop in
+ * `m4.webp` and the cycle grows a fourth beat, no code change.
+ *
+ * The `m` prefix is the filter. That folder also holds the older numbered plates
+ * (`1.png` … `13.png`) from the previous collage, and the anchored pattern keeps
+ * them out instead of splicing twelve retired images into the hero.
+ *
+ * These are full-bleed 2.39:1 exports — `m1.webp` is 1920x803 against the
+ * frame's 239/100 — so `object-cover` is an exact fit here rather than the 26%
+ * vertical crop it was for the previous hand-picked sources. It is kept anyway:
+ * it is what makes a mis-sized future plate fill the frame instead of
+ * letterboxing, which is the failure that would actually be visible.
+ *
+ * No `width`/`height` attributes, unlike the rest of the page's imagery. Every
+ * plate is `absolute inset-0` and sized in CSS, so nothing about its intrinsic
+ * ratio can affect layout, and reading dimensions at config time would mean
+ * pulling sharp into the config for no layout benefit. One request each, all
+ * lazy, and none of them is a candidate for LCP — the earliest is reachable at
+ * ~7s into the cycle.
+ */
+const HERO_MOCKUPS: string[] = carouselPlates;
+
+/* ---------------------------------------------------------------------------
+ * Hero cycle timings, in seconds.
+ *
+ * HERO_MOCKUP_HOLD_S is the gap between one plate starting and the next, NOT the
+ * time a plate is actually readable: each transition crossfades over
+ * HERO_MOCKUP_CROSSFADE_S, so full-opacity dwell is hold - crossfade. At the
+ * 1.5s / 0.55s this started on, that left each plate fully visible for 0.95s —
+ * six of them back to back read as a flipbook rather than a showcase. 2.8s puts
+ * it at 2.25s of readable dwell per plate.
+ *
+ * One lap is film (3.6) + clients (3.4) + one beat per plate, so the lap grows
+ * with the folder: ~22s at the six plates currently in public/carousel/.
+ * ------------------------------------------------------------------------- */
+const HERO_FILM_HOLD_S = 3.6;
+const HERO_CLIENTS_HOLD_S = 3.4;
+const HERO_MOCKUP_HOLD_S = 2.8;
+const HERO_MOCKUP_CROSSFADE_S = 0.55;
+
+interface HeroLogoSlot {
+  x: number;
+  y: number;
+  scale: number;
+}
+
+const HERO_LOGO_SLOTS: HeroLogoSlot[] = [
+  { x: 14.5, y: 25, scale: 0.86 },
+  { x: 25, y: 63, scale: 1.12 },
+  { x: 30, y: 14.5, scale: 0.94 },
+  { x: 39, y: 30.5, scale: 0.88 },
+  // Second-smallest by area at 1.0, for the same reason Client 12 was: 1.12:1 is
+  // all but square, so a shared ink height leaves it covering a fraction of the
+  // area of the wordmarks. 1.2 puts it at 0.43 against a 0.66 median.
+  { x: 45, y: 79, scale: 1.2 },
+  { x: 57, y: 17.5, scale: 1.18 },
+  // y 72, not 70.5: at 1.0 the ink is 8% of frame height and on a 320px phone
+  // the word itself is 24.6% of frame height, so 70.5 left under 4% of frame
+  // height between them. Dropping the slot buys the clearance the bigger ink
+  // needed. 0.82 -> 1.0 moves it from 0.47 to 0.70, level with the median.
+  { x: 66, y: 72, scale: 1.0 },
+  { x: 78, y: 27, scale: 1.06 },
+  { x: 85.5, y: 58, scale: 0.9 },
+  { x: 83, y: 14, scale: 1.15 },
+  // 1.45, up from the 0.8 the spread started at. Equal ink HEIGHT is the wrong
+  // target for a square mark sitting among wordmarks: Client 12 is the only 1:1
+  // logo, so at a shared height it covers a quarter of the area of the 4.53:1
+  // Client 04. At 0.8 it was the smallest thing on screen (0.17 of a 0.66 median
+  // of inkW% x inkH%); at 1.45 its ink is 11.6% of frame height by 4.9% of frame
+  // width, which is 0.56 — just under median, and clearly no longer an outlier.
+  //
+  // The slot stays in the bottom-right corner. Anything much past this runs the box
+  // into Client 07's ink, because the box is square and grows with the ink: 2.7
+  // was the point where the two collided, so a bigger mark for this logo wants
+  // the empty bottom-centre at (57, 82), not a bigger number on this slot.
+  //
+  // x is not 88: the box is wider at this size, so 87.6 is what keeps its right
+  // edge on Client 10's, the other logo out at the right (85.5 + 5.2 = 90.7
+  // against 87.6 + 3.2 = 90.7). The two marks share a margin instead of both
+  // floating near the corner at different distances from it. Client 10's ink is
+  // 20% of frame height higher, so the shared edge is a margin and not a stack.
+  { x: 87.6, y: 87, scale: 1.45 },
+  { x: 16, y: 87.5, scale: 1.02 },
+];
+
+/**
+ * Clients paired with their slot and the box height that yields their target ink
+ * height. `flatMap` so a client added to `clients.ts` with no entry here is
+ * simply absent from the hero scatter — indexing straight into the table would
+ * park it at 0%,0% in the top-left corner instead.
+ */
+const heroLogoSlots = clients.flatMap((client, i) => {
+  const slot = HERO_LOGO_SLOTS[i];
+  if (!slot) return [];
+  const inkHeightFraction = client.height / CLIENT_LOGO_CANVAS;
+  return [
+    {
+      client,
+      slot,
+      boxHeightPct: (HERO_LOGO_INK_PCT * slot.scale) / inkHeightFraction,
+    },
+  ];
+});
 
 /**
  * Injects the route-scoped serif stylesheet (see src/fraunces.css).
@@ -66,23 +192,6 @@ const loadFrauncesAsync =
   `l.href=${JSON.stringify(frauncesCss)};l.fetchPriority="low";` +
   `document.head.appendChild(l)}catch(e){}})()`;
 
-/**
- * `sizes` for the hero <picture>, shared by the preload links and the
- * <source>/<img> elements below.
- *
- * The visual is full-bleed inside a `max-w-[1440px]` section with `px-6`
- * (24px/side) and `md:px-12` (48px/side), so the rendered width is
- * `min(100vw, 1440) - 96` and therefore CAPS at 1344px — past ~1536px of
- * viewport it stops growing. That cap is why the desktop branch is a fixed
- * `1344px` rather than another `100vw` expression.
- *
- * Declared once because the preload's `imageSizes` and the `<source sizes>`
- * MUST be the identical string: if they disagree the browser picks a different
- * candidate for the preload than for the image and downloads two files.
- */
-const HERO_DESKTOP_SIZES = "(max-width: 1440px) calc(100vw - 96px), 1344px";
-const HERO_MOBILE_SIZES = "calc(100vw - 48px)";
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: seo({
@@ -93,42 +202,8 @@ export const Route = createFileRoute("/")({
     }),
     links: [
       ...canonicalLink("/"),
-      // Preload the LCP hero image early so discovery doesn't wait for the
-      // <picture> to parse.
-      //
-      // `imagesrcset` + `imagesizes` (not a bare `href`) is the load-bearing
-      // detail. The <picture> below picks its candidate from a 4-entry srcset
-      // via `sizes`, so a preload naming ONE fixed URL matches only by luck:
-      // measured with Playwright, `href={hero1280Avif}` matched at a 1280px
-      // viewport and double-downloaded everywhere else — at 1440px both
-      // hero-1280 (preload) and hero-1440 (what actually rendered) were
-      // fetched, and at 390px a 720w preload was fetched while the 480w source
-      // that actually rendered came down second. Handing the preload the SAME
-      // srcset+sizes pair makes the browser run the identical selection, so the
-      // preload is deduplicated against the <img> request at every width.
-      // `href` remains as the fallback for engines that ignore imagesrcset —
-      // it points at the SMALLEST candidate, so an approximate preload there
-      // wastes as few bytes as possible.
-      {
-        rel: "preload",
-        as: "image",
-        href: hero768Avif,
-        imageSrcSet: `${hero768Avif} 768w, ${hero1024Avif} 1024w, ${hero1280Avif} 1280w, ${heroDesktopAvif} 1440w`,
-        imageSizes: HERO_DESKTOP_SIZES,
-        type: "image/avif",
-        media: "(min-width: 1024px)",
-        fetchPriority: "high",
-      },
-      {
-        rel: "preload",
-        as: "image",
-        href: heroMobile480Avif,
-        imageSrcSet: `${heroMobile480Avif} 480w, ${heroMobileAvif} 720w`,
-        imageSizes: HERO_MOBILE_SIZES,
-        type: "image/avif",
-        media: "(max-width: 1023px)",
-        fetchPriority: "high",
-      },
+      // No hero-image preload: the visual box is empty, so preloading one
+      // would fetch ~100KB that nothing ever renders.
     ],
     scripts: [
       // Fraunces is the one family this page genuinely needs that nothing
@@ -244,326 +319,214 @@ function Index() {
 
   const pageRef = useRef<HTMLDivElement>(null);
   const heroVideoRef = useRef<HTMLVideoElement>(null);
-  // Autoplay policies only permit an unattended video to start while muted, so
-  // this starts true and the visible control is an unmute affordance.
-  const [heroMuted, setHeroMuted] = useState(true);
+  const heroWordRef = useRef<HTMLParagraphElement>(null);
+  const heroScatterRef = useRef<HTMLDivElement>(null);
+  const heroMockupRef = useRef<HTMLDivElement>(null);
 
-  // Post-video sequence, driven by scroll position rather than a timer. The
-  // hero is a sticky stage inside a tall track: crossing a gate releases the
-  // next beat, but a dwell floor stops a hard flick from blasting past them
-  // all in one frame. Scrolling back up rewinds and replays.
-  const [heroPhase, setHeroPhase] = useState<"video" | "logos" | "collage" | "slideshow">("video");
-  // The collage's <img> elements are mounted only once the collage stage is
-  // reached. 14 images cannot be part of the initial payload without wrecking
-  // the LCP this hero works to protect, and none are visible before that point
-  // anyway, so there is nothing to load early. The slideshow reuses these same
-  // nodes, which is why mounting once serves both stages.
-  const [collageMounted, setCollageMounted] = useState(false);
-  // Index of the full-frame slide on screen. Stays null until the slideshow
-  // starts, which is also what keeps the slideshow layer out of the DOM until
-  // then. Wraps back to 0 so the sequence loops indefinitely.
-  const [slideIndex, setSlideIndex] = useState<number | null>(null);
-  // Bumped when the video finishes. The scroll evaluator holds no React state
-  // of its own, so this is the signal that makes it re-read progress the
-  // instant `ended` fires — otherwise a visitor parked at the video gate would
-  // sit on a frozen final frame until they happened to scroll again.
-  const [heroEndedTick, setHeroEndedTick] = useState(0);
-  // Mirrors prefers-reduced-motion into React state, because the hero's LAYOUT
-  // depends on it (pinned stage vs plain hero) and that has to be decided at
-  // render, not inside an effect. Seeded false so the server and the first
-  // client render agree; the effect corrects it before paint matters. Without
-  // this the pinning would ship to reduced-motion visitors, whose complaint is
-  // precisely about things moving on scroll.
-  const [heroPrefersReducedMotion, setHeroPrefersReducedMotion] = useState(false);
+  /* ---------------------------------------------------------------------------
+   * Hero cycle — film, then clients, then mockups, then round again, forever.
+   *
+   * This is a fixed-duration repeating timeline rather than a ladder of media
+   * events, and that is a deliberate inversion of the one-shot version it
+   * replaces. That version had to latch on whichever of `ended` / `error` /
+   * `loadedmetadata` / a `play()` rejection / a 12s ceiling arrived first,
+   * because it needed to know when the film was really over. Nothing here needs
+   * to know that: the film is cut at a fixed time whatever the asset's real
+   * duration is, so the timeline can simply advance. Every stall the old ladder
+   * existed to survive becomes a non-event — a video that 404s, a codec the
+   * browser refuses, autoplay rejected because the visitor is on a data saver —
+   * all of them just leave an empty grey frame for the first beat while the rest
+   * of the cycle keeps its rhythm. A stall-proof sequence that still stops dead
+   * on a stall is strictly worse than a timed one that cannot.
+   *
+   * SplitText is built ONCE, up front, rather than inside the beat. The timeline
+   * repeats, so a per-cycle split would re-split already-split characters on
+   * every lap.
+   * ------------------------------------------------------------------------- */
   useEffect(() => {
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const sync = () => setHeroPrefersReducedMotion(query.matches);
-    sync();
-    query.addEventListener("change", sync);
-    return () => query.removeEventListener("change", sync);
-  }, []);
-
-  // Refs for bookkeeping that must be readable without causing a render.
-  // phaseRef is the source of truth for "what is on screen right now"; heroPhase
-  // is only the mirror that makes React re-run the GSAP timelines.
-  const phaseRef = useRef<"video" | "logos" | "collage" | "slideshow">("video");
-  const stageEnteredAtRef = useRef(0);
-  const videoEndedRef = useRef(false);
-  const playRequestedRef = useRef(false);
-  const heroTrackRef = useRef<HTMLElement>(null);
-
-  // Single entry point for playback, so the two triggers below cannot race into
-  // a double play(). Idempotent: repeated calls after the first are no-ops.
-  const requestPlayback = useCallback(() => {
-    if (playRequestedRef.current) return;
     const video = heroVideoRef.current;
-    if (!video) return;
-    playRequestedRef.current = true;
-    void video.play().catch(() => {});
-  }, []);
+    const word = heroWordRef.current;
+    const scatter = heroScatterRef.current;
+    const mockupLayer = heroMockupRef.current;
+    if (!video || !word || !scatter || !mockupLayer) return;
 
-  // Ordered so progress and stage can be compared arithmetically.
-  type HeroStage = "video" | "logos" | "collage" | "slideshow";
-  const STAGE_ORDER: Record<HeroStage, number> = { video: 0, logos: 1, collage: 2, slideshow: 3 };
-  // The stage after `stage`. Written out rather than indexed out of an array:
-  // `noUncheckedIndexedAccess` makes every array read `T | undefined`, and this
-  // is a closed set of four, so the compiler should be able to see it is total.
-  const nextStage = (stage: HeroStage): HeroStage =>
-    stage === "video" ? "logos" : stage === "logos" ? "collage" : "slideshow";
-  // Floor on how long a beat stays up before the next gate may release it.
-  const STAGE_DWELL_MS = {
-    video: 0,
-    logos: LOGOS_DWELL_MS,
-    collage: COLLAGE_DWELL_MS,
-    slideshow: Number.POSITIVE_INFINITY,
-  };
+    const logos = scatter.querySelectorAll<HTMLElement>(".sk-hero-client-logo");
+    const mockups = mockupLayer.querySelectorAll<HTMLElement>(".sk-hero-mockup");
 
-  // Stage transitions are funnelled through one function because each needs to
-  // record when the new stage began (for dwell) and reset the slideshow on the
-  // way into it.
-  const goToStage = useCallback((next: "video" | "logos" | "collage" | "slideshow") => {
-    if (phaseRef.current === next) return;
-    const previous = phaseRef.current;
-    phaseRef.current = next;
-    stageEnteredAtRef.current = performance.now();
-    setHeroPhase(next);
-    if (next === "slideshow" && previous !== "slideshow") setSlideIndex(0);
-    // Mount on first arrival and never unmount: the images are needed again if
-    // the visitor scrolls back up and the sequence replays.
-    if (next === "collage" || next === "slideshow") setCollageMounted(true);
-  }, []);
+    // Reduced motion gets the finished clients composition and nothing more: no
+    // film, no typing, no bloom, and above all no cycle. A 12.2s loop that never
+    // stops is the most motion-hostile thing this page could contain, and the
+    // mockup beat in particular has no non-moving equivalent worth degrading to.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      video.pause();
+      gsap.set(video, { opacity: 0 });
+      gsap.set(word, { opacity: 1 });
+      gsap.set(logos, { opacity: 1 });
+      return;
+    }
 
-  // Scroll position is the only clock for stage changes. Progress is measured
-  // across the PIN DISTANCE (track height minus one viewport) rather than the
-  // track height: the final viewport-height of scroll is spent with the sticky
-  // stage already released, so dividing by offsetHeight would leave the last
-  // gate unreachable.
-  useEffect(() => {
-    const track = heroTrackRef.current;
-    if (!track) return undefined;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
+    // Stashed on the node so a re-entry reverts any split still attached rather
+    // than layering a second set of character spans over the first.
+    type WordSplit = ReturnType<typeof SplitText.create>;
+    const tracked = word as HTMLParagraphElement & { __skClientsSplit?: WordSplit };
+    tracked.__skClientsSplit?.revert();
+    const split = SplitText.create(word, { type: "chars" });
+    tracked.__skClientsSplit = split;
 
-    let frame = 0;
-    let dwellTimer: number | undefined;
+    // Absolute positions within one lap, in seconds.
+    const type = HERO_FILM_HOLD_S + 0.45;
+    const wordEnd = type + 0.5 + split.chars.length * 0.055;
+    const dissolve = HERO_FILM_HOLD_S + HERO_CLIENTS_HOLD_S;
+    const lapEnd = dissolve + mockups.length * HERO_MOCKUP_HOLD_S + 0.7;
 
-    const evaluate = () => {
-      frame = 0;
-      if (dwellTimer !== undefined) {
-        window.clearTimeout(dwellTimer);
-        dwellTimer = undefined;
-      }
-      const rect = track.getBoundingClientRect();
-      const pinDistance = track.offsetHeight - window.innerHeight;
-      if (pinDistance <= 0) return;
-      const progress = Math.min(Math.max(-rect.top / pinDistance, 0), 1);
-
-      // Belt to the observer's braces. The observer watches the visual, but a
-      // visitor who flicks the whole track in one gesture can carry the stage
-      // past the viewport before 35% of it is ever on screen — and since the
-      // logos wait on `ended`, that would hang the sequence on the poster
-      // forever. Any movement into the track counts as "scroll onto the
-      // section", so it starts playback too.
-      if (progress > 0.02) requestPlayback();
-
-      // The video gate is doubly guarded: scrolling past it is not enough, the
-      // video must have actually finished. A visitor who scrolls hard while it
-      // is still playing waits here rather than cutting to logos mid-shot.
-      const target =
-        progress < HERO_GATES.video || !videoEndedRef.current
-          ? "video"
-          : progress < HERO_GATES.logos
-            ? "logos"
-            : progress < HERO_GATES.collage
-              ? "collage"
-              : "slideshow";
-
-      const current = phaseRef.current;
-      // The video stage's dwell starts now, on the first evaluation. Left at 0
-      // it would read as "held for the entire page lifetime" and let the first
-      // transition fire instantly regardless of the dwell.
-      if (stageEnteredAtRef.current === 0) stageEnteredAtRef.current = performance.now();
-
-      // Re-arm the check for the stage we are about to enter. This is what keeps
-      // the sequence moving after the visitor stops scrolling: having crossed
-      // the last gate there is no further scroll event coming, so without a
-      // self-scheduled re-check the run stalls one stage short of the slideshow
-      // — every advance would consume the pending timer and never leave
-      // another one behind.
-      const armAfter = (stage: HeroStage) => {
-        const dwell = STAGE_DWELL_MS[stage];
-        if (Number.isFinite(dwell)) dwellTimer = window.setTimeout(evaluate, dwell);
-      };
-
-      // Scrolling back UP above a gate rewinds immediately, with no dwell: that
-      // is the replay path, and making someone wait to undo something feels
-      // broken. Only forward movement is dwell-gated.
-      if (STAGE_ORDER[target] < STAGE_ORDER[current]) {
-        goToStage(target);
-        armAfter(target);
-        return;
-      }
-      if (STAGE_ORDER[target] === STAGE_ORDER[current]) return;
-
-      // Advance ONE stage per release, never straight to the furthest gate.
-      // Jumping video -> collage skipped the logos entirely: the logos stage has
-      // no dwell of its own to catch it, and a visitor who scrolls the whole
-      // track in one gesture would never see a single client logo. Stepping
-      // through in order also guarantees every stage gets its dwell measured,
-      // because the next release cannot happen until this one has been entered.
-      const heldMs = performance.now() - stageEnteredAtRef.current;
-      if (heldMs >= STAGE_DWELL_MS[current]) {
-        const next = nextStage(current);
-        goToStage(next);
-        armAfter(next);
-        return;
-      }
-      // Blocked only by dwell, not by scroll position — so re-check when the
-      // dwell expires.
-      dwellTimer = window.setTimeout(evaluate, STAGE_DWELL_MS[current] - heldMs);
+    const startFilm = () => {
+      // Rewind every lap, not just when `video.ended`: the film is cut short at
+      // HERO_FILM_HOLD_S so it never reaches its own end, and would otherwise
+      // resume from 3.6s on the next pass and show a frozen frame.
+      video.currentTime = 0;
+      void video.play().catch(() => {});
     };
 
-    // rAF-coalesced: scroll fires far more events than the screen can show, and
-    // each raw event would otherwise force its own layout read.
-    const onScroll = () => {
-      if (!frame) frame = window.requestAnimationFrame(evaluate);
-    };
+    const tl = gsap.timeline({ repeat: -1, defaults: { ease: "power3.out" } });
 
-    evaluate();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      if (frame) window.cancelAnimationFrame(frame);
-      if (dwellTimer !== undefined) window.clearTimeout(dwellTimer);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, [goToStage, heroEndedTick, requestPlayback]);
+    // 0. Each lap opens by fading the film up from the mockup before it. Without
+    //    this the wrap-around is a hard cut, which on a sequence this hypnotic
+    //    reads as a glitch rather than a loop.
+    tl.call(startFilm, undefined, 0).fromTo(
+      video,
+      { opacity: 0 },
+      { opacity: 1, duration: 0.7, ease: "power2.out" },
+      0,
+    );
 
-  // Playback starts when the frame is actually on screen, not on mount. On
-  // desktop the 16:9 stage begins ~700px down, so mount-time playback would
-  // begin behind the fold; and gating on intersection keeps the 1.1MB video off
-  // the critical path for anyone who lands mid-page via an anchor.
-  //
-  // The `autoplay` attribute is deliberately NOT used: it fires before this
-  // effect can consult the query, so a reduced-motion visitor would get a flash
-  // of motion before anything could pause it. Driving play() from here also
-  // means that if JS is off, autoplay is refused (data saver, low-power mode),
-  // or the codec is unsupported, nothing breaks — the poster layer just stays.
-  //
-  // "Played at once only": no `loop` attribute and no replay on `ended`, so it
-  // runs through once and freezes on its final frame.
-  useEffect(() => {
-    const frame = heroVideoRef.current?.parentElement;
-    if (!frame) return undefined;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
+    // 1. The film. Cut and faded rather than waited out, which is what pins the
+    //    lap length: the asset is 8s and the beat is 3.6s, so the last 4.4s of
+    //    footage are never shown and the cycle stays snappy.
+    tl.to(video, { opacity: 0, duration: 0.8, ease: "power2.inOut" }, HERO_FILM_HOLD_S).call(
+      () => video.pause(),
+      undefined,
+      HERO_FILM_HOLD_S + 0.8,
+    );
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (!entries.some((entry) => entry.isIntersecting)) return;
-        observer.disconnect();
-        requestPlayback();
+    // 2. "Clients" types itself in. Each character resolves out of a blur while
+    //    a chromatic split closes behind it — that closing gap is the motion
+    //    trail. Overlapping the fade-out by 0.45s keeps the two beats from
+    //    reading as a hard cut.
+    tl.set(word, { opacity: 1 }, type)
+      .fromTo(
+        split.chars,
+        {
+          opacity: 0,
+          x: 14,
+          yPercent: -30,
+          filter: "blur(12px)",
+          textShadow: "0.07em 0 #00e5ff, -0.07em 0 #ff2d95",
+        },
+        {
+          opacity: 1,
+          x: 0,
+          yPercent: 0,
+          filter: "blur(0px)",
+          textShadow: "0 0 rgba(0,0,0,0)",
+          duration: 0.5,
+          ease: "power3.out",
+          stagger: 0.055,
+        },
+        type,
+      )
+      .fromTo(
+        word,
+        { y: 12, scale: 1.04 },
+        { y: 0, scale: 1, duration: 0.9, ease: "power2.out" },
+        type,
+      );
+
+    // 3. The scatter blooms. `from: "center"` works outward from the middle of
+    //    the list, so the logos land near the word first and the outer ones last.
+    tl.fromTo(
+      logos,
+      { opacity: 0, scale: 0.5, filter: "blur(10px)" },
+      {
+        opacity: 1,
+        scale: 1,
+        filter: "blur(0px)",
+        duration: 0.6,
+        ease: "back.out(1.7)",
+        stagger: { each: 0.055, from: "center" },
       },
-      { threshold: 0.35 },
+      wordEnd,
     );
-    observer.observe(frame);
-    return () => observer.disconnect();
-  }, [requestPlayback]);
 
-  // Slideshow: advance one slide every SLIDE_MS and wrap, so the sequence loops
-  // for as long as the stage is held. This is the one stage not gated on scroll
-  // — by the time the visitor reaches it the scroll budget is spent, and a
-  // looping slideshow is what stops the pinned hero from going dead.
-  const slidesTotal = heroCollageImages.length;
-  useEffect(() => {
-    if (heroPhase !== "slideshow" || slideIndex === null) return undefined;
-    const id = window.setTimeout(
-      () => setSlideIndex((i) => (i === null ? null : (i + 1) % slidesTotal)),
-      SLIDE_MS,
+    // 4. Dissolve. Blur and fade together, at the same time the first mockup
+    //    starts underneath, so the swap is covered rather than sequential.
+    tl.to(
+      [word, ...logos],
+      { opacity: 0, filter: "blur(12px)", duration: 0.7, ease: "power2.in" },
+      dissolve,
     );
-    return () => window.clearTimeout(id);
-  }, [heroPhase, slideIndex, slidesTotal]);
 
-  // Logo layer. Mounted only once the video has ended, so during playback the
-  // frame contains nothing but the video — no 12 extra image requests competing
-  // with the LCP element, and nothing to flash if the sequence never runs.
-  useGSAP(
-    () => {
-      const root = pageRef.current;
-      if (!root) return;
-      const strip = root.querySelector<HTMLElement>("[data-hero-logos]");
-      if (!strip) return;
-
-      if (heroPhase === "logos") {
-        gsap.fromTo(
-          strip.querySelectorAll<HTMLElement>("[data-hero-client]"),
-          { opacity: 0, scale: 0.7, y: 16 },
-          {
-            opacity: 1,
-            scale: 1,
-            y: 0,
-            duration: 0.55,
-            ease: "back.out(1.7)",
-            stagger: 0.045,
-          },
+    // 5. Mockups, crossfading. The first scales down into place; the rest are
+    //    straight dissolves so the sequence reads as one rhythm rather than
+    //    three separate entrances. `previous` is carried across iterations
+    //    instead of indexing back into the NodeList, which is typed as possibly
+    //    empty per lookup and would need a guard that can never actually fail.
+    let previous: HTMLElement | undefined;
+    mockups.forEach((mockup, i) => {
+      const at = dissolve + i * HERO_MOCKUP_HOLD_S;
+      if (i === 0) {
+        tl.fromTo(
+          mockup,
+          { opacity: 0, scale: 1.06 },
+          // `immediateRender: false` is load-bearing. A `fromTo` renders its
+          // from-state the moment the timeline is built rather than when the
+          // tween's turn arrives, which parked the first mockup at scale 1.06 for
+          // its entire invisible life: 6% wider than the frame on every side,
+          // showing at a different zoom from the other two that carry no scale,
+          // and inflating the frame's scrollWidth by 40px.
+          { opacity: 1, scale: 1, duration: 0.8, ease: "power2.out", immediateRender: false },
+          at,
         );
-      } else {
-        // "Shrink to a strip and stay": one transform carries the row from
-        // centre stage down to a bottom strip. The logos are never unmounted,
-        // so the client proof remains on screen for the rest of the sequence.
-        gsap.to(strip, { scale: 0.6, duration: 0.85, ease: "power3.inOut" });
+      } else if (previous) {
+        tl.to(
+          previous,
+          { opacity: 0, duration: HERO_MOCKUP_CROSSFADE_S, ease: "power2.inOut" },
+          at,
+        ).fromTo(
+          mockup,
+          { opacity: 0 },
+          { opacity: 1, duration: HERO_MOCKUP_CROSSFADE_S, ease: "power2.inOut" },
+          at,
+        );
       }
-    },
-    { scope: pageRef, dependencies: [heroPhase] },
-  );
+      previous = mockup;
+    });
 
-  // Collage cards. Transform is owned entirely by GSAP — React sets no inline
-  // transform at all, because a React-supplied one would be re-applied on every
-  // render and fight the tween mid-flight. No rotation: the brief was a flush
-  // collage, not scattered cards, so the only motion is a gentle rise.
-  useGSAP(
-    () => {
-      const root = pageRef.current;
-      if (!root || !collageMounted) return;
-      const cards = root.querySelectorAll<HTMLElement>("[data-collage-card]");
-      cards.forEach((card, i) => {
-        gsap.fromTo(
-          card,
-          { opacity: 0, scale: 0.94, yPercent: 8 },
-          {
-            opacity: 1,
-            scale: 1,
-            yPercent: 0,
-            duration: 0.75,
-            ease: "power2.out",
-            delay: i * (COLLAGE_STAGGER_MS / 1000),
-          },
-        );
-      });
-    },
-    { scope: pageRef, dependencies: [collageMounted] },
-  );
+    // 6. Arm the next lap. `clearProps` on filter is required, not tidiness: the
+    //    dissolve leaves blur(12px) on these nodes, and the next lap's word/logos
+    //    tweens never set filter back to 0 on the ones they do not touch — the
+    //    logos tween does, but `word` itself only ever gets `y`/`scale`, so
+    //    without this the word would enter every lap permanently out of focus.
+    tl.set([word, ...logos], { opacity: 0, clearProps: "filter" }, lapEnd).set(
+      mockups,
+      { opacity: 0 },
+      lapEnd,
+    );
 
-  // Collage recedes, slideshow takes the frame. The collage is scaled down and
-  // faded rather than removed, so the transition reads as the grid opening out
-  // into a single screen instead of a hard cut.
-  useGSAP(
-    () => {
-      const root = pageRef.current;
-      if (!root || heroPhase !== "slideshow") return;
-      const layer = root.querySelector<HTMLElement>("[data-collage-layer]");
-      if (!layer) return;
-      gsap.to(layer, { scale: 0.94, opacity: 0, duration: 1, ease: "power2.inOut" });
-    },
-    { scope: pageRef, dependencies: [heroPhase] },
-  );
+    return () => {
+      tl.kill();
+      video.pause();
+      split.revert();
+      delete tracked.__skClientsSplit;
+    };
+  }, []);
 
   // How many animation frames to wait before building the entrance.
   // `useGSAP` runs in a layout effect, i.e. BEFORE the browser paints the
   // hydrated tree, and SplitText.create() measures the heading to find word
   // boundaries. Doing that measurement there means a forced synchronous layout
   // inside the hydration commit. Two nested rAFs push the whole setup past the
-  // LCP frame — the hero <img> paints first, then the animation runs. The cost
-  // is ~2 frames (~32ms) of delay on a state that is already invisible.
+  // first paint frame — the hero copy is on screen before the animation runs.
+  // The cost is ~2 frames (~32ms) of delay on a state that is already invisible.
   const HERO_ENTRANCE_DEFER_FRAMES = 2;
 
   useGSAP(
@@ -597,22 +560,15 @@ function Index() {
         const title = root.querySelector<HTMLElement>(".sk-hero-title");
         const accent = title?.querySelector<HTMLElement>(".sk-hero-accent") ?? null;
 
-        // NOTE (LCP): [data-hero-visual] is intentionally EXCLUDED from the
-        // opacity reveals. The hero <img> is this page's LCP element (verified
-        // in Chrome: the winning candidate is the 1344x756 <img>, not the H1)
-        // and it paints on the very first frame at opacity 1 — it is never gated
-        // on GSAP or hydration. Only non-LCP hero chrome (pills, CTAs, proof,
-        // partner card) participates in the opacity entrance, and the visual
-        // gets a transform-only nudge so its first paint still counts for LCP.
+        // Only non-LCP hero chrome participates in the entrance. The visual
+        // box is empty and is not animated at all.
         const reveals = Array.from(
           root.querySelectorAll<HTMLElement>(
             "[data-hero-lede], [data-hero-pill], [data-hero-cta], [data-hero-proof], [data-hero-partner]",
           ),
         );
 
-        const visual = root.querySelector<HTMLElement>("[data-hero-visual]");
-
-        // READS BEFORE WRITES. Every querySelector above and the Split() call
+        // READS BEFORE WRITES. The querySelector above and the Split() call
         // below happen BEFORE the first gsap.set()/fromTo(), and nothing after
         // this point reads geometry — so no write-then-read interleaving forces
         // a second synchronous layout within the setup.
@@ -675,24 +631,6 @@ function Index() {
             { y: 0, opacity: 1, scale: 1, duration: 0.8, stagger: 0.1 },
             ">-0.2",
           );
-
-        // Transform-only nudge for the LCP visual: no opacity involved, and
-        // immediateRender: false so nothing is hidden before the tween starts.
-        // First paint (opacity 1, final layout) happens before JS runs.
-        if (visual) {
-          tl.fromTo(
-            visual,
-            { y: 24, scale: 0.985 },
-            {
-              y: 0,
-              scale: 1,
-              duration: 0.8,
-              clearProps: "transform",
-              immediateRender: false,
-            },
-            "<0.1",
-          );
-        }
       };
 
       let n = 0;
@@ -704,18 +642,9 @@ function Index() {
         }
         build();
       };
-      // Hold the entrance until the intro overlay (components/PageLoader.tsx)
-      // starts handing the screen over. Otherwise the whole ~1.3s timeline runs
-      // underneath a fully opaque overlay and the visitor arrives at an
-      // already-settled hero having watched none of it — the loader would cost
-      // the page its entrance instead of introducing it.
-      //
-      // Only the non-LCP chrome is gated, never [data-hero-visual]: that image
-      // still paints on the first frame underneath, so LCP is untouched.
-      void afterPageLoaderExit().then(() => {
-        if (disposed || !root.isConnected) return;
-        rafs.push(requestAnimationFrame(step));
-      });
+      // Deferred rather than immediate, so the first paint is never competing
+      // with GSAP building the timeline and SplitText measuring the heading.
+      rafs.push(requestAnimationFrame(step));
 
       // Tweens built inside the deferred callback are created after
       // gsap.context() has already run, so useGSAP's automatic revert does not
@@ -733,7 +662,11 @@ function Index() {
     { scope: pageRef },
   );
 
-  const faqSchema = getFAQSchema(generalFaqs);
+  // Built from `homepageFaqs`, not `generalFaqs`. Marking up questions that are
+  // not on this page is a guideline violation, and it is the kind that gets a
+  // site a manual action rather than a rich result, so the schema has to be
+  // driven by the same array the accordion renders.
+  const faqSchema = getFAQSchema(homepageFaqs);
 
   return (
     <main id="main-content" ref={pageRef} className="min-h-screen bg-background text-foreground">
@@ -758,29 +691,15 @@ function Index() {
         ]}
       />
 
-      {/* Hero — a sticky stage inside a tall scroll track.
+      {/* Hero — copy plus an empty visual box.
 
-          `heroPrefersReducedMotion` gates this: a reduced-motion visitor gets a
-          plain, non-pinned hero of natural height and the poster only. Pinning
-          is not itself an animation, but a stage that holds the viewport while
-          the visitor scrolls IS scroll-driven motion, which is exactly what
-          that preference is asking us not to impose. Reading it from a
-          matchMedia object rather than at render keeps the server markup and the
-          first client render identical. */}
-      <section
-        ref={heroTrackRef}
-        data-hero-track={heroPrefersReducedMotion ? undefined : ""}
-        className="relative"
-        style={heroPrefersReducedMotion ? undefined : { height: `${HERO_TRACK_VH}vh` }}
-      >
-        <div
-          data-hero-stage={heroPhase}
-          className={
-            heroPrefersReducedMotion
-              ? "mx-auto w-full max-w-[1440px] px-6 pt-8 pb-0 md:px-12 md:pt-24 lg:pt-28"
-              : "sticky top-0 mx-auto flex min-h-screen w-full max-w-[1440px] flex-col justify-center px-6 pt-8 pb-8 md:px-12 md:pt-24 lg:pt-28"
-          }
-        >
+          The scroll-driven sequence that used to live here (a pinned 150vh stage
+          cycling video → logos → collage → slideshow) has been removed, so the
+          section is an ordinary document-flow hero again: no track, no sticky
+          pinning, no stage state. The visual box below is kept as an empty
+          fixed-ratio placeholder. */}
+      <section className="mx-auto w-full max-w-[1440px] px-6 pt-8 pb-0 md:px-12 md:pt-24 lg:pt-28">
+        <div className="flex flex-col justify-center">
           <div className="grid grid-cols-1 items-end gap-16 lg:grid-cols-5 lg:gap-10">
             {/* Left column (~60%) */}
             <div className="lg:col-span-3">
@@ -884,192 +803,188 @@ function Index() {
           </div>
 
           {/* Hero visual (LCP) — deliberately NOT .sk-hero-start: it must be
-            opacity:1 on first paint and never wait for GSAP. Entrance motion
-            is transform-only (see useGSAP) with immediateRender:false.
-            Responsive width candidates: the visual is full-bleed inside a
-            max-w-1440 container (px-6 mobile / md:px-12 desktop), so mobile
-            sizes track 100vw minus padding and desktop tracks the container
-            width. 1280w covers the ~1244px rendered desktop width at 1x;
-            1440w remains for high-DPR desktop. Never lazy-load (LCP). */}
-          <div data-hero-visual className="relative mt-10 lg:mt-24">
-            <picture>
-              <source
-                media="(min-width: 1024px)"
-                srcSet={`${hero768Avif} 768w, ${hero1024Avif} 1024w, ${hero1280Avif} 1280w, ${heroDesktopAvif} 1440w`}
-                sizes={HERO_DESKTOP_SIZES}
-                type="image/avif"
-              />
-              <source
-                media="(min-width: 1024px)"
-                srcSet={`${hero768Webp} 768w, ${hero1024Webp} 1024w, ${hero1280Webp} 1280w, ${heroDesktopWebp} 1440w`}
-                sizes={HERO_DESKTOP_SIZES}
-                type="image/webp"
-              />
-              <source
-                srcSet={`${heroMobile480Avif} 480w, ${heroMobileAvif} 720w`}
-                sizes={HERO_MOBILE_SIZES}
-                type="image/avif"
-              />
-              <source
-                srcSet={`${heroMobile480Webp} 480w, ${heroMobileWebp} 720w`}
-                sizes={HERO_MOBILE_SIZES}
-                type="image/webp"
-              />
-              <img
-                src={heroFallback}
-                srcSet={`${heroFallback768} 768w, ${heroFallback1024} 1024w, ${heroFallback1280} 1280w, ${heroFallback} 1440w`}
-                /* This <img> is the no-<picture> fallback, so its srcset holds only
-                 the desktop JPEGs — hence HERO_DESKTOP_SIZES rather than the old
-                 two-branch form whose mobile branch (`calc(100vw - 48px)`)
-                 described assets that are not in this srcset at all. */
-                sizes={HERO_DESKTOP_SIZES}
-                alt="Skédio design studio hero showcase — bold brand identity and UI/UX design"
-                fetchPriority="high"
-                loading="eager"
-                decoding="async"
-                width={1440}
-                height={810}
-                className="aspect-[16/9] w-full rounded-2xl object-cover"
-              />
-            </picture>
+              on screen before the entrance runs, so it is never gated behind it.
 
-            {/* Video overlays the picture rather than replacing it. The <picture>
-              stays mounted underneath as three things at once: the LCP
-              candidate (a 1.1MB video would paint far later than the avif and
-              would regress the metric this hero is built to protect), the frame
-              shown before the first video frame decodes, and the permanent
-              fallback when playback is refused or the codec is unsupported.
-              inset-0 + object-cover keeps it locked to the picture's 16:9 box. */}
+              The video is NOT looped: `ended` is what triggers the beat below,
+              and a looping element never fires it. When it does finish, the film
+              fades out, "Clients" types into the middle of the frame, and the
+              client logos bloom outward around it.
+
+              `aria-hidden` sits on the <video> and on the logo scatter only. The
+              word between them is the one piece of real copy in this box, so
+              hiding the wrapper would hide it from assistive tech.
+
+              2.39:1 (anamorphic scope) is kept: full width at a cinematic ratio.
+              `object-cover` is load-bearing — the file is not 2.39:1, so without
+              it the video letterboxes inside the frame instead of filling it.
+              `bg-muted` (a flat grey) is what the word and the logos read
+              against once the film is gone. */}
+          <div
+            data-hero-visual=""
+            className="relative mt-10 aspect-[239/100] w-full overflow-hidden rounded-2xl bg-muted lg:mt-24"
+          >
             <video
               ref={heroVideoRef}
               src="/video/hero.mp4"
-              muted={heroMuted}
+              autoPlay
+              muted
               playsInline
               preload="auto"
               disablePictureInPicture
               aria-hidden="true"
-              onEnded={() => {
-                // Reduced motion gets the poster layer and nothing else, so the
-                // sequence never starts. `ended` only fires in the browser, so
-                // touching window here is safe.
-                if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-                // Record it in a ref as well as state: the scroll evaluator reads
-                // this synchronously on every frame, and a state write would only
-                // be visible to it after a re-render. The setState below is what
-                // makes the scroll handler re-evaluate and release the logos.
-                videoEndedRef.current = true;
-                setHeroEndedTick((t) => t + 1);
-              }}
               className="pointer-events-none absolute inset-0 h-full w-full rounded-2xl object-cover"
             />
 
-            {/* Beat 2 — client logos, centre stage, then shrunk to a bottom strip
-              and left there. Mounted only after the video ends. alt is empty
-              because no client in `clients` has a realName yet, which is the
-              same signal Clients.tsx uses to treat them as decorative. */}
-            {heroPhase !== "video" && (
-              <div
-                data-hero-logos=""
-                className="pointer-events-none absolute inset-x-0 bottom-0 z-30 flex origin-bottom flex-wrap items-center justify-center gap-x-6 gap-y-2 px-4 pb-3 opacity-0"
-              >
-                {clients.map((client) => (
-                  <img
-                    key={client.name}
-                    data-hero-client=""
-                    src={client.logo}
-                    alt=""
-                    width={client.width}
-                    height={client.height}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-6 w-auto object-contain opacity-60 grayscale md:h-7"
-                  />
-                ))}
-              </div>
-            )}
+            {/* Mockup beat, the last third of the cycle. Sits between the film
+                and the word in paint order so it covers the video while it is up
+                and is covered by the word once the film comes round again —
+                neither ever needs an explicit z-index.
 
-            {/* Beat 3 — the work, as a flush collage. A 4-column CSS grid with
-              four 1fr rows, the final row's two cards each spanning two columns
-              so the rectangle closes with no holes. No absolute positioning and
-              no rotation: a grid is tidy by construction, which is also why
-              nothing here can drift between server and client. Mounted late so
-              14 requests never touch initial load.
-
-              `h-full` on the cards is load-bearing, not tidying. The sources are
-              NOT uniform — a mix of 16:9, 1:1 and 2:3 portrait — and an <img>
-              that is only `w-full` resolves to width:100%; height:auto, i.e.
-              its own intrinsic aspect ratio. `object-fit: cover` then has no box
-              height to crop into, so it does nothing: 9 of the 14 cards rendered
-              TALLER than their 1fr row (a 1:1 shot became 333px in a 186px row),
-              spilled over the rows below, and pushed the collage to 1030px
-              inside a 756px frame where overflow-hidden guillotined the last 274px.
-              Worse, those heights came from each image's intrinsic size, so the
-              grid re-flowed as the bytes arrived — the whole collage visibly
-              jumped into place, worst at the top-left card with nothing over it.
-              `h-full` makes every card fill its row so cover actually crops to a
-              uniform 16:9 cell, which fixes the overlap, the clipping and the
-              load-time reflow in one declaration. */}
-            {collageMounted && (
-              <div
-                data-collage-layer=""
-                className="pointer-events-none absolute inset-0 z-10 grid grid-rows-4 overflow-hidden p-1.5"
-                style={{
-                  gridTemplateColumns: `repeat(${COLLAGE_COLUMNS}, minmax(0, 1fr))`,
-                }}
-              >
-                {heroCollageImages.map((src, i) => (
-                  <img
-                    key={src}
-                    data-collage-card=""
-                    src={src}
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                    style={spansTwoColumns(i) ? { gridColumn: "span 2" } : undefined}
-                    className="h-full min-h-0 w-full rounded-lg object-cover opacity-0 shadow-lg"
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Beat 4 — each mockup full-frame, one at a time, slow crossfade.
-              Stacked and faded by index rather than swapped, so consecutive
-              slides overlap instead of cutting through black. Only the active
-              slide carries `loading="eager"`: the rest are already cached from
-              the collage beat and re-fetching them would defeat that. */}
-            {slideIndex !== null && (
-              <div data-slideshow-layer="" className="pointer-events-none absolute inset-0 z-20">
-                {heroCollageImages.map((src, i) => (
-                  <img
-                    key={src}
-                    data-slide=""
-                    data-active={i === slideIndex ? "true" : undefined}
-                    src={src}
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                    className="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-1000 ease-in-out data-[active=true]:opacity-100"
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* The only control: audio. No `controls` attribute, no scrubber, no
-              playback chrome — a native control bar over a decorative hero
-              video is both visually wrong and unusable at this size. */}
-            <button
-              type="button"
-              onClick={() => setHeroMuted((m) => !m)}
-              aria-label={heroMuted ? "Unmute hero video" : "Mute hero video"}
-              aria-pressed={!heroMuted}
-              className="absolute right-3 bottom-3 grid size-10 cursor-pointer place-items-center rounded-full border border-white/25 bg-black/45 text-white backdrop-blur-sm transition-colors duration-250 ease-out hover:bg-black/65 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                Entirely decorative: `aria-hidden` rather than an alt on each, and
+                `lazy` because nothing here is reachable until ~7s in, long after
+                LCP has been picked by the heading. */}
+            <div
+              ref={heroMockupRef}
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0"
             >
-              {heroMuted ? (
-                <VolumeX className="size-4" aria-hidden="true" />
-              ) : (
-                <Volume2 className="size-4" aria-hidden="true" />
-              )}
-            </button>
+              {HERO_MOCKUPS.map((src) => (
+                <WebpImage
+                  key={src}
+                  src={src}
+                  sizes="(max-width: 1440px) 92vw, 1344px"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  className="sk-hero-mockup absolute inset-0 h-full w-full object-cover"
+                />
+              ))}
+            </div>
+
+            {/* The word the scatter opens around. SplitText owns the inner markup
+                from here, so the word is one text node and stays one string for
+                screen readers (`aria: "auto"` keeps an aria-label on the line
+                and hides the per-character spans). */}
+            <div className="pointer-events-none absolute inset-0 grid place-items-center px-6">
+              <p
+                ref={heroWordRef}
+                data-hero-clients-word=""
+                className="sk-hero-clients-word m-0 text-center font-display text-[clamp(1.75rem,5.4vw,4rem)] font-extrabold leading-none tracking-tight text-foreground"
+              >
+                Clients
+              </p>
+            </div>
+
+            {/* The scatter. Every logo is decorative: no client in `clients` has a
+                `realName` we are cleared to publish, so an alt text would only
+                leak "Client 07" into the accessibility tree — the same signal
+                Clients.tsx uses to treat them as decorative.
+
+                The wrapper div carries the centring translate precisely so GSAP
+                is free to own the <img>'s transform: animating both at once
+                would mean the entrance scale fighting the -50%/-50% offset.
+
+                `height` is a percentage of the frame, not a viewport unit, and
+                that is load-bearing twice over. It is the only way the logos stay
+                proportional to a box that is 3.9x wider on desktop than on a
+                phone (a `clamp()` floor big enough to read on a 143px-tall
+                mobile frame is 14% of its height, versus 9% at 1440px — the
+                scatter visibly changes weight with viewport). And it resolves at
+                all only because this div is absolutely positioned: a percentage
+                height against a content-sized parent computes to `auto`, which
+                would drop each logo back to its intrinsic 1080px.
+
+                The width/height attributes are the 1080x1080 canvas, not
+                client.width/height (which is the ink box) — the attributes
+                reserve layout space, so they have to describe the resource the
+                browser actually loads. Declaring the ink ratio instead made the
+                box reflow from 1.22:1 to 1:1 the moment the image decoded.
+
+                The shadow lives on this div, not the <img>, because the beat
+                below writes `filter: blur()` straight onto every
+                `.sk-hero-client-logo`. Two elements means two separate filter
+                properties, so GSAP's blur and the drop-shadow coexist instead of
+                the tween's final `blur(0px)` erasing the shadow. */}
+            <div
+              ref={heroScatterRef}
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0"
+            >
+              {heroLogoSlots.map(({ client, slot, boxHeightPct }) => {
+                const logo = responsiveFor(client.logo);
+                return (
+                  <div
+                    key={client.name}
+                    className="absolute -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_2px_5px_rgba(0,0,0,0.2)]"
+                    style={{
+                      left: `${slot.x}%`,
+                      top: `${slot.y}%`,
+                      height: `${boxHeightPct}%`,
+                    }}
+                  >
+                    <WebpImage
+                      src={logo.src}
+                      srcSet={logo.srcSet}
+                      webpSrcSet={logo.webpSrcSet}
+                      sizes="(max-width: 640px) 80px, 260px"
+                      width={CLIENT_LOGO_CANVAS}
+                      height={CLIENT_LOGO_CANVAS}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className="sk-hero-client-logo h-full w-auto object-contain grayscale"
+                    />
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Frosted glass along the top and bottom edges. Last in paint order
+                so the backdrop-filter actually has something to sample — a
+                band placed before the video would blur the flat `bg-muted` and
+                read as a grey smear. `pointer-events-none` because the film
+                beneath is the thing being watched, and `aria-hidden` because a
+                decorative edge treatment is not content.
+
+                The blur is faded out with `mask-image` rather than by ending
+                the element with a transparent background. Those look similar
+                and are not: a background gradient only softens the tint and
+                leaves a hard rectangle where the blur stops, which is the tell
+                that gives fake glassmorphism away. Masking the element itself
+                fades the backdrop-filter along with the fill, so the band has no
+                edge. `-webkit-mask-image` is spelled out because Tailwind's
+                arbitrary-property syntax cannot add the prefix, and Safari needs
+                it to mask at all.
+
+                Cost note: backdrop-filter over a playing <video> forces a
+                backdrop readback every frame, and that is the one thing in this
+                frame that can cost real frame rate. It is bounded to the film
+                beat, though — the clients composition and the mockup plates are
+                static, so the browser caches their backdrop and recomposites
+                only the band. If it needs to be cheaper, `backdrop-blur-xl`
+                (24px) over `2xl` (40px) is the first dial to turn. */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-white/12 backdrop-blur-2xl backdrop-saturate-150 [mask-image:linear-gradient(to_bottom,#000_0%,#000_30%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,#000_0%,#000_30%,transparent_100%)]"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-white/12 backdrop-blur-2xl backdrop-saturate-150 [mask-image:linear-gradient(to_top,#000_0%,#000_30%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_top,#000_0%,#000_30%,transparent_100%)]"
+            />
+            {/* The lit lip. A single hairline along each outer edge, brightest
+                where it meets the corner radius. Blur plus translucency on its
+                own reads as frosted haze; it is the highlight that reads as a
+                physical pane, so it is the difference between the two being
+                told apart. `rounded-2xl` on the frame means these are clipped to
+                the same corner curve rather than squaring it off. */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent"
+            />
           </div>
 
           {/* Responsive: bare logo marquee below the copy (no card, no label) */}
@@ -1140,7 +1055,7 @@ function Index() {
           </ScrollReveal>
 
           <div className="mt-12 space-y-4">
-            {generalFaqs.map((faq, index) => (
+            {homepageFaqs.map((faq, index) => (
               <ScrollReveal key={faq.question} delay={index % 3}>
                 {/* `hidden` (display:none) rather than `sr-only` + aria-hidden:
                     sr-only clips to 1x1px but stays focusable, which put seven
@@ -1151,6 +1066,8 @@ function Index() {
                   <FaqItem
                     question={faq.question}
                     answer={faq.answer}
+                    bullets={faq.bullets}
+                    closing={faq.closing}
                     isOpen={openFaq === index}
                     onToggle={() => setOpenFaq(openFaq === index ? null : index)}
                   />
@@ -1159,7 +1076,7 @@ function Index() {
             ))}
           </div>
 
-          {generalFaqs.length > 4 && (
+          {homepageFaqs.length > 4 && (
             <div className="mt-6 text-center">
               <button
                 onClick={() => setShowMore(!showMore)}

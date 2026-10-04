@@ -146,15 +146,18 @@ function ServicesHub() {
                 </p>
 
                 <ul className="mt-7 space-y-2.5 border-t border-border pt-7">
-                  {service.deliverables.slice(0, 3).map((deliverable) => (
-                    <li
-                      key={deliverable}
-                      className="flex items-start gap-2.5 text-sm text-muted-foreground"
-                    >
-                      <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                      <span>{deliverable}</span>
-                    </li>
-                  ))}
+                  {service.deliverables.slice(0, 3).map((deliverable) => {
+                    const title = typeof deliverable === "string" ? deliverable : deliverable.title;
+                    return (
+                      <li
+                        key={title}
+                        className="flex items-start gap-2.5 text-sm text-muted-foreground"
+                      >
+                        <Check className="mt-0.5 size-4 shrink-0 text-primary" />
+                        <span>{title}</span>
+                      </li>
+                    );
+                  })}
                 </ul>
 
                 <span className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-foreground transition-colors group-hover:text-primary">

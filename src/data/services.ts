@@ -1,3 +1,10 @@
+export interface DeliverableItem {
+  title: string;
+  description?: string;
+}
+
+export type ServiceDeliverable = string | DeliverableItem;
+
 export interface ServiceItem {
   slug: string;
   title: string;
@@ -8,7 +15,20 @@ export interface ServiceItem {
   metaDescription: string;
   ogImage: string;
   themeColor: string;
-  deliverables: string[];
+  primaryCta?: string;
+  secondaryCta?: string;
+  eyebrow?: string;
+  deliverablesEyebrow?: string;
+  deliverablesHeading?: string;
+  deliverablesIntro?: string;
+  targetAudienceHeading?: string;
+  highlights?: string[];
+  bannerHeading?: string;
+  bannerSubheading?: string;
+  deliverables: ServiceDeliverable[];
+  processEyebrow?: string;
+  processHeading?: string;
+  processIntro?: string;
   process: Array<{ step: string; title: string; description: string }>;
   targetAudience: string[];
   faqs: Array<{ question: string; answer: string }>;
@@ -27,54 +47,90 @@ export interface ServiceItem {
 export const servicesData: ServiceItem[] = [
   {
     slug: "ui-ux-design",
-    title: "UI/UX Design & Product Strategy Agency",
+    title: "UI/UX Design Services for Websites, Apps & Digital Products",
     shortTitle: "UI/UX Design",
-    tagline: "UI/UX design for websites and apps that people enjoy using and come back to.",
+    tagline:
+      "We design intuitive, user-friendly websites and apps that people enjoy using and come back to.",
     definition:
-      "UI/UX design is the end-to-end discipline of turning a business problem into a digital experience people actually want to use. Skédio's engagements span product strategy, discovery research, information architecture, wireframes, interaction design, interactive prototyping, and usability testing — delivered as a validated, launch-ready product and a production-ready design system.",
-    metaTitle: "UI/UX Design Agency | Product Design & UX Strategy | Skédio",
+      "UI/UX design is the process of turning a business problem into a digital product people actually want to use. At Skédio, we handle everything from user research and wireframes to interactive prototypes and usability testing, and deliver a launch-ready product with a complete design system.",
+    metaTitle: "UI/UX Design Services for Websites, Apps & Digital Products | Skédio",
     metaDescription:
-      "Skédio combines product strategy, user research, and interface design in UI/UX engagements — validated flows, wireframes, and a production-ready design system.",
+      "We design intuitive, user-friendly websites and apps that people enjoy using and come back to. Complete UI/UX design with research, wireframes, prototypes, and design systems.",
     ogImage: "/og.webp",
     themeColor: "#8537F4",
-    deliverables: [
-      "Product Discovery, UX Research & Strategy Sprints",
-      "Product Strategy, User Journeys & Information Architecture",
-      "Low-Fidelity & High-Fidelity Wireframes",
-      "Interactive Figma Prototypes & Usability Testing",
-      "Scalable Design Systems, Tokens & Developer Handoff",
+    primaryCta: "Start Your UI/UX Design Project",
+    secondaryCta: "See Our UI/UX Process",
+    deliverablesHeading: "What's Included in Our UI/UX Design Services",
+    deliverablesIntro:
+      "Every project comes with clear, documented deliverables and developer-ready files, so your product is easy to build, launch, and scale.",
+    targetAudienceHeading: "Who our UI/UX design services are for",
+    highlights: [
+      "Sprint-based delivery",
+      "Validated interactive prototypes",
+      "Scalable design system",
     ],
+    bannerHeading: "Ready to build an intuitive, high-converting product?",
+    bannerSubheading:
+      "Let’s talk through your goals, user flows, and product timeline. We’ll outline a sprint-based plan tailored to your launch.",
+    targetAudience: [
+      "Startups designing a new product before writing a single line of code",
+      "SaaS and B2B platforms looking to simplify complex workflows",
+      "Mobile app (iOS and Android) teams improving engagement and retention",
+      "Businesses redesigning websites or apps that users find confusing",
+    ],
+    deliverables: [
+      {
+        title: "UX Research & Product Discovery",
+        description:
+          "User interviews, competitor analysis, and strategy sprints that define what to build.",
+      },
+      {
+        title: "Product Strategy, User Journeys & Information Architecture",
+        description: "Clear user flows and site structure that make your product easy to navigate.",
+      },
+      {
+        title: "Low-Fidelity & High-Fidelity Wireframes",
+        description:
+          "Screen-by-screen layouts that map every state, from first click to final action.",
+      },
+      {
+        title: "Interactive Figma Prototypes & Usability Testing",
+        description: "Clickable prototypes tested with real users before development begins.",
+      },
+      {
+        title: "Design System & Developer Handoff",
+        description:
+          "Reusable components, design tokens, and organized files your developers can build from directly.",
+      },
+    ],
+    processHeading: "Our 4-Step UI/UX Design Process",
+    processIntro:
+      "A clear, sprint-based process that removes guesswork and delivers your design on time.",
     process: [
       {
         step: "01",
         title: "Discovery & Product Strategy",
         description:
-          "We audit the current product, interview stakeholders and real users, then define what the product must do and map the core journeys that make it feel effortless.",
+          "We review your current product, speak with stakeholders and users, and define the goals and key user journeys.",
       },
       {
         step: "02",
         title: "Information Architecture & Wireframing",
         description:
-          "We structure the flows and information, then build wireframes mapping every screen state, edge case, modal, and responsive breakpoint.",
+          "We organize your content and flows, then build wireframes covering every screen, edge case, and screen size.",
       },
       {
         step: "03",
-        title: "Prototyping & High-Fidelity Interface Design",
+        title: "Prototyping & UI Design",
         description:
-          "We turn flows into interactive prototypes and validate them with users, then craft pixel-perfect visual design with typography, subtle motion cues, and high-contrast accessibility.",
+          "We turn wireframes into interactive prototypes, test them with users, and polish the visual design with clean typography, subtle motion, and accessible contrast.",
       },
       {
         step: "04",
         title: "Design System & Developer Handoff",
         description:
-          "We deliver a reusable design system — tokens, component libraries, interaction states — and align with engineers for a faithful, zero-loss build.",
+          "We deliver a reusable design system with components, tokens, and interaction states, and work with your developers so the final build matches the design.",
       },
-    ],
-    targetAudience: [
-      "Startups shaping a new product before a single line of code",
-      "SaaS and B2B platforms simplifying complex workflows",
-      "Mobile applications (iOS & Android) optimizing engagement and retention",
-      "Teams redesigning complex workflows that stall adoption",
     ],
     faqs: [
       {
@@ -111,54 +167,86 @@ export const servicesData: ServiceItem[] = [
   },
   {
     slug: "website-development",
-    title: "Custom Website Development Studio",
+    title: "Website Development Services for Startups & Growing Brands",
     shortTitle: "Website Development",
     tagline:
-      "Fast, responsive website development that turns your design into a site built to convert.",
+      "Fast, responsive, custom websites designed and built to look sharp, load quickly, and grow with your business.",
     definition:
-      "Website development is the engineering of responsive, accessible websites and the digital platforms behind them. Skédio combines modern frontend technologies (React, Next.js, TanStack Start, TypeScript) with resilient backend architectures to ship fast, secure, search-visible sites that hold up under real traffic.",
-    metaTitle: "Website Development | Custom Web Design & Build | Skédio",
+      "Website development is the process of turning a design into a working website that loads fast, works on every device, and helps visitors become customers. At Skédio, the same team that designs your brand also builds your site, so your look, your message, and your code stay perfectly in sync.",
+    metaTitle: "Website Development Services for Startups & Growing Brands | Skédio",
     metaDescription:
-      "From landing pages to full web platforms. Skédio builds fast, accessible, SEO-ready websites with modern React and TypeScript stacks that scale with traffic.",
+      "Fast, responsive, custom websites designed and built to look sharp, load quickly, and grow with your business. Custom design, CMS, SEO, and ongoing support.",
     ogImage: "/og.webp",
     themeColor: "#8537F4",
-    deliverables: [
-      "Modern Web Applications (React, TanStack, Next.js, SSR)",
-      "Native & Cross-Platform Mobile Applications",
-      "REST & GraphQL API Architecture & Database Schema",
-      "Performance & Core Web Vitals Optimization",
-      "Continuous Integration & Automated Deployment Pipelines",
+    primaryCta: "Start Your Website Project",
+    secondaryCta: "See Our Development Process",
+    deliverablesHeading: "What's Included in Our Website Development Services",
+    deliverablesIntro:
+      "Every project includes a fully built, tested, and launch-ready website, so you get a site that is easy to manage, quick to load, and ready to be found on Google.",
+    targetAudienceHeading: "Who our website development services are for",
+    highlights: ["Custom design & build", "Mobile-first & SEO-ready", "Launch & ongoing support"],
+    bannerHeading: "Ready to launch a fast, high-converting website?",
+    bannerSubheading:
+      "Let’s discuss your goals, features, and launch timeline. We’ll map out a clear technical plan and build your site from the ground up.",
+    targetAudience: [
+      "Startups and new businesses launching their first website",
+      "Local and emerging brands that need a professional online presence",
+      "Businesses with outdated or slow websites that need a redesign and rebuild",
+      "Founders who want design and development handled by one team",
     ],
+    deliverables: [
+      {
+        title: "Custom Website Design & Development",
+        description: "A unique website built around your brand and goals, not a recycled template.",
+      },
+      {
+        title: "Responsive, Mobile-First Development",
+        description: "Pages that look and work smoothly on phones, tablets, and desktops.",
+      },
+      {
+        title: "CMS Integration & Easy Content Management",
+        description:
+          "A simple admin setup so you can update text, images, and pages without touching code.",
+      },
+      {
+        title: "Speed, Performance & On-Page SEO",
+        description:
+          "Optimized images and clean code, plus proper headings, meta tags, and site structure to help you rank.",
+      },
+      {
+        title: "Testing, Launch & Ongoing Support",
+        description:
+          "Cross-browser and device testing, a smooth launch, and support afterward for fixes and updates.",
+      },
+    ],
+    processHeading: "Our 4-Step Website Development Process",
+    processIntro:
+      "A clear, step-by-step process that takes your website from an approved design to a live, high-performing site, with updates at every stage.",
     process: [
       {
         step: "01",
-        title: "Technical Architecture & Stack Selection",
+        title: "Planning & Technical Scoping",
         description:
-          "We evaluate scale requirements and select the right database, backend, and frontend frameworks.",
+          "We confirm your goals, pages, features, and platform, then map out the structure and timeline.",
       },
       {
         step: "02",
-        title: "Agile Sprint Development",
+        title: "Design-to-Code Development",
         description:
-          "We build in iterative milestones with type-safe code, automated test suites, and staging environments for continuous review.",
+          "We turn the approved design into clean, responsive code, built page by page to match the design exactly.",
       },
       {
         step: "03",
-        title: "Quality Assurance & Speed Audits",
+        title: "Integration, Testing & Optimization",
         description:
-          "We run rigorous accessibility, security, and Core Web Vitals audits ensuring sub-second load times.",
+          "We add forms, CMS, and any integrations, then test across devices and browsers and optimize for speed and SEO.",
       },
       {
         step: "04",
-        title: "Deployment & Scale Support",
+        title: "Launch & Support",
         description:
-          "We configure edge CDNs, monitoring, logging, and provide ongoing maintenance support post-launch.",
+          "We take your site live, check everything in the real environment, and stay available for updates and improvements.",
       },
-    ],
-    targetAudience: [
-      "Founders needing to build and launch a high-quality MVP rapidly",
-      "Companies rebuilding legacy applications into modern SSR web stacks",
-      "Teams seeking a dedicated web engineering partner",
     ],
     faqs: [
       {
@@ -195,54 +283,92 @@ export const servicesData: ServiceItem[] = [
   },
   {
     slug: "brand-identity",
-    title: "Brand Identity & Logo Design Studio",
+    title: "Brand Identity Design Services for Startups & Growing Brands",
     shortTitle: "Brand Identity",
     tagline:
-      "Logos, color, typography, and guidelines that give your brand a consistent, recognizable identity.",
+      "Logos, colors, typography, and guidelines that give your brand a consistent, recognizable identity from day one.",
     definition:
-      "Brand identity design is the creation of a unified visual system — including logomarks, typography, color schemes, motion guidelines, and brand design assets. Skédio crafts cohesive visual languages tailored for high-growth digital businesses.",
-    metaTitle: "Brand Identity Design | Logo & Visual Systems | Skédio",
+      "Brand identity design is how your business looks, sounds, and feels everywhere people meet it, from your logo and colors to your website, packaging, and social media. At Skédio, we start with strategy and build a complete visual identity system, so your brand looks consistent, builds trust, and stands out from competitors.",
+    metaTitle: "Brand Identity Design Services for Startups & Growing Brands | Skédio",
     metaDescription:
-      "Distinctive logos, typography, color systems, and comprehensive design guidelines crafted for modern brands by Skédio.",
+      "Logos, colors, typography, and guidelines that give your brand a consistent, recognizable identity from day one. Strategy, logos, design systems, and brand guidelines.",
     ogImage: "/og.webp",
     themeColor: "#8537F4",
-    deliverables: [
-      "Primary & Secondary Logomarks, Monograms & Favicons",
-      "Custom Color Palette & Semantic Color Guidelines",
-      "Curated Typography Hierarchy & Font Licensing Guidance",
-      "Iconography, Illustration & Graphic Element Kits",
-      "Comprehensive Digital & Print Brand Guidelines Book",
+    primaryCta: "Start Your Brand Identity Project",
+    secondaryCta: "See Our Branding Process",
+    deliverablesHeading: "What's Included in Our Brand Identity Design Services",
+    deliverablesIntro:
+      "Every project includes a complete, ready-to-use identity with files and guidelines, so your brand looks the same on every platform and in every format.",
+    targetAudienceHeading: "Who our brand identity services are for",
+    highlights: [
+      "Strategy-led identity",
+      "Scalable logo & asset kit",
+      "Full brand guidelines book",
     ],
+    bannerHeading: "Ready to give your brand a distinctive, memorable identity?",
+    bannerSubheading:
+      "Let’s define your brand’s personality, strategy, and visual language. We’ll build a complete identity system built to stand out.",
+    targetAudience: [
+      "Startups and new businesses creating a brand from scratch",
+      "Local and emerging brands that want to look professional and trustworthy",
+      "Established businesses ready for a rebrand or a refreshed look",
+      "Founders who are tired of juggling separate designers for logo, website, and marketing",
+    ],
+    deliverables: [
+      {
+        title: "Brand Discovery & Positioning",
+        description:
+          "Research on your audience and competitors, plus a clear positioning that shows what makes your brand different.",
+      },
+      {
+        title: "Logo Design & Logo Variations",
+        description:
+          "A primary logo with horizontal, stacked, and icon versions that work on websites, social media, and print.",
+      },
+      {
+        title: "Color Palette & Typography System",
+        description:
+          "Carefully chosen brand colors and fonts that set the tone and stay consistent across every touchpoint.",
+      },
+      {
+        title: "Visual Identity System",
+        description:
+          "Icons, patterns, imagery style, and graphic elements that extend your logo into a full brand look.",
+      },
+      {
+        title: "Brand Guidelines & Brand Collateral",
+        description:
+          "A clear brand book and ready-to-use assets such as business cards, stationery, and social media templates.",
+      },
+    ],
+    processHeading: "Our 4-Step Brand Identity Design Process",
+    processIntro:
+      "A clear, step-by-step process that takes your brand from an early idea to a finished identity, with your feedback at every stage.",
     process: [
       {
         step: "01",
-        title: "Moodboarding & Visual Direction",
+        title: "Discovery & Brand Strategy",
         description:
-          "We explore 2–3 distinct creative directions rooted in your strategic direction, presenting moodboards and style tiles.",
+          "We learn about your business, audience, and competitors, then define your brand's purpose, personality, and positioning.",
       },
       {
         step: "02",
-        title: "Concept Design & Exploration",
+        title: "Concept & Logo Design",
         description:
-          "We develop the selected direction into fully realized logo concepts, typographic systems, and visual elements.",
+          "We explore creative directions and sketch logo concepts, then refine the strongest one with your feedback.",
       },
       {
         step: "03",
-        title: "Real-World Mockups & Stress-Testing",
+        title: "Visual Identity System",
         description:
-          "We test how the identity renders across digital apps, social media, outdoor billboards, packaging, and merchandise.",
+          "We build out your colors, typography, icons, and graphic elements so the logo works as part of a complete system.",
       },
       {
         step: "04",
-        title: "Brand Design System & Asset Delivery",
+        title: "Brand Guidelines & Launch Assets",
         description:
-          "We package vector assets, font guides, and comprehensive brand guidelines ensuring smooth handoff and scalable execution.",
+          "We deliver your brand book and final files, plus the assets you need to launch with a consistent look everywhere.",
       },
-    ],
-    targetAudience: [
-      "Startups needing a credible, memorable identity for fundraising and launch",
-      "Consumer and tech companies wanting a modern visual refresh",
-      "Digital-first products needing robust visual design systems",
     ],
     faqs: [
       {
@@ -279,54 +405,92 @@ export const servicesData: ServiceItem[] = [
   },
   {
     slug: "marketing-creatives",
-    title: "Marketing Creatives & Content Design",
+    eyebrow: "Marketing Creatives Studio",
+    title: "Marketing Creatives & Social Media Design for Growing Brands",
     shortTitle: "Marketing Creatives",
     tagline:
-      "Eye-catching marketing creatives for social, ads, and campaigns that keep your brand on message.",
+      "Eye-catching social media posts, ad creatives, and campaign designs that get your brand noticed and keep it consistent everywhere.",
     definition:
-      "Marketing creatives are the repeatable visual and verbal assets a brand publishes D social posts, ad sets, email, print, and landing pages D so that every touchpoint looks like it came from the same studio. Sk—dio builds campaign systems, art direction, and content templates that stay on-brand as the calendar fills up.",
-    metaTitle: "Marketing Creatives | Social & Campaign Design | Skédio",
+      "Marketing creatives are the visual assets that carry your brand's message to your audience, including social media posts, ad banners, campaign graphics, and promotional materials. At Skédio, the team that builds your brand identity also designs your marketing creatives, so every post and ad looks like it belongs to the same brand and drives real attention and action.",
+    metaTitle:
+      "Marketing Creatives & Social Media Design for Growing Brands | Skédio",
     metaDescription:
-      "Marketing creatives that keep one brand voice across social, ads, email, and print — art direction, campaign systems, and on-brand content production.",
+      "Eye-catching social media posts, ad creatives, and campaign designs that get your brand noticed and keep it consistent everywhere.",
     ogImage: "/og.webp",
     themeColor: "#8537F4",
-    deliverables: [
-      "Campaign Concepts & Art Direction",
-      "Social Media Kits, Carousels & Story Templates",
-      "Paid Social & Display Ad Creative Sets",
-      "Email, Newsletter & Landing Page Design",
-      "Brand-Consistent Content Style Guide & Templates",
+    primaryCta: "Start Your Marketing Project",
+    secondaryCta: "See Our Creative Process",
+    deliverablesEyebrow: "What's Included",
+    deliverablesHeading: "What's Included in Our Marketing Creative Services",
+    deliverablesIntro:
+      "Every project includes ready-to-publish designs in the right sizes and formats, so your brand shows up consistently on every platform without extra work on your side.",
+    targetAudienceHeading: "Who our marketing creative services are for",
+    highlights: ["Multi-platform sizing", "Editable brand templates", "High-converting ad visuals"],
+    bannerHeading: "Ready to elevate your social media & ad creatives?",
+    bannerSubheading:
+      "Let’s craft scroll-stopping marketing assets and campaign visuals that keep your brand consistent and drive real engagement.",
+    targetAudience: [
+      "Startups and new brands launching on social media for the first time",
+      "Local and emerging businesses that need regular, professional-looking content",
+      "Brands running ads or campaigns that need strong visuals",
+      "Founders who want marketing designs that match their brand identity and website",
     ],
+    deliverables: [
+      {
+        title: "Social Media Post & Story Design",
+        description:
+          "Scroll-stopping static posts, carousels, and stories designed for Instagram, LinkedIn, Facebook, and more.",
+      },
+      {
+        title: "Ad Creatives & Campaign Design",
+        description:
+          "Display ads, banners, and campaign visuals built to catch attention and encourage clicks.",
+      },
+      {
+        title: "Social Media Templates & Content Kits",
+        description:
+          "Editable templates in your brand style, so your team can post consistently and quickly.",
+      },
+      {
+        title: "Promotional & Launch Materials",
+        description:
+          "Posters, flyers, email graphics, and launch assets for product releases, events, and offers.",
+      },
+      {
+        title: "Motion Graphics & Short-Form Video Creatives",
+        description:
+          "Animated posts, reels covers, and short branded clips that perform well on social platforms.",
+      },
+    ],
+    processEyebrow: "Our Creative Process",
+    processHeading: "Our 4-Step Marketing Creative Process",
+    processIntro:
+      "A clear, repeatable process that turns your campaign goals into polished, on-brand designs, with your feedback at every stage.",
     process: [
       {
         step: "01",
-        title: "Channel Audit & Creative Strategy",
+        title: "Brief & Strategy",
         description:
-          "We map where the brand actually shows up, what is converting, and which assets are missing, then agree the creative direction for the cycle.",
+          "We learn about your goals, audience, platforms, and brand guidelines, then agree on the message and content plan.",
       },
       {
         step: "02",
-        title: "Concepting & System Design",
+        title: "Concept & Creative Direction",
         description:
-          "We explore distinct campaign directions, pick one, and build the layout, type, colour, and motion rules that make it repeatable.",
+          "We explore visual ideas and layouts that fit your brand and the platform, then align on one direction with you.",
       },
       {
         step: "03",
-        title: "Asset Production",
+        title: "Design & Refinement",
         description:
-          "We produce the full set D social cuts, ad variants sized per placement, email art, and landing pages D in every ratio the channels require.",
+          "We design the full set of creatives, gather your feedback, and refine them until they are ready to publish.",
       },
       {
         step: "04",
-        title: "Templates & Handoff",
+        title: "Delivery & Optimization",
         description:
-          "We deliver editable templates and a style guide so your team can ship on-brand assets between sprints without waiting on us.",
+          "We deliver final files in every format you need, and suggest tweaks based on how your content performs.",
       },
-    ],
-    targetAudience: [
-      "Brands publishing on a calendar they cannot keep up with",
-      "Teams whose social and ads stop looking like their own website",
-      "Founders who need launch-day creative without hiring in-house",
     ],
     faqs: [
       {

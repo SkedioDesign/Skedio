@@ -108,6 +108,92 @@ const devWebpMiddleware = (): Plugin => {
   };
 };
 
+/**
+ * Exposes the ordered list of hero mockup plates in `public/carousel/` as a
+ * virtual module, so dropping another `m<n>.<ext>` into that folder extends the
+ * hero's mockup sequence with no code change.
+ *
+ * Why a plugin and not `import.meta.glob`: globbing `public/` is not supported.
+ * Vite does not fail loudly on it — a pattern rooted at `/carousel/` simply
+ * resolves to an empty object — which is the worst failure mode available, a
+ * silently blank hero beat. Verified against Vite 8.3.1.
+ *
+ * `import.meta.glob` over `src/assets/` would work with three lines and no
+ * plugin, but these plates are deployment artifacts rather than source: they are
+ * full-bleed 2.39:1 exports, served from a stable `/carousel/` path, and dropped
+ * in by hand. Keeping them in `public/` and generating the list here means the
+ * folder on disk is the whole contract.
+ *
+ * Ordering is by the numeric suffix, not lexicographic: `m10` has to land after
+ * `m9`, and `String.localeCompare` with numeric handling would work but a
+ * subtraction on the captured digits is both cheaper and impossible to get
+ * subtly wrong.
+ */
+const carouselManifest = (): Plugin => {
+  const ID = "virtual:carousel-manifest";
+  const RESOLVED = "\0" + ID;
+  // Anchored on the whole basename so a file called `m1-hero.png` or `m2.old.png`
+  // is ignored rather than silently joining the sequence out of filename order.
+  const PLATE = /^m(\d+)\.(png|jpe?g|webp|avif)$/i;
+
+  let root = process.cwd();
+  const list = async () => {
+    let names: string[];
+    try {
+      names = await fs.readdir(path.join(root, "public", "carousel"));
+    } catch {
+      // No folder yet. An empty sequence is a legitimate state — the hero
+      // timeline handles zero mockups — and must not break the build.
+      return [];
+    }
+    return names
+      .map((name) => {
+        const match = PLATE.exec(name);
+        return match ? { order: Number(match[1]), name } : null;
+      })
+      .filter((entry): entry is { order: number; name: string } => entry !== null)
+      .sort((a, b) => a.order - b.order)
+      .map((entry) => `/carousel/${entry.name}`);
+  };
+
+  return {
+    name: "skedio:carousel-manifest",
+    configResolved(config) {
+      root = config.root;
+    },
+    resolveId(id) {
+      return id === ID ? RESOLVED : null;
+    },
+    async load(id) {
+      if (id !== RESOLVED) return null;
+      return `export default ${JSON.stringify(await list())};`;
+    },
+    configureServer(server) {
+      // The list is baked into the module graph at transform time, so a plate
+      // dropped in while dev is running would otherwise stay invisible until a
+      // restart — the transform result is cached and never recomputed.
+      //
+      // A `full-reload` on its own is NOT enough: it re-requests the module, but
+      // Vite answers from that same cache. The module has to be invalidated
+      // first. A full reload rather than an HMR patch is the honest response to
+      // the second half of it — the list sizes the GSAP timeline that owns the
+      // mockup beat, and patching it in mid-sequence would leave that timeline
+      // pointing at elements React had just unmounted.
+      const reload = (file: string) => {
+        if (!PLATE.test(path.basename(file))) return;
+        if (!/public[\\/]carousel[\\/]/.test(file)) return;
+        for (const environment of Object.values(server.environments)) {
+          const mod = environment.moduleGraph.getModuleById(RESOLVED);
+          if (mod) environment.moduleGraph.invalidateModule(mod);
+        }
+        server.ws.send({ type: "full-reload" });
+      };
+      server.watcher.on("add", reload);
+      server.watcher.on("unlink", reload);
+    },
+  };
+};
+
 export default defineConfig({
   css: { transformer: "lightningcss" },
   resolve: { tsconfigPaths: true },
@@ -205,6 +291,7 @@ export default defineConfig({
     viteReact(),
     tailwindcss(),
     devWebpMiddleware(),
+    carouselManifest(),
     stripConsoleOnClient(),
   ],
 });

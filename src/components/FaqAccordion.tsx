@@ -63,11 +63,18 @@ function FaqPanel({ open, children }: { open: boolean; children: ReactNode }) {
 export function FaqItem({
   question,
   answer,
+  bullets,
+  closing,
   isOpen,
   onToggle,
 }: {
   question: string;
   answer: string;
+  // `| undefined` on both because `exactOptionalPropertyTypes` is on: callers
+  // forward `faq.bullets` straight through, and without it a FAQ that simply has
+  // no list fails to typecheck against a prop declared as `bullets?: string[]`.
+  bullets?: string[] | undefined;
+  closing?: string | undefined;
   isOpen: boolean;
   onToggle: () => void;
 }) {
@@ -100,6 +107,20 @@ export function FaqItem({
       <FaqPanel open={isOpen}>
         <div className="border-t border-border px-6 pt-4 pb-6 leading-relaxed text-muted-foreground">
           {answer}
+          {/* `marker` + `list-none` rather than a plain disc: the bullet glyphs
+              would inherit the muted body colour, whereas the item text is the
+              part being scanned. Tying the marker to `currentColor` on the li
+              keeps the two from drifting apart in a dark-theme pass. */}
+          {bullets && (
+            <ul className="mt-3 list-none space-y-1.5 pl-1 [&>li]:relative [&>li]:pl-5">
+              {bullets.map((bullet) => (
+                <li key={bullet} className="marker:text-primary">
+                  {bullet}
+                </li>
+              ))}
+            </ul>
+          )}
+          {closing && <p className="mt-3">{closing}</p>}
         </div>
       </FaqPanel>
     </div>

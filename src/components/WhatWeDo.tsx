@@ -118,7 +118,8 @@ const DEFAULT_SERVICE: WhatWeDoItem = {
   index: "01",
   slug: "ui-ux-design",
   title: "UI/UX Design",
-  description: "UI/UX design for websites and apps that people enjoy using and come back to.",
+  description:
+    "We design intuitive, user-friendly websites and apps that people enjoy using and come back to.",
   image: svcImages["ui-ux-design"] as ServiceImage,
   accentColor: "#f97316",
 };

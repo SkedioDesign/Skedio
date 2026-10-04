@@ -64,7 +64,7 @@ export interface ServiceSchemaInput {
   slug?: string;
   serviceType?: string;
   shortTitle?: string;
-  deliverables?: string[];
+  deliverables?: Array<string | { title: string; description?: string }>;
 }
 
 export function getServiceSchema(service: ServiceSchemaInput) {
@@ -102,7 +102,8 @@ export function getServiceSchema(service: ServiceSchemaInput) {
               "@type": "Offer",
               itemOffered: {
                 "@type": "Service",
-                name: d,
+                name: typeof d === "string" ? d : d.title,
+                ...(typeof d !== "string" && d.description ? { description: d.description } : {}),
               },
               position: idx + 1,
             })),
@@ -179,6 +180,27 @@ export function getBreadcrumbSchema(items: BreadcrumbItem[]) {
 export interface FAQItem {
   question: string;
   answer: string;
+  /** Folded into `text` below. See faqAnswerText. */
+  bullets?: string[];
+  /** Folded into `text` below. See faqAnswerText. */
+  closing?: string;
+}
+
+/**
+ * Flattens an FAQ into the single string schema.org's `Answer.text` accepts.
+ *
+ * The accordion can render `bullets` as real list items, but structured data has
+ * no lists — `text` is one string. Dropping them would make the schema a strict
+ * subset of the visible page, which is the worse failure: the markup would look
+ * valid while quietly misrepresenting answers that are half length. Joining them
+ * back in costs nothing and keeps the two in agreement.
+ */
+function faqAnswerText(faq: FAQItem): string {
+  return [faq.answer, ...(faq.bullets ?? []), faq.closing]
+    .filter((part): part is string => Boolean(part))
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 export function getFAQSchema(faqs: FAQItem[]) {
@@ -190,7 +212,7 @@ export function getFAQSchema(faqs: FAQItem[]) {
       name: faq.question,
       acceptedAnswer: {
         "@type": "Answer",
-        text: faq.answer,
+        text: faqAnswerText(faq),
       },
     })),
   };
