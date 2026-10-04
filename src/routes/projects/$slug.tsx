@@ -797,8 +797,8 @@ function ServiceCrossLinks({ slugs }: { slugs: string[] }) {
   return (
     <section className="cs-services" aria-labelledby="cs-services-heading">
       <div className="cs-services__inner">
-        <p className="cs-services__kicker">Services Applied</p>
-        <h2 id="cs-services-heading" className="cs-services__title">
+        <p className="cs-services__kicker"></p>
+        <h2 id="cs-services-heading" className="cs-services__title" style={{ marginTop: '1rem' }}>
           The craft behind this work
         </h2>
         <div className="cs-services__list">
@@ -819,9 +819,6 @@ function ServiceCrossLinks({ slugs }: { slugs: string[] }) {
             Start a Conversation <ArrowUpRight size={15} />
           </Link>
         </div>
-        <Link to="/projects" className="cs-services__more">
-          <ArrowLeft size={14} /> Back to all projects
-        </Link>
       </div>
     </section>
   );
@@ -995,7 +992,6 @@ function CaseStudy() {
       {bodySections.map((section) => (
         <SectionRenderer key={`${section.type}-${section.id}`} doc={doc} section={section} />
       ))}
-      <ServiceCrossLinks slugs={project.serviceSlugs} />
       {endingSection && <EndingSection doc={doc} section={endingSection} />}
     </main>
   );
