@@ -75,13 +75,25 @@ const CONCURRENCY = 3;
  * and is never a rendered candidate.
  */
 export const RESPONSIVE_VARIANTS = [
-  // Service art supplied under images/. Their aspects are NOT uniform — uiux,
-  // website-development and marketing-creative are 16:9, brand-identity is 3:2
-  // — so the 480/768 ladder covers the ~664px desktop slot at 1x and 2x DPR and
-  // object-cover does the cropping. They live under images/ rather than at the
+  // Service art supplied under images/. Their aspects are NOT uniform —
+  // brand-identity1 / uiux1 / marketing-creative1 are 16:9, and web-development,
+  // brand-identity2 and uiux2 are 3:2 — so the 480/768 ladder covers the ~664px
+  // desktop slot at 1x and 2x DPR. They live under images/ rather than at the
   // static root because they are supplied artwork, not build output — the
   // generated twins sit beside their source, so these land at
-  // images/brand-identity-480.webp and friends.
+  // images/brand-identity1-480.webp and friends.
+  //
+  // A source may itself be WebP (uiux2, brand-identity2). Those emit WebP
+  // variants only: there is no JPEG original to derive a fallback from, and
+  // re-encoding WebP to JPEG costs bytes for no gain over a format every
+  // baseline browser already decodes. Their full-size `.webp` is both the
+  // variant source and the widest rendered candidate — optimizeFile downscales
+  // it to MAX_DIMENSION in place, so a 6000px export ships as a 1600px file.
+  //
+  // A PNG source is different: it can carry real transparency, so whether the
+  // record lists "jpg" depends on the ART, not the extension. Check the alpha
+  // before reusing a "jpg" record for a new PNG, and prefer
+  // "png" when any pixel is actually transparent.
   //
   // Swapping one of these sources requires re-running this script against
   // `public` (or committing freshly generated variants): the -480/-768 files
@@ -90,17 +102,25 @@ export const RESPONSIVE_VARIANTS = [
   // next build. WhatWeDo.tsx's intrinsic width/height hint must be updated in
   // the same pass when the new source changes aspect.
   //
-  // The slug is `marketing-creatives` but the file is `marketing-creative.jpeg`
-  // (singular). Variant names follow the FILE, so WhatWeDo.tsx must reference
-  // `marketing-creative-*`; renaming one side without the other silently 404s.
-  { src: "images/brand-identity.jpeg", widths: [480, 768], formats: ["webp", "jpg"] },
+  // The slug is `marketing-creatives` (plural) but the file is
+  // `marketing-creative1.jpeg` (singular, with a plate index). Variant names
+  // follow the FILE, so WhatWeDo.tsx must reference `marketing-creative1-*`;
+  // renaming one side without the other silently 404s.
+  { src: "images/brand-identity1.jpg", widths: [480, 768], formats: ["webp", "jpg"] },
   // Second brand-identity plate. It has no service of its own — WhatWeDo.tsx
   // rotates it inside the brand-identity card — but it still needs the same
   // ladder, because that rotation renders it in the very same slots.
-  { src: "images/brand-identity-2.jpeg", widths: [480, 768], formats: ["webp", "jpg"] },
-  { src: "images/uiux.jpeg", widths: [480, 768], formats: ["webp", "jpg"] },
-  { src: "images/website-development.jpeg", widths: [480, 768], formats: ["webp", "jpg"] },
-  { src: "images/marketing-creative.jpeg", widths: [480, 768], formats: ["webp", "jpg"] },
+  { src: "images/brand-identity2.webp", widths: [480, 768], formats: ["webp"] },
+  // The two UI/UX plates. Same reasoning as brand-identity2: WhatWeDo.tsx
+  // rotates them inside the ui-ux-design card, so both need the ladder. WebP
+  // sources, so WebP-only variants.
+  { src: "images/uiux1.webp", widths: [480, 768], formats: ["webp"] },
+  { src: "images/uiux2.webp", widths: [480, 768], formats: ["webp"] },
+  // The FILE is `web-development` while the slug is `website-development`, and
+  // the variant names follow the FILE — so WhatWeDo.tsx must reference
+  // `web-development-*`; matching one side to the slug instead silently 404s.
+  { src: "images/web-development.jpeg", widths: [480, 768], formats: ["webp", "jpg"] },
+  { src: "images/marketing-creative1.jpeg", widths: [480, 768], formats: ["webp", "jpg"] },
   // Nothing renders these any more — WhatWeDo.tsx moved to the supplied artwork
   // above. Their entries stay ONLY so the committed -480/-768 twins keep being
   // recognised as managed variants: drop them and `isResponsiveVariant` starts
@@ -144,7 +164,7 @@ export const RESPONSIVE_VARIANTS = [
 function variantBasenames() {
   const names = new Set();
   for (const v of RESPONSIVE_VARIANTS) {
-    const base = v.src.replace(/\.(jpe?g|png)$/i, "");
+    const base = v.src.replace(/\.(jpe?g|png|webp)$/i, "");
     for (const w of v.widths) {
       for (const f of v.formats) {
         const ext = f === "jpg" ? "jpg" : f;
@@ -336,7 +356,7 @@ async function generateResponsiveVariants() {
       exists = false;
     }
     if (!exists) continue;
-    const base = srcFile.replace(/\.(jpe?g|png)$/i, "");
+    const base = srcFile.replace(/\.(jpe?g|png|webp)$/i, "");
     for (const width of v.widths) {
       for (const format of v.formats) {
         const dest = `${base}-${width}.${format === "jpg" ? "jpg" : format}`;
