@@ -278,7 +278,12 @@ function PillLink({
         ? "bg-ink text-ink-foreground hover:bg-primary"
         : "bg-primary text-primary-foreground hover:bg-primary-hover";
 
-  const sizes = variant === "ink" ? "px-5 py-3 md:px-7" : "px-6 py-3";
+  // Two sizes rather than one: the hero CTAs are the page's most prominent
+  // tap targets, and at full size they measured 324px combined, which overflowed
+  // the 272px row at a 320px viewport. Trimming padding and the icon disc brings
+  // that down without dropping the 14px label below `type-button`, since the
+  // smaller text is the part that would cost legibility.
+  const sizes = variant === "ink" ? "px-4 py-2.5 md:px-6 md:py-3" : "px-4 py-2.5 md:px-5 md:py-3";
 
   const Comp = onClick ? "button" : "a";
   const props = onClick ? { type: "button" as const, onClick } : { href };
@@ -291,10 +296,10 @@ function PillLink({
       {children}
       <span
         className={`grid place-items-center rounded-full transition-transform duration-250 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5 ${
-          variant === "ink" ? "size-7 bg-white/20 md:size-8" : "size-7 bg-foreground/10"
+          variant === "ink" ? "size-6 bg-white/20 md:size-7" : "size-6 bg-foreground/10 md:size-7"
         }`}
       >
-        <ArrowUpRight className={variant === "ink" ? "size-3.5 md:size-4" : "size-3.5"} />
+        <ArrowUpRight className="size-3.5" />
       </span>
     </Comp>
   );
@@ -714,11 +719,24 @@ function Index() {
                 A Creative Design Studio Where <span className="sk-hero-accent">Brands Begin.</span>
               </h1>
 
+              {/* The <br /> is `sm:`-up only, and `text-balance` covers the
+                widths below it. The sentence is ~904px wide at 16px, so two
+                lines need ~452px per line: from a 500px viewport up it lands
+                on two lines anyway, and the forced break there just makes that
+                break land in the right place. Under sm the box is too narrow
+                for two lines at a readable size -- 342px at a 390px phone --
+                so the break only produced orphans, "development," alone on a
+                line at every phone width. `text-balance` evens those three
+                lines instead of leaving one word stranded.
+                The space before the <br /> is a real text node: without it the
+                two sentences would run together as "development,we" on the
+                widths where the break is hidden. */}
               <p
                 data-hero-lede=""
-                className="sk-hero-start mt-6 text-base leading-relaxed text-muted-foreground md:text-lg"
+                className="sk-hero-start mt-6 text-balance text-base leading-relaxed text-muted-foreground md:text-lg"
               >
-                From brand identity and UI/UX design to MVP development, <br />
+                From brand identity and UI/UX design to MVP development,{" "}
+                <br className="hidden sm:inline" />
                 we help founders take products from idea to launch.
               </p>
 
@@ -746,7 +764,13 @@ function Index() {
                 ))}
               </div>
 
-              <div data-hero-cta className="sk-hero-start mt-8 flex items-center gap-2 md:gap-3">
+              {/* `flex-wrap` so the pair degrades to two stacked full-width buttons on the
+                narrowest phones instead of overflowing: measured 324px combined
+                against a 272px row at 320px before the sizes were trimmed. */}
+              <div
+                data-hero-cta
+                className="sk-hero-start mt-8 flex flex-wrap items-center gap-2 md:gap-3"
+              >
                 <PillLink href="#work" variant="ink">
                   View our works
                 </PillLink>
