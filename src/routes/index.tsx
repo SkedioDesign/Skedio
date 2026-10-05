@@ -962,28 +962,40 @@ function Index() {
                 beat, though — the clients composition and the mockup plates are
                 static, so the browser caches their backdrop and recomposites
                 only the band. If it needs to be cheaper, `backdrop-blur-xl`
-                (24px) over `2xl` (40px) is the first dial to turn. */}
+                (24px) over `2xl` (40px) is the first dial to turn.
+
+                Below `sm` none of the four are rendered at all, which is what
+                removes the per-frame readback rather than merely softening it.
+                The frame is 239:1, so an h-24 band is a third of a 268px-tall
+                phone frame against ~9% of the 1440px desktop one — the effect
+                is at its heaviest exactly where there is least frame rate to
+                spend, and a 40px blur at that size reads as haze, not glass.
+                `display: none` also means the compositor never allocates the
+                filter surface, which a reduced-opacity backdrop-filter would. */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-white/12 backdrop-blur-2xl backdrop-saturate-150 [mask-image:linear-gradient(to_bottom,#000_0%,#000_30%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,#000_0%,#000_30%,transparent_100%)]"
+              className="pointer-events-none absolute inset-x-0 top-0 hidden h-24 bg-white/12 backdrop-blur-2xl backdrop-saturate-150 sm:block [mask-image:linear-gradient(to_bottom,#000_0%,#000_30%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,#000_0%,#000_30%,transparent_100%)]"
             />
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-white/12 backdrop-blur-2xl backdrop-saturate-150 [mask-image:linear-gradient(to_top,#000_0%,#000_30%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_top,#000_0%,#000_30%,transparent_100%)]"
+              className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-24 bg-white/12 backdrop-blur-2xl backdrop-saturate-150 sm:block [mask-image:linear-gradient(to_top,#000_0%,#000_30%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_top,#000_0%,#000_30%,transparent_100%)]"
             />
             {/* The lit lip. A single hairline along each outer edge, brightest
                 where it meets the corner radius. Blur plus translucency on its
                 own reads as frosted haze; it is the highlight that reads as a
                 physical pane, so it is the difference between the two being
                 told apart. `rounded-2xl` on the frame means these are clipped to
-                the same corner curve rather than squaring it off. */}
+                the same corner curve rather than squaring it off.
+
+                Same `sm:block` gate as the bands above — a 1px highlight on a
+                268px frame is not a lit edge, it is a visible seam. */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent"
+              className="pointer-events-none absolute inset-x-0 top-0 hidden h-px bg-gradient-to-r from-transparent via-white/70 to-transparent sm:block"
             />
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent"
+              className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-px bg-gradient-to-r from-transparent via-white/70 to-transparent sm:block"
             />
           </div>
 
