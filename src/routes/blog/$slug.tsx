@@ -168,40 +168,48 @@ function BlogPost() {
 
         {/* The date sits in a <time> with the machine-readable value in
             `dateTime`; the old raw ISO string told readers nothing. */}
-        <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 border-y border-border py-4 text-sm text-muted-foreground">
-          {/* Name, photo and links travel together: they identify the same
-              person, and the icons are `size-8` tap targets, so they read as
-              the author's row rather than as loose buttons beside the date.
-              The photo is decorative — the name is right beside it in the same
-              row, so an alt would only repeat it for screen reader users. */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2.5">
-              {authorPhoto ? (
-                <WebpImage
-                  src={authorPhoto}
-                  alt=""
-                  aria-hidden="true"
-                  width={36}
-                  height={36}
-                  loading="lazy"
-                  decoding="async"
-                  className="size-9 shrink-0 rounded-full border border-border object-cover"
-                />
-              ) : (
-                <UserRound className="size-4" aria-hidden="true" />
-              )}
-              <span className="text-foreground">{post.author ?? "Skédio"}</span>
-            </div>
-            <SocialLinks socials={socialsFor(post.author)} />
+        <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-3 border-y border-border py-4 text-sm text-muted-foreground">
+          {/* Name and photo. The photo is decorative — the name is right beside
+              it, so an alt would only repeat it for screen reader users. */}
+          <div className="flex shrink-0 items-center gap-2.5">
+            {authorPhoto ? (
+              <WebpImage
+                src={authorPhoto}
+                alt=""
+                aria-hidden="true"
+                width={36}
+                height={36}
+                loading="lazy"
+                decoding="async"
+                className="size-9 shrink-0 rounded-full border border-border object-cover"
+              />
+            ) : (
+              <UserRound className="size-4" aria-hidden="true" />
+            )}
+            <span className="text-foreground">{post.author ?? "Skédio"}</span>
           </div>
-          {/* Date and length are grouped and pushed right with `ml-auto` so they
-              sit against the right edge whenever they share a line with the
-              author, and stay together on their own right-aligned line when
-              narrow widths wrap the byline. `flex-wrap` on the parent handles
-              the wrap; `ml-auto` does the right-alignment. */}
-          <div className="ml-auto flex items-center gap-4">
-            <div className="flex items-center gap-1.5">
+
+          {/* The links are a sibling of the name, not a child of it. That is
+              what lets them pair up with the share button on the second line at
+              phone widths: photo, name, five icons and a share button cannot
+              all fit in 320px, so the name takes the first line, the icons
+              wrap to the next, and the share button — pushed right by
+              `ml-auto` — lands beside them. Nested one level deeper the links
+              would wrap on their own and the share button would drop to a third
+              line, orphaned. `wrap={false}` keeps the icons themselves
+              unbroken, so a link is never split across lines. */}
+          <SocialLinks socials={socialsFor(post.author)} wrap={false} />
+
+          {/* Date and reading time, from `sm` up only. On a phone they are the
+              two widest items in the row and there is no room for them once
+              the share button has its place, so they are dropped rather than
+              allowed to force a third line. The `sr-only` copy below keeps both
+              announced to screen readers at every width. */}
+          <div className="ml-auto hidden flex-nowrap items-center gap-4 sm:flex">
+            <div className="flex shrink-0 items-center gap-1.5">
               <Calendar className="size-4" aria-hidden="true" />
+              {/* The date sits in a <time> with the machine-readable value in
+                  `dateTime`; the old raw ISO string told readers nothing. */}
               <time dateTime={post.publishedAt}>
                 {new Date(post.publishedAt).toLocaleDateString("en-US", {
                   month: "long",
@@ -211,19 +219,35 @@ function BlogPost() {
               </time>
             </div>
             {post.readingTimeMinutes && (
-              <div className="flex items-center gap-1.5">
+              <div className="flex shrink-0 items-center gap-1.5">
                 <Clock className="size-4" aria-hidden="true" />
                 <span>{post.readingTimeMinutes} min read</span>
               </div>
             )}
-            {/* Inside the right-aligned group, last, so the share control sits
-                at the end of the row without pushing the date off the edge. */}
-            <ShareButton
-              url={toAbsoluteUrl(`/blog/${post.slug}`)}
-              title={post.title}
-              className="shrink-0"
-            />
           </div>
+
+          {/* Last child, so it is the far-right item from `sm` up. Below `sm`
+              `ml-auto` pulls it to the right edge of the links' line; the
+              hidden metadata above leaves that space to it. */}
+          <ShareButton
+            url={toAbsoluteUrl(`/blog/${post.slug}`)}
+            title={post.title}
+            className="ml-auto shrink-0 sm:ml-0"
+          />
+
+          {/* Date and reading time for narrow screens, where the visible row
+              above is hidden. `sr-only` takes them out of the layout without
+              taking them out of the accessibility tree. */}
+          <span className="sr-only sm:hidden">
+            <time dateTime={post.publishedAt}>
+              {new Date(post.publishedAt).toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </time>
+            {post.readingTimeMinutes && `, ${post.readingTimeMinutes} min read`}
+          </span>
         </div>
 
         {/* Article Body */}

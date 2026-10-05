@@ -66,7 +66,7 @@ export function ShareButton({
          announce the label change twice for anyone navigating by name. */
       aria-label={copied ? "Link copied to clipboard" : `Share “${title}”`}
       className={cn(
-        "inline-flex cursor-pointer items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground/70 transition-colors duration-200 hover:border-primary/50 hover:text-primary",
+        "inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground/70 transition-colors duration-200 hover:border-primary/50 hover:text-primary",
         copied && "border-primary/50 text-primary",
         className,
       )}
@@ -76,7 +76,11 @@ export function ShareButton({
       ) : (
         <Share2 className="size-4" aria-hidden="true" />
       )}
-      {copied ? "Link copied" : "Share"}
+      {/* Label collapses to the icon below `sm`, where the byline is tight
+          enough that the words cost a line. `aria-label` above is unaffected,
+          so the button keeps its full accessible name at every width — the
+          visible label is decoration, not the accessible name. */}
+      <span className="hidden sm:inline">{copied ? "Link copied" : "Share"}</span>
     </button>
   );
 }

@@ -54,9 +54,18 @@ function BrandIcon({ name }: { name: BrandKey }) {
 export function SocialLinks({
   socials,
   className = "",
+  wrap = true,
 }: {
   socials: TeamSocials;
   className?: string;
+  /**
+   * Whether the icons may break across lines. Default true, which is what the
+   * narrow team cards on /about need. Pass false where the row must stay
+   * intact — see the blog byline. `shrink-0` then stops the row compressing
+   * below its natural width, so the caller must allow the break at the row
+   * level instead.
+   */
+  wrap?: boolean;
 }) {
   const entries = Object.entries(socials).filter(
     (entry): entry is [SocialKey, string] => Boolean(entry[1]) && entry[0] in socialLabels,
@@ -65,7 +74,9 @@ export function SocialLinks({
   if (entries.length === 0) return null;
 
   return (
-    <div className={`flex flex-wrap items-center gap-2.5 ${className}`}>
+    <div
+      className={`flex items-center gap-2.5 ${wrap ? "flex-wrap" : "flex-nowrap shrink-0"} ${className}`}
+    >
       {entries.map(([key, url]) => {
         const label = socialLabels[key];
         return (
