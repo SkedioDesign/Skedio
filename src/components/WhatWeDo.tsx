@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -8,9 +8,9 @@ import { WebpImage } from "@/components/WebpImage";
 
 /** Fallback source, the JPEG candidates the `<img>` picks from, the WebP
  *  candidates the `<source>` offers, and the intrinsic size of `src`. Kept as
- *  one object per service so the ladders can never drift out of sync with each
- *  other — and because the source aspect is no longer uniform (see below), the
- *  intrinsic pair cannot be hoisted into shared constants any more. */
+ *  one object per rendered image so the ladders can never drift out of sync with
+ *  each other — and because the source aspect is no longer uniform (see below),
+ *  the intrinsic pair cannot be hoisted into shared constants any more. */
 type ServiceImage = {
   src: string;
   srcSet: string;
@@ -46,52 +46,74 @@ const SVC_SIZES = "(max-width: 768px) 100vw, 664px";
  * `width`/`height` are the intrinsic size of the 768w variant, emitted so the
  * browser reserves the box before the bytes land. Both slots crop with
  * object-cover inside a fixed-aspect container, so these only supply the aspect
- * hint — kept per service rather than hoisted because the hint has to stay
- * honest if a source is ever swapped. All four are currently 16:9 supplied
- * artwork under images/ (768x432).
+ * hint — kept per image rather than hoisted because the hint has to stay honest
+ * if a source is ever swapped. Three sources are 16:9 supplied artwork under
+ * images/ (768x432); both brand-identity plates are 3:2 (768x512) and are
+ * cropped by object-cover like the rest.
+ *
+ * Each slug maps to an ARRAY because a service can have more than one plate:
+ * brand-identity ships two and they rotate inside the single preview card. One
+ * entry means no carousel — ServiceMedia hides the dots and skips the timer
+ * rather than special-casing the slug.
+ *
+ * Regenerate the -480/-768 variants from the source whenever a supplied image is
+ * replaced or added — they are committed build output, and `vite dev` serves
+ * them straight off disk rather than deriving them, so a swapped source
+ * otherwise keeps rendering the old art. The RESPONSIVE_VARIANTS records in
+ * scripts/optimize-images.mjs have to list the new file too, or the URLs below
+ * 404 (a `<source>` that resolves to nothing is a broken image, not a fallback).
  */
-const svcImages: Record<string, ServiceImage> = {
-  "ui-ux-design": {
-    src: "/images/uiux-768.jpg",
-    srcSet: "/images/uiux-480.jpg 480w, /images/uiux-768.jpg 768w",
-    webpSrcSet: "/images/uiux-480.webp 480w, /images/uiux-768.webp 768w, /images/uiux.webp 1200w",
-    width: 768,
-    height: 432,
-  },
-  "website-development": {
-    src: "/images/website-development-768.jpg",
-    srcSet: "/images/website-development-480.jpg 480w, /images/website-development-768.jpg 768w",
-    webpSrcSet:
-      "/images/website-development-480.webp 480w, /images/website-development-768.webp 768w, /images/website-development.webp 1200w",
-    width: 768,
-    height: 432,
-  },
-  "brand-identity": {
-    src: "/images/brand-identity-768.jpg",
-    srcSet: "/images/brand-identity-480.jpg 480w, /images/brand-identity-768.jpg 768w",
-    webpSrcSet:
-      "/images/brand-identity-480.webp 480w, /images/brand-identity-768.webp 768w, /images/brand-identity.webp 1200w",
-    width: 768,
-    height: 432,
-  },
+const svcImages: Record<string, ServiceImage[]> = {
+  "ui-ux-design": [
+    {
+      src: "/images/uiux-768.jpg",
+      srcSet: "/images/uiux-480.jpg 480w, /images/uiux-768.jpg 768w",
+      webpSrcSet: "/images/uiux-480.webp 480w, /images/uiux-768.webp 768w, /images/uiux.webp 1200w",
+      width: 768,
+      height: 432,
+    },
+  ],
+  "website-development": [
+    {
+      src: "/images/website-development-768.jpg",
+      srcSet: "/images/website-development-480.jpg 480w, /images/website-development-768.jpg 768w",
+      webpSrcSet:
+        "/images/website-development-480.webp 480w, /images/website-development-768.webp 768w, /images/website-development.webp 1200w",
+      width: 768,
+      height: 432,
+    },
+  ],
+  "brand-identity": [
+    {
+      src: "/images/brand-identity-768.jpg",
+      srcSet: "/images/brand-identity-480.jpg 480w, /images/brand-identity-768.jpg 768w",
+      webpSrcSet:
+        "/images/brand-identity-480.webp 480w, /images/brand-identity-768.webp 768w, /images/brand-identity.webp 1200w",
+      width: 768,
+      height: 512,
+    },
+    {
+      src: "/images/brand-identity-2-768.jpg",
+      srcSet: "/images/brand-identity-2-480.jpg 480w, /images/brand-identity-2-768.jpg 768w",
+      webpSrcSet:
+        "/images/brand-identity-2-480.webp 480w, /images/brand-identity-2-768.webp 768w, /images/brand-identity-2.webp 1200w",
+      width: 768,
+      height: 512,
+    },
+  ],
   // Source is `marketing-creative.jpeg` (singular) while the slug is
   // `marketing-creatives` — the variant names follow the FILE, so keep the
   // ladder on `marketing-creative-*`.
-  "marketing-creatives": {
-    src: "/images/marketing-creative-768.jpg",
-    srcSet: "/images/marketing-creative-480.jpg 480w, /images/marketing-creative-768.jpg 768w",
-    webpSrcSet:
-      "/images/marketing-creative-480.webp 480w, /images/marketing-creative-768.webp 768w, /images/marketing-creative.webp 1200w",
-    width: 768,
-    height: 432,
-  },
-};
-
-const accentColors: Record<string, string> = {
-  "brand-identity": "#7c3aed",
-  "ui-ux-design": "#f97316",
-  "website-development": "#0d9488",
-  "marketing-creatives": "#db2777",
+  "marketing-creatives": [
+    {
+      src: "/images/marketing-creative-768.jpg",
+      srcSet: "/images/marketing-creative-480.jpg 480w, /images/marketing-creative-768.jpg 768w",
+      webpSrcSet:
+        "/images/marketing-creative-480.webp 480w, /images/marketing-creative-768.webp 768w, /images/marketing-creative.webp 1200w",
+      width: 768,
+      height: 432,
+    },
+  ],
 };
 
 interface WhatWeDoItem {
@@ -99,8 +121,7 @@ interface WhatWeDoItem {
   slug: string;
   title: string;
   description: string;
-  image: ServiceImage;
-  accentColor: string;
+  images: ServiceImage[];
 }
 
 const services: WhatWeDoItem[] = servicesData
@@ -109,10 +130,11 @@ const services: WhatWeDoItem[] = servicesData
     slug: s.slug,
     title: s.shortTitle,
     description: s.tagline,
-    image: svcImages[s.slug],
-    accentColor: accentColors[s.slug],
+    images: svcImages[s.slug],
   }))
-  .filter((s): s is WhatWeDoItem => Boolean(s.image && s.accentColor));
+  // `images.length` rather than `images`: a slug with an empty array would
+  // otherwise pass and render a preview with nothing in it.
+  .filter((s): s is WhatWeDoItem => Boolean(s.images?.length));
 
 const DEFAULT_SERVICE: WhatWeDoItem = {
   index: "01",
@@ -120,8 +142,7 @@ const DEFAULT_SERVICE: WhatWeDoItem = {
   title: "UI/UX Design",
   description:
     "We design intuitive, user-friendly websites and apps that people enjoy using and come back to.",
-  image: svcImages["ui-ux-design"] as ServiceImage,
-  accentColor: "#f97316",
+  images: svcImages["ui-ux-design"] as ServiceImage[],
 };
 
 function AccentBar({ active }: { active: boolean }) {
@@ -135,6 +156,164 @@ function AccentBar({ active }: { active: boolean }) {
           : "scale-y-50 opacity-0 group-hover:scale-y-100 group-hover:opacity-40",
       )}
     />
+  );
+}
+
+/** How long each plate of a multi-image service stays up. */
+const ROTATE_MS = 5200;
+
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReduced(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  return reduced;
+}
+
+/**
+ * Which plate of the active service is showing, advancing on a timer.
+ *
+ * `running` is the caller's "this preview is actually on screen" signal — the
+ * desktop panel passes true only for the selected service, and the mobile panel
+ * passes whether its accordion row is open — which keeps a closed or off-screen
+ * preview from spending a timer that swaps images nobody sees.
+ *
+ * Switching services resets the position by remounting instead of by an effect:
+ * the desktop caller keys `ServiceMedia` on the slug, so React gives the new
+ * service a fresh state rather than a cascading render to correct the old one.
+ *
+ * A `count` of 1 is not a special case in the caller: no timer is installed and
+ * no dots render, so a single-plate service behaves exactly as it did before.
+ */
+function usePlateIndex(count: number, running: boolean) {
+  const [index, setIndex] = useState(0);
+  const reduced = usePrefersReducedMotion();
+
+  useEffect(() => {
+    if (count < 2 || !running || reduced) return;
+    const id = window.setInterval(() => setIndex((i) => (i + 1) % count), ROTATE_MS);
+    return () => window.clearInterval(id);
+  }, [count, running, reduced]);
+
+  // The modulo keeps the index in range for the render that happens before a
+  // `count` change (a dot click racing a service switch) has settled.
+  return [count > 0 ? index % count : 0, setIndex] as const;
+}
+
+/**
+ * Dots for a multi-plate preview, drawn over the frame's bottom-right corner so
+ * both slots can drop them in without the caller's layout having to reserve
+ * space for them. The translucent pill is what makes them legible over
+ * arbitrary artwork; a bare dot has no guaranteed contrast.
+ */
+function PlateDots({
+  count,
+  index,
+  onSelect,
+  title,
+}: {
+  count: number;
+  index: number;
+  onSelect: (i: number) => void;
+  title: string;
+}) {
+  if (count < 2) return null;
+
+  return (
+    <div
+      role="group"
+      aria-label={`${title} images`}
+      className="absolute right-3 bottom-3 flex items-center gap-1.5 rounded-full bg-background/70 px-2.5 py-2 backdrop-blur-sm"
+    >
+      {Array.from({ length: count }, (_, i) => (
+        <button
+          key={i}
+          type="button"
+          onClick={() => onSelect(i)}
+          aria-label={`Show image ${i + 1} of ${count}`}
+          aria-current={i === index}
+          className={cn(
+            "h-1.5 cursor-pointer rounded-full transition-all duration-300 ease-out",
+            i === index
+              ? "w-5 bg-primary"
+              : "w-1.5 bg-muted-foreground/50 hover:bg-muted-foreground",
+          )}
+        />
+      ))}
+    </div>
+  );
+}
+
+/**
+ * The service preview: a fixed-aspect frame holding every plate of the active
+ * service, crossfaded, plus the dots that drive it. Shared by the desktop panel
+ * and the mobile accordion so both rotate identically — the only difference is
+ * the aspect class the caller passes in.
+ */
+function ServiceMedia({
+  item,
+  running,
+  frameClassName,
+  overlayClassName,
+  sizes,
+}: {
+  item: WhatWeDoItem;
+  running: boolean;
+  frameClassName: string;
+  /** Optional hairline drawn over the frame; the desktop card has one, the
+   *  mobile panel's frame is already inset in a bordered card and does not. */
+  overlayClassName?: string;
+  sizes: string;
+}) {
+  // Pointer devices get a pause on hover: the desktop list swaps the selected
+  // service on mouseenter, so without this the plate would advance out from
+  // under a visitor who is reading it.
+  const [hovered, setHovered] = useState(false);
+  const [index, setIndex] = usePlateIndex(item.images.length, running && !hovered);
+
+  return (
+    <div
+      className={cn("relative overflow-hidden", frameClassName)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {item.images.map((img, i) => (
+        <div
+          key={img.src}
+          aria-hidden={i !== index}
+          className={cn(
+            "absolute inset-0 transition-opacity duration-300 ease-out",
+            i === index ? "opacity-100" : "opacity-0",
+          )}
+        >
+          <WebpImage
+            src={img.src}
+            srcSet={img.srcSet}
+            webpSrcSet={img.webpSrcSet}
+            sizes={sizes}
+            width={img.width}
+            height={img.height}
+            // Only the visible plate is named; the others are decorative
+            // duplicates of the same service, so announcing all of them would
+            // read the service name once per plate.
+            alt={i === index ? item.title : ""}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover"
+          />
+        </div>
+      ))}
+      {overlayClassName ? (
+        <div className={cn("pointer-events-none absolute inset-0", overlayClassName)} />
+      ) : null}
+      <PlateDots count={item.images.length} index={index} onSelect={setIndex} title={item.title} />
+    </div>
   );
 }
 
@@ -271,27 +450,12 @@ function MobileAccordion({
             >
               <div className="overflow-hidden">
                 <div className="px-6 pb-6">
-                  <div className="relative aspect-[16/10] overflow-hidden rounded-xl">
-                    <WebpImage
-                      src={s.image.src}
-                      srcSet={s.image.srcSet}
-                      webpSrcSet={s.image.webpSrcSet}
-                      sizes={SVC_SIZES}
-                      width={s.image.width}
-                      height={s.image.height}
-                      alt={s.title}
-                      loading="lazy"
-                      decoding="async"
-                      className="h-full w-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-tr from-black/30 via-transparent to-transparent" />
-                    <div
-                      className="absolute inset-0"
-                      style={{
-                        background: `linear-gradient(135deg, ${s.accentColor}45 0%, transparent 50%)`,
-                      }}
-                    />
-                  </div>
+                  <ServiceMedia
+                    item={s}
+                    running={isOpen}
+                    frameClassName="relative aspect-[16/10] overflow-hidden rounded-xl"
+                    sizes={SVC_SIZES}
+                  />
                   <p className="mt-4 text-base leading-relaxed text-muted-foreground">
                     {s.description}
                   </p>
@@ -335,39 +499,19 @@ export function WhatWeDo() {
         </ScrollReveal>
         <ScrollReveal direction="right" className="lg:col-span-3">
           <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-card">
-            <div className="relative aspect-[16/9] overflow-hidden">
-              {services.map((s, i) => (
-                <div
-                  key={s.slug}
-                  aria-hidden={i !== (active ?? 0)}
-                  className={cn(
-                    "absolute inset-0 transition-opacity duration-300 ease-out",
-                    i === (active ?? 0) ? "opacity-100" : "opacity-0",
-                  )}
-                >
-                  <WebpImage
-                    src={s.image.src}
-                    srcSet={s.image.srcSet}
-                    webpSrcSet={s.image.webpSrcSet}
-                    sizes={SVC_SIZES}
-                    width={s.image.width}
-                    height={s.image.height}
-                    alt={s.title}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-tr from-black/40 via-transparent to-transparent" />
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background: `linear-gradient(135deg, ${s.accentColor}59 0%, transparent 48%)`,
-                    }}
-                  />
-                </div>
-              ))}
-              <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-black/10" />
-            </div>
+            <ServiceMedia
+              // Keyed on the slug so selecting a different service remounts the
+              // preview on that service's first plate. Without it the plate
+              // index would carry over — landing on the brand-identity service
+              // would open mid-rotation, or out of range entirely for the
+              // single-plate services.
+              key={item.slug}
+              item={item}
+              running
+              frameClassName="aspect-[16/9]"
+              overlayClassName="rounded-3xl ring-1 ring-inset ring-black/10"
+              sizes={SVC_SIZES}
+            />
 
             <div className="p-5 md:p-6">
               <div key={item.index} className="sk-fade-up">

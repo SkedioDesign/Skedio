@@ -75,16 +75,29 @@ const CONCURRENCY = 3;
  * and is never a rendered candidate.
  */
 export const RESPONSIVE_VARIANTS = [
-  // Service art supplied under images/. All four are 16:9, so the 480/768 ladder
-  // covers the ~664px desktop slot at 1x and 2x DPR. They live under images/
-  // rather than at the static root because they are supplied artwork, not build
-  // output — the generated twins sit beside their source, so these land at
+  // Service art supplied under images/. Their aspects are NOT uniform — uiux,
+  // website-development and marketing-creative are 16:9, brand-identity is 3:2
+  // — so the 480/768 ladder covers the ~664px desktop slot at 1x and 2x DPR and
+  // object-cover does the cropping. They live under images/ rather than at the
+  // static root because they are supplied artwork, not build output — the
+  // generated twins sit beside their source, so these land at
   // images/brand-identity-480.webp and friends.
+  //
+  // Swapping one of these sources requires re-running this script against
+  // `public` (or committing freshly generated variants): the -480/-768 files
+  // are committed, and `vite dev` serves them from disk instead of deriving
+  // them from the source, so dev would keep rendering the previous art until the
+  // next build. WhatWeDo.tsx's intrinsic width/height hint must be updated in
+  // the same pass when the new source changes aspect.
   //
   // The slug is `marketing-creatives` but the file is `marketing-creative.jpeg`
   // (singular). Variant names follow the FILE, so WhatWeDo.tsx must reference
   // `marketing-creative-*`; renaming one side without the other silently 404s.
   { src: "images/brand-identity.jpeg", widths: [480, 768], formats: ["webp", "jpg"] },
+  // Second brand-identity plate. It has no service of its own — WhatWeDo.tsx
+  // rotates it inside the brand-identity card — but it still needs the same
+  // ladder, because that rotation renders it in the very same slots.
+  { src: "images/brand-identity-2.jpeg", widths: [480, 768], formats: ["webp", "jpg"] },
   { src: "images/uiux.jpeg", widths: [480, 768], formats: ["webp", "jpg"] },
   { src: "images/website-development.jpeg", widths: [480, 768], formats: ["webp", "jpg"] },
   { src: "images/marketing-creative.jpeg", widths: [480, 768], formats: ["webp", "jpg"] },
