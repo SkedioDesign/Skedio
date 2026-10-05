@@ -511,6 +511,23 @@
     border-collapse: collapse;
     font-size: 0.9375rem;
   }
+
+  /* Comparison tables are the widest content in any article: four columns of
+     prose cannot compress below ~530px without wrapping every cell to three or
+     four lines, and a table cannot scroll its own overflow. The wrapper is
+     added by the renderer (see the table rule in renderMarkdown) — it is what
+     gives the table a scrollbar instead of letting it set the page width. */
+  .prose-skedio .sk-table-scroll {
+    margin-top: 1.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* The wrapper scrolls; the table inside keeps its natural width, so columns
+     stop compressing before they become unreadable. */
+  .prose-skedio .sk-table-scroll > table {
+    margin-top: 0;
+    min-width: 34rem;
+  }
   .prose-skedio th,
   .prose-skedio td {
     padding: 0.75rem 1rem;

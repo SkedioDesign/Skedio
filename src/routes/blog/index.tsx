@@ -47,8 +47,13 @@ const formatDate = (iso: string, month: "long" | "short" = "long") =>
 const formatMonthYear = (iso: string) =>
   new Date(iso).toLocaleDateString("en-US", { month: "long", year: "numeric" });
 
-const readMinutes = (content: string) =>
-  Math.max(1, Math.round(content.trim().split(/\s+/).length / 200));
+/**
+ * A post's stated reading time wins over the word count. The count is derived
+ * from `content`, so it cannot see the tables and lists the reader also has to
+ * read, and it silently disagrees with the author on long posts.
+ */
+const readMinutes = (post: BlogPost) =>
+  post.readingTimeMinutes ?? Math.max(1, Math.round(post.content.trim().split(/\s+/).length / 200));
 
 function BlogList() {
   // Single source of truth: the visible trail and the JSON-LD are built from
@@ -59,7 +64,10 @@ function BlogList() {
   ];
   const breadcrumbs = getBreadcrumbSchema(BREADCRUMB_ITEMS);
 
-  const stories = [...blogPosts].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+  // `blogPosts` is already sorted pinned-first, so the featured slot is simply
+  // the head of that list. Re-sorting by date here would drop the pin: a post
+  // pinned below the fold would silently lose the slot to a newer one.
+  const stories = blogPosts;
   const featured = stories[0]!;
   const rail = stories.slice(1);
 
@@ -168,7 +176,7 @@ function FeaturedStory({ post }: { post: BlogPost }) {
           <span className="eyebrow">{post.category}</span>
         </div>
         <span className="hidden text-xs tracking-[-0.01em] text-muted-foreground sm:block">
-          {readMinutes(post.content)} min read
+          {readMinutes(post)} min read
         </span>
       </div>
 
@@ -233,7 +241,7 @@ function ListEntry({ post, index }: { post: BlogPost; index: string }) {
           {post.title}
         </h3>
         <p className="mt-2.5 text-xs tracking-[-0.01em] text-muted-foreground">
-          {formatDate(post.publishedAt, "short")} · {readMinutes(post.content)} min read
+          {formatDate(post.publishedAt, "short")} · {readMinutes(post)} min read
         </p>
       </div>
     </Link>

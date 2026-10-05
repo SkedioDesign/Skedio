@@ -1,12 +1,28 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, ArrowUpRight, Calendar } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Calendar, Clock, UserRound } from "lucide-react";
 import { blogPosts } from "@/data/blog";
 import { seo, canonicalLink } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
-import { getArticleSchema, getBreadcrumbSchema, getWebPageSchema } from "@/lib/schema";
+import {
+  getArticleSchema,
+  getBreadcrumbSchema,
+  getFAQSchema,
+  getWebPageSchema,
+} from "@/lib/schema";
 import { useContactModal } from "@/context/use-contact-modal";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ArticleRelatedLinks } from "@/components/ArticleRelatedLinks";
+import { SocialLinks, type TeamSocials } from "@/components/SocialLinks";
+import { WebpImage } from "@/components/WebpImage";
+import teamSocialsData from "@/data/team-socials.json";
+
+/** The byline's links and photo, read from the same team roster the about page
+ *  uses, so an author is described once rather than restated per post. A name
+ *  absent from that file falls back to no links and no photo. */
+const memberFor = (name?: string) =>
+  name ? teamSocialsData.members.find((m) => m.name === name) : undefined;
+
+const socialsFor = (name?: string): TeamSocials => memberFor(name)?.socials ?? {};
 
 export const Route = createFileRoute("/blog/$slug")({
   loader: async ({ params }) => {
@@ -37,7 +53,10 @@ export const Route = createFileRoute("/blog/$slug")({
 
     return {
       meta: seo({
-        title: `${post.title} | Skédio Blog`,
+        // `metaTitle`, not `${post.title} | Skédio Blog`: the suffix overflowed
+        // Google's 60-character limit on the longer titles, and the field
+        // already exists so each post can state a title that fits.
+        title: post.metaTitle,
         description: post.metaDescription,
         image: post.ogImage,
         url: `/blog/${post.slug}`,
@@ -73,13 +92,17 @@ function ArticleNotFound() {
 function BlogPost() {
   const { post, slug, html } = Route.useLoaderData();
   const { openContactModal } = useContactModal();
+  const authorPhoto = memberFor(post.author)?.img;
 
   const articleSchema = getArticleSchema({
     title: post.title,
     description: post.metaDescription,
     path: `/blog/${post.slug}`,
     datePublished: post.publishedAt,
-    authorName: "Skédio Studio",
+    // The byline. This used to be hardcoded to "Skédio Studio", so a post
+    // crediting a named author still claimed the studio here — and this is the
+    // one place crawlers read.
+    authorName: post.author ?? "Skédio",
     image: post.ogImage,
   });
 
@@ -100,10 +123,14 @@ function BlogPost() {
           breadcrumbSchema,
           getWebPageSchema({
             path: `/blog/${post.slug}`,
-            name: `${post.title} | Skédio Blog`,
+            name: post.metaTitle,
             description: post.metaDescription,
             datePublished: post.publishedAt,
           }),
+          // Only when the post declares them. Google requires FAQPage
+          // markup to match content visible on the page, so this is driven
+          // from the post's own FAQ section rather than generated here.
+          ...(post.faqs?.length ? [getFAQSchema(post.faqs)] : []),
         ]}
       />
 
@@ -138,11 +165,56 @@ function BlogPost() {
 
         <h1 className="type-h1 mt-6 leading-tight">{post.title}</h1>
 
-        <div className="mt-8 flex flex-wrap items-center gap-6 border-y border-border py-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2.5">{/* Author info could be added here */}</div>
-          <div className="flex items-center gap-1.5">
-            <Calendar className="size-4" />
-            <span>{post.publishedAt}</span>
+        {/* The date sits in a <time> with the machine-readable value in
+            `dateTime`; the old raw ISO string told readers nothing. */}
+        <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 border-y border-border py-4 text-sm text-muted-foreground">
+          {/* Name, photo and links travel together: they identify the same
+              person, and the icons are `size-8` tap targets, so they read as
+              the author's row rather than as loose buttons beside the date.
+              The photo is decorative — the name is right beside it in the same
+              row, so an alt would only repeat it for screen reader users. */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
+              {authorPhoto ? (
+                <WebpImage
+                  src={authorPhoto}
+                  alt=""
+                  aria-hidden="true"
+                  width={36}
+                  height={36}
+                  loading="lazy"
+                  decoding="async"
+                  className="size-9 shrink-0 rounded-full border border-border object-cover"
+                />
+              ) : (
+                <UserRound className="size-4" aria-hidden="true" />
+              )}
+              <span className="text-foreground">{post.author ?? "Skédio"}</span>
+            </div>
+            <SocialLinks socials={socialsFor(post.author)} />
+          </div>
+          {/* Date and length are grouped and pushed right with `ml-auto` so they
+              sit against the right edge whenever they share a line with the
+              author, and stay together on their own right-aligned line when
+              narrow widths wrap the byline. `flex-wrap` on the parent handles
+              the wrap; `ml-auto` does the right-alignment. */}
+          <div className="ml-auto flex items-center gap-4">
+            <div className="flex items-center gap-1.5">
+              <Calendar className="size-4" aria-hidden="true" />
+              <time dateTime={post.publishedAt}>
+                {new Date(post.publishedAt).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </time>
+            </div>
+            {post.readingTimeMinutes && (
+              <div className="flex items-center gap-1.5">
+                <Clock className="size-4" aria-hidden="true" />
+                <span>{post.readingTimeMinutes} min read</span>
+              </div>
+            )}
           </div>
         </div>
 

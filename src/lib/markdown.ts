@@ -29,7 +29,61 @@ function escapeHtml(source: string): string {
   return source.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+/**
+ * GitHub-flavoured heading slug, so an article's hand-written table of contents
+ * resolves. The exact rules matter because the anchors are written by hand in
+ * the content and cannot be checked against the headings that produce them:
+ * lowercase, drop anything that isn't a letter, digit, space or hyphen, then
+ * spaces to hyphens. `How to Build a Startup Design System (Step by Step)`
+ * therefore becomes `how-to-build-a-startup-design-system-step-by-step`.
+ *
+ * `marked` dropped its built-in `headerIds` option in v8, and its default
+ * heading renderer emits no `id` at all — every in-page table of contents on
+ * the blog was dead before this.
+ */
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s-]/gu, "")
+    .trim()
+    .replace(/\s+/g, "-");
+}
+
+/**
+ * Headings are numbered per render, not per module: `renderMarkdown` is called
+ * once per request, and two posts that both contain a "Conclusion" heading must
+ * not collide on the same document.
+ */
+const headingIds = new Map<string, number>();
+
+const renderer = new marked.Renderer();
+renderer.heading = function ({ tokens, depth }) {
+  const text = this.parser.parseInline(tokens);
+  // `parseInline` returns HTML, so strip tags before slugging — an emphasised
+  // word would otherwise slug on its markup (`<em>`) and lose its letters.
+  const base = slugify(text.replace(/<[^>]*>/g, ""));
+  const seen = headingIds.get(base) ?? 0;
+  headingIds.set(base, seen + 1);
+  // Repeats get a numeric suffix rather than sharing an id, which would make
+  // every later link on the page jump to the first one.
+  const id = seen === 0 ? base : `${base}-${seen}`;
+  return `<h${depth} id="${id}">${text}</h${depth}>\n`;
+};
+
+/**
+ * Wraps tables so they can scroll.
+ *
+ * A `<table>` cannot scroll its own overflow, so a wide table inside a narrow
+ * column pushes the whole document sideways — measured at 555px of document
+ * width on a 320px screen for the design-system article's comparison tables.
+ * `overflow-x: auto` only works on a block box, so the wrapper supplies it and
+ * the table keeps its natural width inside.
+ */
+const originalTable = renderer.table.bind(renderer);
+renderer.table = (token) => `<div class="sk-table-scroll">${originalTable(token)}</div>\n`;
+
 export function renderMarkdown(markdown: string): string {
-  const html = marked.parse(escapeHtml(markdown)) as string;
+  headingIds.clear();
+  const html = marked.parse(escapeHtml(markdown), { renderer }) as string;
   return html.replace(DANGEROUS_URL_SCHEME, "$1=$2#$2");
 }

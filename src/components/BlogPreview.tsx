@@ -15,7 +15,7 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
  */
 const previewDims: Record<string, { width: number; height: number }> = {
   // svc-uiux.jpg
-  "good-ui-isnt-about-making-things-beautiful": { width: 700, height: 560 },
+  "what-is-a-design-system-why-startups-need-one": { width: 700, height: 560 },
   // insight-1.jpg
   "ai-wont-replace-designers": { width: 560, height: 560 },
   // svc-identity.jpg
@@ -28,8 +28,13 @@ function fmtDate(iso?: string) {
   return `${MONTHS[Number(m) - 1]} ${Number(d)}, ${y}`;
 }
 
-function readMinutes(content: string) {
-  return Math.max(1, Math.round(content.trim().split(/\s+/).length / 200));
+/** A post's stated reading time wins over the word count, which is derived from
+ *  `content` and so cannot account for the tables and lists in it. */
+function readMinutes(post: BlogPost) {
+  return (
+    post.readingTimeMinutes ??
+    Math.max(1, Math.round(post.content.trim().split(/\s+/).length / 200))
+  );
 }
 
 function CategoryLabel({ category }: { category: string }) {
@@ -68,7 +73,7 @@ function FeaturedStory({ post }: { post: BlogPost }) {
         <span className="h-px w-10 shrink-0 bg-foreground/15" />
         <CategoryLabel category={post.category} />
         <span className="ml-auto hidden text-xs tracking-[-0.01em] text-muted-foreground sm:block">
-          {readMinutes(post.content)} min read
+          {readMinutes(post)} min read
         </span>
       </div>
 
@@ -128,7 +133,7 @@ function ListEntry({ post, index }: { post: BlogPost; index: string }) {
       </h3>
 
       <p className="mt-2 text-xs tracking-[-0.01em] text-muted-foreground">
-        {fmtDate(post.publishedAt)} · {readMinutes(post.content)} min read
+        {fmtDate(post.publishedAt)} · {readMinutes(post)} min read
       </p>
 
       <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-primary transition-colors duration-200 group-hover:text-primary-hover">
