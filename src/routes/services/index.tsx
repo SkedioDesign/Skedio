@@ -8,6 +8,7 @@ import { seo, canonicalLink } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
 import { getBreadcrumbSchema, getItemListSchema } from "@/lib/schema";
 import { SiteHeader } from "@/components/SiteHeader";
+import { siteNavLinks } from "@/lib/site-nav";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { useContactModal } from "@/context/use-contact-modal";
@@ -77,14 +78,7 @@ function ServicesHub() {
     <main id="main-content" className="min-h-screen bg-background text-foreground">
       <StructuredData data={[breadcrumbSchema, itemListSchema]} />
 
-      <SiteHeader
-        links={[
-          { label: "Work", to: "/" },
-          { label: "Services", current: true },
-          { label: "Blog", to: "/blog" },
-          { label: "About", to: "/about" },
-        ]}
-      />
+      <SiteHeader links={siteNavLinks("Services")} />
 
       {/* Hero */}
       <section className="mx-auto w-full max-w-[1440px] px-6 pt-16 pb-0 md:px-12 md:pt-24 lg:pt-28">

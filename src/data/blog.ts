@@ -57,8 +57,11 @@ const rawBlogPosts: BlogPost[] = [
       "A design system is a shared set of tokens, components and rules that keeps your product consistent. Learn what it includes, why startups need one, and how to build it lean.",
     publishedAt: "2026-10-05",
     metaTitle: "What Is a Design System? Why Startups Need One | Skédio",
+    // Trimmed to fit the 160-char meta description cap. The excerpt
+    // above keeps the fuller phrasing, since it renders as body copy in
+    // listings rather than being cut off mid-sentence in search results.
     metaDescription:
-      "A design system is a shared set of tokens, components and rules that keeps your product consistent. Learn what it includes, why startups need one, and how to build it lean.",
+      "A design system is a shared set of tokens, components and rules that keeps a product consistent. Learn why startups need one and how to build it lean.",
     ogImage: "/og.webp",
     relatedServiceSlug: "ui-ux-design",
     relatedProjectSlug: "tiffinly",

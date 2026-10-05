@@ -12,6 +12,7 @@ import { seo, canonicalLink } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 import { StructuredData } from "@/components/StructuredData";
 import { SiteHeader } from "@/components/SiteHeader";
+import { siteNavLinks } from "@/lib/site-nav";
 import { WebpImage } from "@/components/WebpImage";
 import { WhatWeDo } from "@/components/WhatWeDo";
 import { SelectedWork } from "@/components/SelectedWork";
@@ -687,14 +688,7 @@ function Index() {
       />
 
       {/* Nav */}
-      <SiteHeader
-        links={[
-          { label: "Work", to: "/projects" },
-          { label: "Services", to: "/services" },
-          { label: "Blog", to: "/blog" },
-          { label: "About", to: "/about" },
-        ]}
-      />
+      <SiteHeader links={siteNavLinks(null)} />
 
       {/* Hero — copy plus an empty visual box.
 

@@ -9,8 +9,6 @@ import {
 import appCss from "../styles.css?url";
 import { Footer } from "../components/Footer";
 import { LenisProvider } from "../components/LenisProvider";
-import { ContactModalProvider } from "../context/contact-modal-context";
-import { ContactModal } from "../components/ContactModal";
 import { StructuredData } from "../components/StructuredData";
 import { getOrganizationSchema, getWebSiteSchema } from "../lib/schema";
 import { siteConfig } from "../lib/site-config";
@@ -85,12 +83,9 @@ function RootComponent() {
   return (
     <LenisProvider>
       <RootDocument>
-        <ContactModalProvider>
-          <Outlet />
-          <ContactModal />
-          {!isCaseStudy && <Footer />}
-          <CookieConsent />
-        </ContactModalProvider>
+        <Outlet />
+        {!isCaseStudy && <Footer />}
+        <CookieConsent />
       </RootDocument>
     </LenisProvider>
   );
@@ -98,7 +93,13 @@ function RootComponent() {
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en-IN">
+    // `suppressHydrationWarning` because a blocking inline script in <head>
+    // adds the `js` class to <html> before React hydrates (see the `scripts`
+    // entry in head() above — it gates the scroll-reveal start state). The
+    // server renders no class; the client finds one already applied. This is
+    // the documented way to tell React the difference is intentional, and it is
+    // scoped to this one element, so a real mismatch inside <body> still warns.
+    <html lang="en-IN" suppressHydrationWarning>
       <head>
         <HeadContent />
         <StructuredData data={[getOrganizationSchema(), getWebSiteSchema()]} />

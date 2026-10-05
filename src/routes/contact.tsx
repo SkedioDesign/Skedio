@@ -6,6 +6,7 @@ import { seo, canonicalLink } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 import { StructuredData } from "@/components/StructuredData";
 import { SiteHeader } from "@/components/SiteHeader";
+import { siteNavLinks } from "@/lib/site-nav";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { getBreadcrumbSchema, getContactPageSchema, getWebPageSchema } from "@/lib/schema";
 
@@ -91,15 +92,9 @@ function Contact() {
 
   return (
     <>
-      <SiteHeader
-        links={[
-          { label: "Home", to: "/" },
-          { label: "Work", to: "/projects" },
-          { label: "Services", to: "/services" },
-          { label: "Blog", to: "/blog" },
-          { label: "Contact", current: true },
-        ]}
-      />
+      {/* Contact has no item of its own in the shared nav, so it passes null —
+          the footer reaches it at /#contact. */}
+      <SiteHeader links={siteNavLinks(null)} />
       <main className="pt-28 md:pt-36">
         <div className="mx-auto w-full max-w-[1200px] px-6">
           <Breadcrumbs

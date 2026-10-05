@@ -3,6 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import type { ReactNode } from "react";
 import { seo } from "@/lib/seo";
 import { SiteHeader } from "@/components/SiteHeader";
+import { siteNavLinks } from "@/lib/site-nav";
 
 const notFoundMeta = seo({
   title: "Page Not Found | Skédio Design Studio",
@@ -53,14 +54,9 @@ export function NotFound() {
       {/* React 19 hoists <meta> rendered here into <head> */}
       {robotsMeta && <meta name={robotsMeta.name} content={robotsMeta.content} />}
 
-      {/* Nav */}
-      <SiteHeader
-        links={[
-          { label: "Home", to: "/" },
-          { label: "About", to: "/about" },
-          { label: "Insights", to: "/insights" },
-        ]}
-      />
+      {/* Nav — the shared nav, since a dead-end page is exactly where someone
+          needs the way out. */}
+      <SiteHeader links={siteNavLinks(null)} />
 
       {/* 404 message */}
       <main

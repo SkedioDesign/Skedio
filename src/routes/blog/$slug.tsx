@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, ArrowUpRight, Calendar, Clock, UserRound } from "lucide-react";
 import { blogPosts } from "@/data/blog";
-import { seo, canonicalLink } from "@/lib/seo";
+import { seo, canonicalLink, toAbsoluteUrl } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
 import {
   getArticleSchema,
@@ -13,6 +13,7 @@ import { useContactModal } from "@/context/use-contact-modal";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ArticleRelatedLinks } from "@/components/ArticleRelatedLinks";
 import { SocialLinks, type TeamSocials } from "@/components/SocialLinks";
+import { ShareButton } from "@/components/ShareButton";
 import { WebpImage } from "@/components/WebpImage";
 import teamSocialsData from "@/data/team-socials.json";
 
@@ -215,6 +216,13 @@ function BlogPost() {
                 <span>{post.readingTimeMinutes} min read</span>
               </div>
             )}
+            {/* Inside the right-aligned group, last, so the share control sits
+                at the end of the row without pushing the date off the edge. */}
+            <ShareButton
+              url={toAbsoluteUrl(`/blog/${post.slug}`)}
+              title={post.title}
+              className="shrink-0"
+            />
           </div>
         </div>
 

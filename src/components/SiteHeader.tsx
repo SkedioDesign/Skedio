@@ -5,6 +5,9 @@ import { useContactModal } from "@/context/use-contact-modal";
 import { cn } from "@/lib/utils";
 import { WebpImage } from "@/components/WebpImage";
 
+/** A nav item. `hash` is a section on `to`, used for the homepage anchors
+ *  (see lib/site-nav.ts). `current` marks the page you are already on, rendered
+ *  as text rather than a link so it cannot be activated. */
 export type HeaderLink =
   { label: string; to: string; hash?: string; current?: false } | { label: string; current: true };
 

@@ -7,6 +7,7 @@ import { seo, canonicalLink } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
 import { getBreadcrumbSchema, getItemListSchema, getWebPageSchema } from "@/lib/schema";
 import { SiteHeader } from "@/components/SiteHeader";
+import { siteNavLinks } from "@/lib/site-nav";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { useContactModal } from "@/context/use-contact-modal";
@@ -62,14 +63,7 @@ function ProjectsHub() {
         ]}
       />
 
-      <SiteHeader
-        links={[
-          { label: "Work", current: true },
-          { label: "Services", to: "/services" },
-          { label: "Blog", to: "/blog" },
-          { label: "About", to: "/about" },
-        ]}
-      />
+      <SiteHeader links={siteNavLinks("Work")} />
 
       {/* Hero */}
       <section className="mx-auto w-full max-w-[1440px] px-6 pt-16 md:px-12 md:pt-24 lg:pt-28">

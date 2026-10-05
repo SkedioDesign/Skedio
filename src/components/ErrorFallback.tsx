@@ -3,6 +3,7 @@ import { Link, type ErrorComponentProps } from "@tanstack/react-router";
 import { ArrowUpRight, RotateCcw } from "lucide-react";
 import { seo } from "@/lib/seo";
 import { SiteHeader } from "@/components/SiteHeader";
+import { siteNavLinks } from "@/lib/site-nav";
 import { logError } from "@/lib/error-capture";
 
 const errorMeta = seo({
@@ -30,13 +31,7 @@ export function ErrorFallback({ error, info, reset }: ErrorComponentProps) {
       {robotsMeta && <meta name={robotsMeta.name} content={robotsMeta.content} />}
 
       {/* Nav */}
-      <SiteHeader
-        links={[
-          { label: "Home", to: "/" },
-          { label: "About", to: "/about" },
-          { label: "Insights", to: "/insights" },
-        ]}
-      />
+      <SiteHeader links={siteNavLinks(null)} />
 
       {/* Error message */}
       <main

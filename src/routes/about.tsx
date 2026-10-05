@@ -12,6 +12,7 @@ import {
   TEAM_PHOTO_HEIGHT,
 } from "@/lib/responsive-images";
 import { SiteHeader } from "@/components/SiteHeader";
+import { siteNavLinks } from "@/lib/site-nav";
 import {
   getBreadcrumbSchema,
   getPersonSchema,
@@ -125,15 +126,7 @@ function About() {
       />
 
       {/* ── Nav ─────────────────────────────────────────────────────── */}
-      <SiteHeader
-        links={[
-          { label: "Home", to: "/" },
-          { label: "Work", to: "/", hash: "work" },
-          { label: "Services", to: "/", hash: "services" },
-          { label: "Blog", to: "/", hash: "blog" },
-          { label: "About", current: true },
-        ]}
-      />
+      <SiteHeader links={siteNavLinks("About")} />
 
       <Breadcrumbs
         items={breadcrumbItems}
