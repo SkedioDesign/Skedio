@@ -60,6 +60,14 @@ export const Route = createFileRoute("/blog/$slug")({
         title: post.metaTitle,
         description: post.metaDescription,
         image: post.ogImage,
+        // Only when the post declares a card of its own. seo() defaults to the
+        // measured size of /og.webp, which would state the wrong aspect ratio
+        // for any other file — and og:image:alt describes the card image, not
+        // the headline beside it.
+        ...(post.ogImageWidth && post.ogImageHeight
+          ? { imageWidth: post.ogImageWidth, imageHeight: post.ogImageHeight }
+          : {}),
+        ...(post.previewAlt ? { imageAlt: post.previewAlt } : {}),
         url: `/blog/${post.slug}`,
         type: "article",
         publishedTime: post.publishedAt,

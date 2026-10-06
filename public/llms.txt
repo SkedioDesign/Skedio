@@ -27,7 +27,8 @@
 
 ## Studio Blog
 - [Blog Overview](https://www.skediodesign.in/blog): Longer articles on product design, brand identity, and digital product development.
-- [Good UI Isn't About Making Things Beautiful](https://www.skediodesign.in/blog/good-ui-isnt-about-making-things-beautiful)
+- [Do You Need a Custom Web App or Just a Website?](https://www.skediodesign.in/blog/custom-web-app-or-website-which-do-you-need)
+- [What Is a Design System & Why Startups Need One](https://www.skediodesign.in/blog/what-is-a-design-system-why-startups-need-one)
 - [A Logo Is Not A Brand](https://www.skediodesign.in/blog/a-logo-is-not-a-brand)
 - [AI Won't Replace Designers. But Designers Who Use AI Will Move Differently.](https://www.skediodesign.in/blog/ai-wont-replace-designers)
 - [Blog RSS Feed](https://www.skediodesign.in/blog/feed.xml): Subscribe to new blog posts via this RSS 2.0 feed.

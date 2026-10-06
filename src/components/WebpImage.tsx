@@ -42,8 +42,17 @@ const RASTER_WEBP_SRC = /\.(jpe?g|png)$/i;
  *   />
  */
 export function WebpImage({ src, alt = "", webpSrcSet, sizes, ...props }: WebpImageProps) {
+  // A twin only exists where the build pipeline can emit it, and that pipeline
+  // only ever writes inside this site's own output. Deriving `.webp` for an
+  // absolute URL invents a filename on someone else's server: `<picture>` picks
+  // the `<source type="image/webp">` unconditionally and never falls back to
+  // the `<img>` if that guess 404s, so an external raster ships as a broken
+  // image rather than a slow one.
+  const isExternal = /^https?:\/\//i.test(src ?? "");
   const webpSrc =
-    src && RASTER_WEBP_SRC.test(src) ? encodeURI(src.replace(RASTER_WEBP_SRC, ".webp")) : null;
+    src && !isExternal && RASTER_WEBP_SRC.test(src)
+      ? encodeURI(src.replace(RASTER_WEBP_SRC, ".webp"))
+      : null;
 
   // Explicit responsive candidates win; otherwise serve the single full-size
   // .webp twin (which `sizes` still applies to as a 1-candidate srcset).

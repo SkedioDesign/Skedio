@@ -128,11 +128,11 @@ function ServiceDetail() {
       <div className="border-b border-border/70 bg-background/85 backdrop-blur-md sticky top-0 z-40">
         <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-3.5">
           <Link
-            to="/services"
+            to="/"
             className="group inline-flex items-center gap-2 text-sm font-semibold text-foreground/75 transition-colors hover:text-primary"
           >
             <ArrowLeft className="size-4 transition-transform duration-200 group-hover:-translate-x-1" />
-            <span className="hidden sm:inline">All Services</span>
+            <span className="hidden sm:inline">Home</span>
             <span className="text-muted-foreground/60 hidden sm:inline">/</span>
             <span className="text-foreground font-bold">{service.shortTitle}</span>
           </Link>

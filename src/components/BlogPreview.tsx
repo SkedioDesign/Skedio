@@ -14,12 +14,16 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
  * simply renders without dimensions.
  */
 const previewDims: Record<string, { width: number; height: number }> = {
-  // svc-uiux.jpg
-  "what-is-a-design-system-why-startups-need-one": { width: 700, height: 560 },
+  // public/DesignSystem-101-Hero-Illustration.png — square, padded by
+  // scripts/pad-design-system-hero.mjs so cover crops of any card shape keep
+  // the whole illustration
+  "what-is-a-design-system-why-startups-need-one": { width: 1600, height: 1600 },
   // insight-1.jpg
   "ai-wont-replace-designers": { width: 560, height: 560 },
   // svc-identity.jpg
   "a-logo-is-not-a-brand": { width: 700, height: 560 },
+  // public/ProductDevelopment-768.jpg
+  "custom-web-app-or-website-which-do-you-need": { width: 768, height: 527 },
 };
 
 function fmtDate(iso?: string) {
@@ -80,7 +84,7 @@ function FeaturedStory({ post }: { post: BlogPost }) {
       <div className="mt-5 overflow-hidden">
         <WebpImage
           src={post.previewImage}
-          alt=""
+          alt={post.previewAlt ?? post.title}
           {...(dims ? { width: dims.width, height: dims.height } : {})}
           loading="lazy"
           decoding="async"

@@ -191,7 +191,7 @@ function FeaturedStory({ post }: { post: BlogPost }) {
       <div className="mt-9 overflow-hidden">
         <WebpImage
           src={post.previewImage}
-          alt=""
+          alt={post.previewAlt ?? post.title}
           loading="lazy"
           decoding="async"
           className="aspect-[3/2] w-full object-cover will-change-transform transition-transform duration-700 ease-out group-hover:scale-[1.02]"
@@ -221,7 +221,7 @@ function ListEntry({ post, index }: { post: BlogPost; index: string }) {
       <div className="shrink-0 overflow-hidden">
         <WebpImage
           src={post.previewImage}
-          alt=""
+          alt={post.previewAlt ?? post.title}
           loading="lazy"
           decoding="async"
           className="aspect-square w-24 object-cover will-change-transform transition-transform duration-700 ease-out group-hover:scale-[1.04] sm:w-28"
