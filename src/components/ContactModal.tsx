@@ -11,6 +11,7 @@ export function ContactModal() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     message: "",
   });
 
@@ -18,12 +19,13 @@ export function ContactModal() {
     getBody: (honey) => ({
       name: formData.name,
       email: formData.email,
+      phone: formData.phone,
       message: formData.message,
       _subject: `New Project Inquiry from ${formData.name} (Skedio Studio)`,
       _template: "table",
     }),
     errorCopy: `Something went wrong. Please try again or email us directly at ${siteConfig.email}`,
-    onSent: () => setFormData({ name: "", email: "", message: "" }),
+    onSent: () => setFormData({ name: "", email: "", phone: "", message: "" }),
   });
 
   const handleClose = useCallback(() => {
@@ -186,6 +188,25 @@ export function ContactModal() {
                   required
                   placeholder="e.g. rahul@company.com"
                   value={formData.email}
+                  onChange={handleChange}
+                  disabled={status === "loading"}
+                  className="w-full rounded-xl border border-border/80 bg-surface/60 px-4 py-3.5 text-sm text-foreground outline-none transition-all placeholder:text-muted-foreground focus:border-primary focus:bg-surface focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="contact-phone"
+                  className="block text-xs font-semibold uppercase tracking-wider text-foreground/80"
+                >
+                  Phone Number
+                </label>
+                <input
+                  id="contact-phone"
+                  name="phone"
+                  type="tel"
+                  placeholder="e.g. +91 98765 43210"
+                  value={formData.phone}
                   onChange={handleChange}
                   disabled={status === "loading"}
                   className="w-full rounded-xl border border-border/80 bg-surface/60 px-4 py-3.5 text-sm text-foreground outline-none transition-all placeholder:text-muted-foreground focus:border-primary focus:bg-surface focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
