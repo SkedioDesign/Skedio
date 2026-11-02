@@ -64,6 +64,12 @@ const responsiveByImage: Record<string, ResponsiveCandidates> = {
     srcSet: "/EDIOS/1-480.jpg 480w, /EDIOS/1-800.jpg 800w, /EDIOS/1.webp 1920w",
     webpSrcSet: "/EDIOS/1-480.webp 480w, /EDIOS/1-800.webp 800w, /EDIOS/1.webp 1920w",
   },
+  "/ZedHealth/1.jpg": {
+    src: "/ZedHealth/1-800.jpg",
+    srcSet: "/ZedHealth/1-480.jpg 480w, /ZedHealth/1-800.jpg 800w, /ZedHealth/1-1200.jpg 1200w",
+    webpSrcSet:
+      "/ZedHealth/1-480.webp 480w, /ZedHealth/1-800.webp 800w, /ZedHealth/1-1200.webp 1200w",
+  },
   // Team portraits: 1023-1600px originals (up to 724KB) for a 260px card.
   // src points at the 2x candidate so browsers without srcset still avoid the
   // multi-hundred-KB original.

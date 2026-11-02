@@ -142,6 +142,34 @@ export const projects: ProjectSummary[] = [
     size: "wide",
     published: true,
   },
+  {
+    slug: "zedhealth",
+    name: "ZedHealth Administration",
+    line: "Healthcare Administration Website",
+    tag: "UI/UX, Web Development",
+    cover: "/ZedHealth/1.jpg",
+    metaTitle: "ZedHealth Administration — Website Design & Development | Skédio",
+    metaDescription:
+      "Explore how Skédio designed and developed a clear, trust-led website for ZedHealth Administration, a healthcare TPA serving corporates and individuals in Zambia.",
+    ogImage: "/ZedHealth/1.jpg",
+    ogImageWidth: 1418,
+    ogImageHeight: 1109,
+    themeColor: "#05502E",
+    year: "2026",
+    platform: "Responsive Website",
+    discipline: "UI/UX Design & Web Development",
+    scope: "Website Design, Front-end Development, Responsive QA",
+    publishedDate: "2026-11-02",
+    client: "ZedHealth Administration",
+    summary:
+      "A clear, trust-led website for ZedHealth Administration, positioning its healthcare administration and care-coordination services for corporates and individuals in Zambia.",
+    services: ["UI/UX Design", "Website Development"],
+    serviceSlugs: ["ui-ux-design", "website-development"],
+    category: "Development",
+    tagColor: "teal",
+    size: "normal",
+    published: true,
+  },
 ];
 
 /* Bento grid shape used by the SelectedWork section — derived from projects. */
