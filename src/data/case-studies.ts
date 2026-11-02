@@ -882,8 +882,8 @@ export const caseStudies: CaseStudyDocument[] = [
       {
         type: "editorial",
         id: "outcome",
-        num: "08",
-        kicker: "08 — THE OUTCOME",
+        num: "09",
+        kicker: "09 — THE OUTCOME",
         headline: "A Complete Multi-Role\n**Mobile Ecosystem.**",
         lede: [
           "The result is a complete multi-role mobile UI ecosystem that covers the major workflows of Tiffinly — from onboarding and subscription selection to provider operations and final delivery.",
@@ -899,6 +899,306 @@ export const caseStudies: CaseStudyDocument[] = [
           alt: "Tiffinly final brand statement artwork",
           width: 1600,
           height: 1067,
+        },
+        foot: "End of case study — Skédio",
+      },
+    ],
+  },
+  {
+    slug: "zedhealth",
+    assets: "/ZedHealth",
+    brand: "ZEDHEALTH",
+    chapters: [
+      { id: "overview", num: "01", label: "Overview" },
+      { id: "brief", num: "02", label: "Brief" },
+      { id: "home", num: "03", label: "Homepage" },
+      { id: "about", num: "04", label: "About" },
+      { id: "principles", num: "05", label: "Principles" },
+      { id: "services", num: "06", label: "Services" },
+      { id: "contact", num: "07", label: "Contact" },
+      { id: "design", num: "08", label: "Design" },
+      { id: "outcome", num: "09", label: "Outcome" },
+    ],
+    sections: [
+      {
+        type: "cover",
+        wordmark: [{ text: "ZED" }, { text: "HEALTH", accent: true }],
+        facts: [
+          {
+            label: "Category",
+            value: "Healthcare / UI/UX Design / Web Development",
+          },
+          { label: "Client", value: "ZedHealth Administration" },
+          { label: "Studio", value: "Skédio Creative Studio" },
+          { label: "Status", value: "Completed" },
+          { label: "Website", value: "https://zedhealth.co.zm/" },
+        ],
+        subtitle: ["Right Care.", "Right Provider."],
+        coverImage: {
+          name: "1",
+          alt: "ZedHealth Administration — Right Care. Right Provider.",
+          width: 1418,
+          height: 1109,
+        },
+      },
+      {
+        type: "overview",
+        id: "overview",
+        num: "01",
+        kicker: "01 — PROJECT OVERVIEW",
+        index: [
+          { num: "01", label: "Overview" },
+          { num: "02", label: "Brief" },
+          { num: "03", label: "Structure" },
+          { num: "04", label: "Design & Build" },
+          { num: "05", label: "Outcome" },
+        ],
+        headline: "Built To Strengthen\nThe System, **Not Sit Beside It.**",
+        lede: "ZedHealth Administration is a healthcare third-party administrator connecting corporates and individuals with appropriate care, providers, and administration. Skédio designed and developed a four-page website that explains that role clearly, builds trust, and gives every audience a straightforward path to the right service. ZedHealth is not presented as a hospital or clinic — the site positions the organisation as the layer that makes healthcare access easier to manage.",
+        visual: {
+          name: "2",
+          alt: "ZedHealth website hero — built to strengthen the system, not sit beside it",
+          width: 1122,
+          height: 1402,
+        },
+      },
+      {
+        type: "editorial",
+        id: "brief",
+        num: "02",
+        kicker: "02 — THE BRIEF",
+        headline: "Make A Complex\n**Healthcare Model Clear.**",
+        lede: [
+          "ZedHealth needed a digital home for a business that sits between corporates, individuals, providers, and care coordination. The website had to explain that model without making it feel clinical, bureaucratic, or difficult to navigate.",
+          "The brief focused on a clean, professional presence that could speak to two audiences at once: organisations looking after their people, and individuals trying to find the right care or support.",
+          "Phase 1 covered four core pages — Home, About Us, Services, and Contact Us — with clear content structure, a responsive front-end, and a contact and enquiry flow.",
+        ],
+        tags: [
+          "Healthcare administration",
+          "Corporate healthcare",
+          "Individual care",
+          "Trust",
+          "Clarity",
+          "Responsive",
+        ],
+        footnote:
+          "The work was intentionally scoped to a focused first phase rather than an open-ended website programme.",
+        visual: {
+          name: "5",
+          alt: "ZedHealth website introduction and healthcare outcomes messaging",
+          width: 1448,
+          height: 1086,
+        },
+      },
+      {
+        type: "editorial",
+        id: "home",
+        num: "03",
+        kicker: "03 — HOMEPAGE",
+        theme: "dark",
+        headline: "Right Care.\n**Right Provider.**",
+        lede: [
+          "The homepage leads with ZedHealth's commitment to accessible, reliable, and innovative healthcare solutions across Zambia and beyond.",
+          "From there, the page moves visitors from the promise into the practical: who ZedHealth supports, what the organisation does, and how to start a conversation.",
+          "The visual hierarchy keeps the message calm and confident, with the brand line carrying the top of the page and clear service pathways doing the navigation work below it.",
+        ],
+        points: [
+          {
+            label: "Trust-first positioning",
+            items: ["A clear statement of purpose before service detail."],
+          },
+          {
+            label: "Two-audience navigation",
+            items: ["Paths for corporates and individuals without splitting the experience."],
+          },
+          {
+            label: "Conversion-focused contact",
+            items: ["A visible enquiry route from every key decision point."],
+          },
+        ],
+        visual: {
+          name: "1",
+          alt: "ZedHealth homepage — Right Care. Right Provider.",
+          width: 1418,
+          height: 1109,
+        },
+      },
+      {
+        type: "editorial",
+        id: "about",
+        num: "04",
+        kicker: "04 — ABOUT, MISSION & VISION",
+        headline: "Mission, Vision, And\n**Why It Matters.**",
+        lede: [
+          "The About page gives ZedHealth room to explain why it exists. The mission centres on transforming healthcare management through technology, transparency, and a shorter journey to appropriate treatment.",
+          "The vision describes an inclusive healthcare ecosystem where quality and affordable care is accessible to corporates and individuals through efficient administration, technology, and responsible managed care.",
+        ],
+        tags: [
+          "Inclusive healthcare",
+          "Responsible managed care",
+          "Technology & transparency",
+          "Access for corporates and individuals",
+        ],
+        footnote:
+          "The page keeps the purpose human: better administration should shorten the distance between a healthcare need and the right support.",
+        visual: {
+          name: "3",
+          alt: "ZedHealth mission and vision display",
+          width: 1536,
+          height: 1024,
+        },
+      },
+      {
+        type: "editorial",
+        id: "principles",
+        num: "05",
+        kicker: "05 — PRINCIPLES",
+        theme: "dark",
+        headline: "Five Principles,\n**Measured Against.**",
+        lede: [
+          "ZedHealth states the standards it is willing to be measured against. The website gives those principles room to breathe, so they read as commitments rather than slogans.",
+        ],
+        points: [
+          {
+            label: "Accessibility",
+            items: ["Healthcare access designed around real people and real constraints."],
+          },
+          {
+            label: "Affordability",
+            items: ["A focus on quality care that remains within reach."],
+          },
+          {
+            label: "Flexibility",
+            items: ["Administration that adapts to different organisations and individuals."],
+          },
+          {
+            label: "Quality Care",
+            items: ["The standard every service and referral is measured against."],
+          },
+          {
+            label: "Technology & Control",
+            items: ["Better visibility, clearer administration, and responsible managed care."],
+          },
+        ],
+        visual: {
+          name: "4",
+          alt: "ZedHealth five principles — accessibility, affordability, flexibility, quality care, technology and control",
+          width: 1086,
+          height: 1448,
+        },
+      },
+      {
+        type: "editorial",
+        id: "services",
+        num: "06",
+        kicker: "06 — SERVICES",
+        headline: "A Connected Set Of\n**Healthcare Services.**",
+        lede: [
+          "The Services page brings ZedHealth's offer into one readable system, so visitors can quickly identify the support that matches their situation.",
+        ],
+        points: [
+          {
+            label: "Health insurance claim administration",
+            items: ["Structured administration that keeps claims and care moving."],
+          },
+          {
+            label: "Patient assistance",
+            items: ["Support for individuals navigating access to appropriate care."],
+          },
+          {
+            label: "Medical referrals",
+            items: ["A clearer route from need to the right provider."],
+          },
+          {
+            label: "Telemedicine coordination",
+            items: ["Connected access to remote healthcare support."],
+          },
+          {
+            label: "Healthcare consultation",
+            items: ["Guidance for organisations and individuals making care decisions."],
+          },
+          {
+            label: "Hospital network management",
+            items: ["Coordinated provider relationships across the care network."],
+          },
+          {
+            label: "Corporate healthcare programmes",
+            items: ["Healthcare administration shaped around an organisation and its people."],
+          },
+        ],
+        visual: {
+          name: "7",
+          alt: "ZedHealth services and care ecosystem overview",
+          width: 1254,
+          height: 1254,
+        },
+      },
+      {
+        type: "editorial",
+        id: "contact",
+        num: "07",
+        kicker: "07 — CONTACT",
+        headline: "A Clear Path To\n**Start A Conversation.**",
+        lede: [
+          "The contact page keeps the next step simple. It gives corporates and individuals a direct way to ask about healthcare administration, patient support, provider networks, or a tailored programme.",
+          "The enquiry flow was built into the site rather than left as an afterthought, so the website can move a visitor from understanding to action without friction.",
+        ],
+        visual: {
+          name: "8",
+          alt: "ZedHealth contact page — let's start a conversation",
+          width: 1448,
+          height: 1086,
+        },
+      },
+      {
+        type: "editorial",
+        id: "design",
+        num: "08",
+        kicker: "08 — DESIGN & DEVELOPMENT",
+        theme: "dark",
+        headline: "A Calm, Confident\n**Visual System.**",
+        lede: [
+          "The visual direction draws on ZedHealth's green and gold brand cues, using deep greens for trust and warm neutral tones for clarity. The result feels professional without becoming cold or overly clinical.",
+          "Typography, spacing, and content blocks were kept consistent across all four pages, with a responsive layout that preserves hierarchy from mobile to desktop.",
+          "The front-end was tested across screen sizes and handed off with the assets and structure needed to keep the site coherent as it grows.",
+        ],
+        tags: [
+          "Green & gold identity",
+          "Clear hierarchy",
+          "Consistent components",
+          "Mobile-first layouts",
+          "Accessible contrast",
+          "Cross-device QA",
+        ],
+        visual: {
+          name: "6",
+          alt: "ZedHealth responsive website design and content system",
+          width: 1122,
+          height: 1402,
+        },
+      },
+      {
+        type: "editorial",
+        id: "outcome",
+        num: "08",
+        kicker: "08 — THE OUTCOME",
+        headline: "Phase One:\n**Live And Complete.**",
+        lede: [
+          "Phase 1 delivered a four-page ZedHealth Administration website with responsive layouts, a clear service structure, and a contact and enquiry flow. The site now gives the organisation a credible digital home for its healthcare administration and care-coordination work.",
+          "Phase 2 was discussed as a potential future expansion. It is not part of the completed scope described here, and no additional features or results are claimed for it.",
+        ],
+        footnote:
+          "The project demonstrates Skédio's approach to healthcare websites: understand the system, make the language clear, and build trust before asking for action.",
+      },
+      {
+        type: "ending",
+        word: "ZEDHEALTH",
+        tag: [{ text: "Right Care. " }, { text: "Right Provider.", accent: true }],
+        visual: {
+          name: "3",
+          alt: "ZedHealth mission and vision final brand statement",
+          width: 1536,
+          height: 1024,
         },
         foot: "End of case study — Skédio",
       },

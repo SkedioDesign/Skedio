@@ -140,6 +140,7 @@ export const RESPONSIVE_VARIANTS = [
   // only ever needed for a >2x screen.
   { src: "HaoCabs/1.jpg", widths: [480, 800, 1200], formats: ["webp", "jpg"] },
   { src: "EDIOS/1.jpg", widths: [480, 800], formats: ["webp", "jpg"] },
+  { src: "ZedHealth/1.jpg", widths: [480, 800, 1200], formats: ["webp", "jpg"] },
   // Team portraits render inside a max-w-[260px] aspect-4/5 card, so 260w
   // covers 1x DPR, 520w 2x and 780w 3x. The originals are 1023-1600px
   // portraits (up to 724KB) that no browser ever needed in full.

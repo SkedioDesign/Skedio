@@ -57,6 +57,7 @@ const coverDims: Record<string, { width: number; height: number }> = {
   "/HaoCabs/cover.png": { width: 941, height: 1672 },
   "/EDIOS/1.jpg": { width: 800, height: 450 },
   "/tiffinly/1.jpg": { width: 800, height: 534 },
+  "/ZedHealth/1.jpg": { width: 800, height: 626 },
 };
 
 const MORPH_MS = 480;
